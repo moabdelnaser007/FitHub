@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251205224557_init")]
+    [Migration("20251206123601_init")]
     partial class init
     {
         /// <inheritdoc />
