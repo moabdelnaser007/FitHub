@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class Subscription : BaseEntity
     {
-        public int SubscriptionId { get; set; }
         public int UserId { get; set; }
         public int PlanId { get; set; }
         public int BranchId { get; set; }

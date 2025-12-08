@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class Visit : BaseEntity
     {
-        public int VisitId { get; set; }
 
         public int BookingId { get; set; }
         public int UserId { get; set; }

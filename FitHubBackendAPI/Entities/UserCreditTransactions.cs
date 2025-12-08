@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class UserCreditTransactions : BaseEntity
     {
-        public int TransactionId { get; set; }
         public int UserId { get; set; }
 
         public int CreditsBefore { get; set; }
@@ -15,7 +14,6 @@ namespace FitHubBackendAPI.Entities
         public TransactionSource Source { get; set; }
 
         public int? ReferenceId { get; set; }
-        public DateTime CreatedAt { get; set; }
 
         public User User { get; set; } = null!;
     }

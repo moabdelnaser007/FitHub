@@ -27,71 +27,48 @@ namespace FitHubBackendAPI.Data
         public DbSet<Visit> Visits { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<OwnerSettlement> OwnerSettlements { get; set; }
+        public DbSet<VerificationCode> VerificationCodes { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // =====================================
-            // 🔵 PRIMARY KEYS
-            // =====================================
-            modelBuilder.Entity<GymOwner>().HasKey(x => x.OwnerId);
-            modelBuilder.Entity<OwnerWallet>().HasKey(x => x.WalletId);
-            modelBuilder.Entity<GymBranch>().HasKey(x => x.BranchId);
-            modelBuilder.Entity<GymStaff>().HasKey(x => x.StaffId);
-            modelBuilder.Entity<GymAmenities>().HasKey(x => x.AmenityId);
-            modelBuilder.Entity<GymPlan>().HasKey(x => x.PlanId);
-            modelBuilder.Entity<User>().HasKey(x => x.UserId);
-            modelBuilder.Entity<UserWallet>().HasKey(x => x.WalletId);
-            modelBuilder.Entity<UserCreditTransactions>().HasKey(x => x.TransactionId);
-            modelBuilder.Entity<Subscription>().HasKey(x => x.SubscriptionId);
-            modelBuilder.Entity<Booking>().HasKey(x => x.BookingId);
-            modelBuilder.Entity<Visit>().HasKey(x => x.VisitId);
-            modelBuilder.Entity<Review>().HasKey(x => x.ReviewId);
-            modelBuilder.Entity<OwnerSettlement>().HasKey(x => x.SettlementId);
+            // =============================
+            // ✅ ENUM CONVERSIONS
+            // =============================
 
-
-            // =====================================
-            // 🔵 ENUM CONVERSIONS
-            // =====================================
-            // GymOwner
             modelBuilder.Entity<GymOwner>().Property(x => x.Status).HasConversion<string>();
             modelBuilder.Entity<GymOwner>().Property(x => x.ApplicationStatus).HasConversion<string>();
 
-            // GymBranch
             modelBuilder.Entity<GymBranch>().Property(x => x.Status).HasConversion<string>();
             modelBuilder.Entity<GymBranch>().Property(x => x.GenderType).HasConversion<string>();
 
-            // GymStaff
             modelBuilder.Entity<GymStaff>().Property(x => x.Status).HasConversion<string>();
 
-            // GymPlan
             modelBuilder.Entity<GymPlan>().Property(x => x.Status).HasConversion<string>();
 
-            // User
             modelBuilder.Entity<User>().Property(x => x.Status).HasConversion<string>();
 
-            // UserCreditTransactions
             modelBuilder.Entity<UserCreditTransactions>().Property(x => x.TransactionType).HasConversion<string>();
             modelBuilder.Entity<UserCreditTransactions>().Property(x => x.Source).HasConversion<string>();
 
-            // Subscription
             modelBuilder.Entity<Subscription>().Property(x => x.Status).HasConversion<string>();
 
-            // Booking
             modelBuilder.Entity<Booking>().Property(x => x.Status).HasConversion<string>();
 
-            // Visit
             modelBuilder.Entity<Visit>().Property(x => x.Status).HasConversion<string>();
 
-            // Settlement
             modelBuilder.Entity<OwnerSettlement>().Property(x => x.PayoutStatus).HasConversion<string>();
 
+            modelBuilder.Entity<VerificationCode>().Property(x => x.Type).HasConversion<string>();
 
-            // =====================================
-            // 🔵 TIMESPAN CONVERSION
-            // =====================================
+
+            // =============================
+            // ✅ TIMESPAN CONVERSION
+            // =============================
+
             modelBuilder.Entity<GymBranch>()
                 .Property(x => x.OpenTime)
                 .HasConversion(
@@ -107,25 +84,23 @@ namespace FitHubBackendAPI.Data
                 );
 
 
-            // =====================================
-            // 🔵 RELATIONSHIPS
-            // =====================================
+            // =============================
+            // ✅ RELATIONSHIPS
+            // =============================
 
-            // GymOwner 1-1 OwnerWallet
+            // ----- GymOwner -----
             modelBuilder.Entity<GymOwner>()
                 .HasOne(o => o.Wallet)
                 .WithOne(w => w.Owner)
                 .HasForeignKey<OwnerWallet>(w => w.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // GymOwner 1-M Branches
             modelBuilder.Entity<GymOwner>()
                 .HasMany(o => o.Branches)
                 .WithOne(b => b.Owner)
                 .HasForeignKey(b => b.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // GymOwner 1-M Settlements
             modelBuilder.Entity<GymOwner>()
                 .HasMany(o => o.Settlements)
                 .WithOne(s => s.Owner)
@@ -133,49 +108,43 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // GymBranch 1-M Staff
+            // ----- GymBranch -----
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Staff)
                 .WithOne(s => s.Branch)
                 .HasForeignKey(s => s.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // GymBranch 1-M Amenities
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Amenities)
                 .WithOne(a => a.Branch)
                 .HasForeignKey(a => a.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // GymBranch 1-M Plans
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Plans)
                 .WithOne(p => p.Branch)
                 .HasForeignKey(p => p.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // GymBranch 1-M Subscriptions
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Subscriptions)
                 .WithOne(s => s.Branch)
                 .HasForeignKey(s => s.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // GymBranch 1-M Bookings
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Bookings)
                 .WithOne(bk => bk.Branch)
                 .HasForeignKey(bk => bk.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // GymBranch 1-M Visits
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Visits)
                 .WithOne(v => v.Branch)
                 .HasForeignKey(v => v.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // GymBranch 1-M Reviews
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Reviews)
                 .WithOne(r => r.Branch)
@@ -183,7 +152,7 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // GymStaff 1-M Visit CheckIns
+            // ----- GymStaff -----
             modelBuilder.Entity<GymStaff>()
                 .HasMany(s => s.VisitsCheckInHandled)
                 .WithOne(v => v.Staff)
@@ -191,14 +160,13 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // GymPlan 1-M Subscriptions
+            // ----- GymPlan -----
             modelBuilder.Entity<GymPlan>()
                 .HasMany(p => p.Subscriptions)
                 .WithOne(s => s.Plan)
                 .HasForeignKey(s => s.PlanId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // GymPlan 1-M Bookings
             modelBuilder.Entity<GymPlan>()
                 .HasMany(p => p.Bookings)
                 .WithOne(b => b.Plan)
@@ -206,43 +174,37 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // User 1-1 Wallet
+            // ----- User -----
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Wallet)
                 .WithOne(w => w.User)
                 .HasForeignKey<UserWallet>(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User 1-M Wallet Transactions
             modelBuilder.Entity<User>()
                 .HasMany(u => u.WalletTransactions)
                 .WithOne(t => t.User)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-            // User 1-M Subscriptions
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Subscriptions)
                 .WithOne(s => s.User)
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // User 1-M Bookings
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Bookings)
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // User 1-M Visits
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Visits)
                 .WithOne(v => v.User)
                 .HasForeignKey(v => v.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // User 1-M Reviews
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reviews)
                 .WithOne(r => r.User)
@@ -250,7 +212,7 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // Subscription 1-M Bookings
+            // ----- Subscription -----
             modelBuilder.Entity<Subscription>()
                 .HasMany(s => s.Bookings)
                 .WithOne(b => b.Subscription)
@@ -258,14 +220,13 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // Booking 1-1 Visit (Optional until Check-In happens)
+            // ----- Booking -----
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.VisitRecord)
                 .WithOne(v => v.Booking)
                 .HasForeignKey<Visit>(v => v.BookingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Booking 1-1 Review (Optional)
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Review)
                 .WithOne(r => r.Booking)
@@ -273,7 +234,7 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // Visit Relations
+            // ----- Visit -----
             modelBuilder.Entity<Visit>()
                 .HasOne(v => v.User)
                 .WithMany(u => u.Visits)
@@ -293,7 +254,7 @@ namespace FitHubBackendAPI.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // Review Relations
+            // ----- Review -----
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
@@ -305,24 +266,7 @@ namespace FitHubBackendAPI.Data
                 .WithMany(b => b.Reviews)
                 .HasForeignKey(r => r.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
-            // Owner Settlements
-            modelBuilder.Entity<GymOwner>()
-                .HasMany(o => o.Settlements)
-                .WithOne(s => s.Owner)
-                .HasForeignKey(s => s.OwnerId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<BaseEntity>()
-                .Property(e => e.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
-
-            modelBuilder.Entity<BaseEntity>()
-                .Property(e => e.UpdatedAt)
-                .ValueGeneratedOnUpdate();
-
-
         }
     }
 }
+

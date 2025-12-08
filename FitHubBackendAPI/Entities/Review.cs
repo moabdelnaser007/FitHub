@@ -2,7 +2,6 @@
 {
     public class Review : BaseEntity
     {
-        public int ReviewId { get; set; }
 
         public int UserId { get; set; }
         public int BranchId { get; set; }
@@ -11,7 +10,6 @@
         public int Rating { get; set; }
         public string? Comment { get; set; }
         public bool IsAnonymous { get; set; }
-        public DateTime CreatedAt { get; set; }
 
         public User User { get; set; } = null!;
         public GymBranch Branch { get; set; } = null!;
