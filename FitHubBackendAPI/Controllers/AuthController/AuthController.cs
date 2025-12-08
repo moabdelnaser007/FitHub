@@ -1,5 +1,5 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
-using FitHubBackendAPI.Services.Interfaces;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

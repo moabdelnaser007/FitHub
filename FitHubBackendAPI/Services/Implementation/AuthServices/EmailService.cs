@@ -1,6 +1,6 @@
-﻿using FitHubBackendAPI.Services.Interfaces;
+﻿using FitHubBackendAPI.Services.Interfaces.AuthServices;
 
-namespace FitHubBackendAPI.Services.Implementation
+namespace FitHubBackendAPI.Services.Implementation.AuthServices
 {
     public class EmailService : IEmailService
     {

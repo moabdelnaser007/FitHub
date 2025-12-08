@@ -1,4 +1,4 @@
-﻿using FitHubBackendAPI.Entities;
+﻿using FitHubBackendAPI.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;

@@ -1,11 +1,11 @@
-﻿using FitHubBackendAPI.Entities;
-using FitHubBackendAPI.Services.Interfaces;
+﻿using FitHubBackendAPI.Entities.Models;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FitHubBackendAPI.Services.Implementation
+namespace FitHubBackendAPI.Services.Implementation.AuthServices
 {
     public class JwtService : IJwtService
     {
