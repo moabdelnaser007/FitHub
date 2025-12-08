@@ -1,6 +1,6 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
 
-namespace FitHubBackendAPI.Services.Interfaces
+namespace FitHubBackendAPI.Services.Interfaces.AuthServices
 {
     public interface IAuthService
     {

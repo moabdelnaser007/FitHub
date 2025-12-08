@@ -1,4 +1,4 @@
-﻿namespace FitHubBackendAPI.Entities
+﻿namespace FitHubBackendAPI.Entities.Models
 {
     public class OwnerWallet : BaseEntity
     {

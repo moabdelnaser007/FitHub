@@ -1,4 +1,4 @@
-﻿namespace FitHubBackendAPI.Services.Interfaces
+﻿namespace FitHubBackendAPI.Services.Interfaces.AuthServices
 {
     public interface IEmailService
     {

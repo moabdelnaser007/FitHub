@@ -1,6 +1,6 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
 
-namespace FitHubBackendAPI.Entities
+namespace FitHubBackendAPI.Entities.Models
 {
     public class OwnerSettlement : BaseEntity
     {

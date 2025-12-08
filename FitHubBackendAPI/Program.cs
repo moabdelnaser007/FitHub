@@ -1,7 +1,7 @@
 using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
-using FitHubBackendAPI.Services.Implementation;
+using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

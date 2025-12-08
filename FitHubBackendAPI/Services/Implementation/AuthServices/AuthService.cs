@@ -2,7 +2,6 @@
 using FitHubBackendAPI.DTOs.AuthDTOs;
 using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
-using FitHubBackendAPI.Services.Interfaces;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -10,9 +9,10 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BCrypt.Net;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
 
 
-namespace FitHubBackendAPI.Services.Implementation
+namespace FitHubBackendAPI.Services.Implementation.AuthServices
 {
     public class AuthService : IAuthService
     {
