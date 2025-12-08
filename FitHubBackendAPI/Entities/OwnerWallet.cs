@@ -2,7 +2,6 @@
 {
     public class OwnerWallet : BaseEntity
     {
-        public int WalletId { get; set; }
         public int OwnerId { get; set; }
 
         public decimal Balance { get; set; }

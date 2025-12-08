@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class Booking : BaseEntity
     {
-        public int BookingId { get; set; }
 
         public string BookingCode { get; set; } = null!;
         public int UserId { get; set; }
@@ -16,7 +15,6 @@ namespace FitHubBackendAPI.Entities
         public int CreditsCost { get; set; }
 
         public BookingStatus Status { get; set; } = BookingStatus.CONFIRMED;
-        public DateTime CreatedAt { get; set; }
 
         public User User { get; set; } = null!;
         public GymBranch Branch { get; set; } = null!;

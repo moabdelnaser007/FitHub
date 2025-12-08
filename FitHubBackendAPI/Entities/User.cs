@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class User : BaseEntity
     {
-        public int UserId { get; set; }
 
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -12,8 +11,9 @@ namespace FitHubBackendAPI.Entities
         public string PasswordHash { get; set; } = null!;
         public string? City { get; set; }
 
-        public UserStatus Status { get; set; } = UserStatus.ACTIVE;
-        public DateTime CreatedAt { get; set; }
+
+        public UserRole Role { get; set; }
+        public AccountStatus Status { get; set; }
 
         public UserWallet? Wallet { get; set; }
         public List<UserCreditTransactions> WalletTransactions { get; set; } = new();

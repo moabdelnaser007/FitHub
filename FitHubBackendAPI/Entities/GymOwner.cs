@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class GymOwner : BaseEntity
     {
-        public int OwnerId { get; set; }
 
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -16,8 +15,11 @@ namespace FitHubBackendAPI.Entities
         public string? DocumentUrl { get; set; }
         public string? RejectionReason { get; set; }
 
-        public OwnerStatus Status { get; set; } = OwnerStatus.ACTIVE;
-        public DateTime CreatedAt { get; set; }
+
+        public string CommercialRegistrationNumber { get; set; }
+        public string LicenseFileUrl { get; set; }
+
+        public AccountStatus Status { get; set; }
 
         // Navigation
         public OwnerWallet? Wallet { get; set; }

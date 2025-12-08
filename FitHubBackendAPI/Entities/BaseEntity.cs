@@ -1,11 +1,11 @@
 ﻿namespace FitHubBackendAPI.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public bool? IsDeleted { get; set; }
         public bool? IsAcTive { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public int? UpdatedBy { get; set; }

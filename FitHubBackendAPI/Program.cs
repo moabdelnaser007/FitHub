@@ -1,6 +1,8 @@
 using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
+using FitHubBackendAPI.Services.Implementation;
+using FitHubBackendAPI.Services.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -35,6 +37,11 @@ namespace FitHubBackendAPI
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
 
             // ===============================
             // 3) Add AutoMapper
@@ -49,7 +56,7 @@ namespace FitHubBackendAPI
             // ===============================
             // 5) Add Controllers
             // ===============================
-            //builder.Services.AddControllers()
+            builder.Services.AddControllers();
             //    .AddNewtonsoftJson(); // Optional - if you want Newtonsoft
 
             // ===============================
@@ -81,6 +88,9 @@ namespace FitHubBackendAPI
                         ValidateLifetime = false
                     };
                 });
+
+            builder.Services.AddAuthorization();
+
 
             // ===============================
             // 8) Add Swagger

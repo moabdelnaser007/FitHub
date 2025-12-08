@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class OwnerSettlement : BaseEntity
     {
-        public int SettlementId { get; set; }
         public int OwnerId { get; set; }
 
         public string SettlementMonth { get; set; } = null!;
@@ -16,7 +15,6 @@ namespace FitHubBackendAPI.Entities
         public DateTime? PayoutDate { get; set; }
 
         public string? AdminNotes { get; set; }
-        public DateTime CreatedAt { get; set; }
 
         public GymOwner Owner { get; set; } = null!;
     }

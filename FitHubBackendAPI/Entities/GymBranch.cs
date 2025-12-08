@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.Entities
 {
     public class GymBranch: BaseEntity
     {
-        public int BranchId { get; set; }
         public int OwnerId { get; set; }
 
         public string BranchName { get; set; } = null!;
@@ -18,7 +17,6 @@ namespace FitHubBackendAPI.Entities
         public GymGenderType GenderType { get; set; } = GymGenderType.Mixed;
         public BranchStatus Status { get; set; } = BranchStatus.ACTIVE;
 
-        public DateTime CreatedAt { get; set; }
 
         // Navigation
         public GymOwner Owner { get; set; } = null!;
