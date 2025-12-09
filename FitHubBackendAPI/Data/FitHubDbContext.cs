@@ -1,4 +1,6 @@
-﻿using FitHubBackendAPI.Entities.Models;
+﻿using FitHubBackendAPI.Entities;
+using FitHubBackendAPI.Entities.Enums;
+using FitHubBackendAPI.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -266,6 +268,8 @@ namespace FitHubBackendAPI.Data
                 .WithMany(b => b.Reviews)
                 .HasForeignKey(r => r.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            
         }
     }
 }

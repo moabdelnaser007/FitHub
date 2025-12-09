@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BCrypt.Net;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Entities.Models;
 
 
 namespace FitHubBackendAPI.Services.Implementation.AuthServices
@@ -27,7 +28,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             _emailService = emailService;
         }
 
-        // ✅ USER REGISTER
+        // USER REGISTER
         public async Task RegisterUserAsync(RegisterUserDto dto)
         {
             if (dto.Password != dto.ConfirmPassword)
@@ -53,7 +54,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await CreateOtpAndSend(dto.Email, OtpType.Register);
         }
 
-        // ✅ OWNER REGISTER
+        // OWNER REGISTER
         public async Task RegisterOwnerAsync(RegisterOwnerDto dto)
         {
             if (dto.Password != dto.ConfirmPassword)
@@ -73,7 +74,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await _context.SaveChangesAsync();
         }
 
-        // ✅ LOGIN
+        // LOGIN
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
@@ -90,7 +91,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             return _jwtService.GenerateToken(user);
         }
 
-        // ✅ VERIFY OTP
+        // VERIFY OTP
         public async Task VerifyOtpAsync(VerifyOtpDto dto)
         {
             var otp = await _context.VerificationCodes
@@ -110,7 +111,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await _context.SaveChangesAsync();
         }
 
-        // ✅ FORGOT PASSWORD
+        // FORGOT PASSWORD
         public async Task ForgotPasswordAsync(ForgotPasswordDto dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
@@ -120,7 +121,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await CreateOtpAndSend(dto.Email, OtpType.ForgotPassword);
         }
 
-        // ✅ RESET PASSWORD
+        // RESET PASSWORD
         public async Task ResetPasswordAsync(ResetPasswordDto dto)
         {
             var otp = await _context.VerificationCodes
@@ -140,7 +141,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await _context.SaveChangesAsync();
         }
 
-        // ✅ OTP GENERATION
+        // OTP GENERATION
         private async Task CreateOtpAndSend(string email, OtpType type)
         {
             var code = new Random().Next(100000, 999999).ToString();
