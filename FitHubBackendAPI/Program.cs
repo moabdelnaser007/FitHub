@@ -2,10 +2,14 @@ using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
+using FitHubBackendAPI.Services.Implementation.UserServices;
 using FitHubBackendAPI.Services.Interfaces;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using AutoMapper;
 
 namespace FitHubBackendAPI
 {
@@ -42,11 +46,12 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
-
+            //add User "wallet" service
+            builder.Services.AddScoped<IUserWalletService, UserWalletService>();
             // ===============================
             // 3) Add AutoMapper
             // ===============================
-            //builder.Services.AddAutoMapper(typeof(Program));
+             builder.Services.AddAutoMapper(typeof(Program));
 
             // ===============================
             // 4) Add FluentValidation
