@@ -3,6 +3,7 @@ using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Interfaces;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;

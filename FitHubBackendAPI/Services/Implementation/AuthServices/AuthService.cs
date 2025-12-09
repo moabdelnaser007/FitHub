@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BCrypt.Net;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Entities.Models;
 
 
 namespace FitHubBackendAPI.Services.Implementation.AuthServices

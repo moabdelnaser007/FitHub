@@ -1,11 +1,12 @@
 ﻿using FitHubBackendAPI.Data;
+using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace FitHubBackendAPI.Repository.Implementation
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly FitHubDbContext _context;
         private readonly DbSet<T> _db;
