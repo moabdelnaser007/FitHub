@@ -1,17 +1,22 @@
 using FitHubBackendAPI.Data;
+using FitHubBackendAPI.Data.DataSeeder;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
-using FitHubBackendAPI.Services.Interfaces;
+using FitHubBackendAPI.Services.Implementation.UserServices;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 namespace FitHubBackendAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -38,9 +43,10 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddScoped<IAuthService, AuthService>();
-
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+
+            builder.Services.AddScoped<IUserService, UserService>();
 
 
             // ===============================
@@ -75,20 +81,32 @@ namespace FitHubBackendAPI
             // ===============================
             // 7) Add JWT Authentication (Optional)
             // ===============================
-            builder.Services.AddAuthentication("Bearer")
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new()
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = false,
-                        ValidateLifetime = false
-                    };
-                });
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+            })
+            .AddJwtBearer("Bearer", options =>
+            {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
 
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+        ),
+        ClockSkew = TimeSpan.Zero
+    };
+});
             builder.Services.AddAuthorization();
 
 
@@ -117,6 +135,12 @@ namespace FitHubBackendAPI
             app.UseAuthorization();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<FitHubDbContext>();
+                await DataSeeder.SeedAdminAsync(context);
+            }
 
             app.Run();
         }

@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
+using FitHubBackendAPI.Entities.Models;
 
 namespace FitHubBackendAPI.Entities
 {
