@@ -72,6 +72,9 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
 
             await _context.GymOwners.AddAsync(owner);
             await _context.SaveChangesAsync();
+
+            await CreateOtpAndSend(dto.Email, OtpType.Register);
+
         }
 
         // LOGIN
