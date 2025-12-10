@@ -9,6 +9,7 @@ namespace FitHubBackendAPI.Services.Interfaces.AuthServices
 
         Task<string> LoginAsync(LoginDto dto);
 
+        Task SendOtpAsync(SendOtpDto dto);
         Task VerifyOtpAsync(VerifyOtpDto dto);
 
         Task ForgotPasswordAsync(ForgotPasswordDto dto);

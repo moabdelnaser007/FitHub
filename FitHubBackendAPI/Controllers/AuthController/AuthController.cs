@@ -37,6 +37,14 @@ namespace FitHubBackendAPI.Controllers.AuthController
             return Ok(new { token });
         }
 
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOtp([FromBody] SendOtpDto dto)
+        {
+            await _authService.SendOtpAsync(dto);
+            return Ok(new { message = "OTP sent successfully" });
+        }
+
+
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp(VerifyOtpDto dto)
         {
