@@ -2,8 +2,10 @@ using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Data.DataSeeder;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
+using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Implementation.UserServices;
+using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
@@ -47,6 +49,8 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
 
 
             // ===============================
