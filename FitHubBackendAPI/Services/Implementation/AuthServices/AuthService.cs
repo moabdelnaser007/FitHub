@@ -94,6 +94,36 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             return _jwtService.GenerateToken(user);
         }
 
+        // SEND OTP 
+        public async Task SendOtpAsync(SendOtpDto dto)
+        {
+            var userExists = await _context.Users.AnyAsync(x => x.Email == dto.Email);
+            var ownerExists = await _context.GymOwners.AnyAsync(x => x.Email == dto.Email);
+
+            if (!userExists && !ownerExists)
+                throw new Exception("Email not found");
+
+            var code = new Random().Next(100000, 999999).ToString();
+
+            var otp = new VerificationCode
+            {
+                Email = dto.Email,
+                Code = code,
+                ExpireAt = DateTime.UtcNow.AddMinutes(10),
+                Type = dto.Type
+            };
+
+            await _context.VerificationCodes.AddAsync(otp);
+            await _context.SaveChangesAsync();
+
+            await _emailService.SendAsync(
+                dto.Email,
+                "OTP Code",
+                $"Your OTP is: {code}"
+            );
+        }
+
+
         // VERIFY OTP
         public async Task VerifyOtpAsync(VerifyOtpDto dto)
         {
