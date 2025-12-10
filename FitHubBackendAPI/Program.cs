@@ -48,10 +48,13 @@ namespace FitHubBackendAPI
 
             //add User "wallet" service
             builder.Services.AddScoped<IUserWalletService, UserWalletService>();
+
+            //add User "subscription" service
+            builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             // ===============================
             // 3) Add AutoMapper
             // ===============================
-             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(Program));
 
             // ===============================
             // 4) Add FluentValidation
@@ -61,8 +64,12 @@ namespace FitHubBackendAPI
             // ===============================
             // 5) Add Controllers
             // ===============================
-            builder.Services.AddControllers();
-            //    .AddNewtonsoftJson(); // Optional - if you want Newtonsoft
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // ????? ?? ???: ????? ??????? ????? (0 -> "Active")
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
             // ===============================
             // 6) Add CORS
