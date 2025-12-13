@@ -2,7 +2,7 @@
 
 namespace FitHubBackendAPI.DTOs.AuthDTOs
 {
-    public class SendOtpDto
+    public class  ReSendOtpDto
     {
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]

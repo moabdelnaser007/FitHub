@@ -141,7 +141,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        public async Task SendOtpAsync(string email)
+        public async Task ReSendOtpAsync(string email)
         {
             var userExists = await _context.Users.AnyAsync(x => x.Email == email);
             var ownerExists = await _context.GymOwners.AnyAsync(x => x.Email == email);
@@ -175,28 +175,18 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         public async Task VerifyOtpAsync(VerifyOtpDto dto)
         {
             var otp = await _context.VerificationCodes
-                .FirstOrDefaultAsync(x => x.Email == dto.Email
-                    && x.Code == dto.Otp
-                    && x.UsedAt == null
-                    && x.ExpireAt > DateTime.UtcNow);
+        .FirstOrDefaultAsync(x =>
+            x.Email == dto.Email &&
+            x.Code == dto.Otp &&
+            x.UsedAt == null &&
+            x.ExpireAt > DateTime.UtcNow
+        );
 
             if (otp == null)
                 throw new ValidationException("Invalid or expired OTP.");
 
+            // ✔️ نعلّم إن الـ OTP اتستخدم
             otp.UsedAt = DateTime.UtcNow;
-
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
-            if (user != null)
-            {
-                user.Status = AccountStatus.Active;
-            }
-
-            var owner = await _context.GymOwners.FirstOrDefaultAsync(x => x.Email == dto.Email);
-            if (owner != null)
-            {
-                owner.Status = AccountStatus.Active;
-                owner.ApplicationStatus = ApplicationStatus.APPROVED;
-            }
 
             await _context.SaveChangesAsync();
         }
@@ -221,7 +211,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 .FirstOrDefaultAsync(x => x.Email == dto.Email
                     && x.Code == dto.Otp
                     && x.Type == OtpType.ForgotPassword
-                    && x.UsedAt == null
+                    && x.UsedAt != null
                     && x.ExpireAt > DateTime.UtcNow);
 
             if (otp == null)

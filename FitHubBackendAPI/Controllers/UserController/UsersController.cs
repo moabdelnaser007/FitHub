@@ -29,7 +29,7 @@ namespace FitHubBackendAPI.Controllers.UserController
         }
 
         
-        [HttpGet("me")]
+        [HttpGet("get-me")]
         public async Task<ActionResult<UserProfileDto>> GetMyProfile()
         {
             var userId = GetCurrentUserId();
@@ -44,7 +44,7 @@ namespace FitHubBackendAPI.Controllers.UserController
         }
 
        
-        [HttpPut("me")]
+        [HttpPut("update-me")]
         public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateUserProfileDto dto)
         {
             var userId = GetCurrentUserId();

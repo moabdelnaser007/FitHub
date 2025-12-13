@@ -53,6 +53,8 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
+            builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+
 
             // ===============================
             // 3) Add AutoMapper

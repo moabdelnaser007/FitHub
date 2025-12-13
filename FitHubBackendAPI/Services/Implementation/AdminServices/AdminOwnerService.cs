@@ -1,5 +1,5 @@
 ﻿using FitHubBackendAPI.Data;
-using FitHubBackendAPI.DTOs.UserDTOs;
+using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
@@ -74,23 +74,6 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             "Your gym registration was rejected");
         }
 
-        public async Task<List<AdminUserListItemDto>> GetAllUsersAsync()
-        {
-            var users = await _context.Users
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
-
-            return users.Select(u => new AdminUserListItemDto
-            {
-                Id = u.Id,
-                FullName = u.FullName,
-                Email = u.Email,
-                Phone = u.Phone,
-                City = u.City,
-                Role = u.Role.ToString(),
-                Status = u.Status.ToString(),
-                CreatedAt = u.CreatedAt
-            }).ToList();
-        }
+       
     }
 }

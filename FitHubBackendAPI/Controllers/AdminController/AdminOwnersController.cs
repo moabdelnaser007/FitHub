@@ -1,4 +1,4 @@
-﻿using FitHubBackendAPI.DTOs.UserDTOs;
+﻿using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;

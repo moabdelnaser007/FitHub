@@ -70,26 +70,26 @@ namespace FitHubBackendAPI.Controllers.AuthController
             return Ok(response);
         }
 
-        [HttpPost("send-otp")]
-        public async Task<IActionResult> SendOtp([FromBody] SendOtpDto dto)
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
         {
-            await _authService.SendOtpAsync(dto.Email);
+            await _authService.VerifyOtpAsync(dto);
+
+            var response = ResponseViewModel<string>.Success(null, "OTP Checked successfully.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
+        }
+
+        [HttpPost("Resend-otp")]
+        public async Task<IActionResult> ReSendOtp([FromBody] ReSendOtpDto dto)
+        {
+            await _authService.ReSendOtpAsync(dto.Email);
 
             var response = ResponseViewModel<string>.Success(null, "OTP sent successfully.");
             response.ErrorCode = ErrorCode.OK;
             return Ok(response);
         }
 
-
-        [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
-        {
-            await _authService.VerifyOtpAsync(dto);
-
-            var response = ResponseViewModel<string>.Success(null, "Account activated.");
-            response.ErrorCode = ErrorCode.OK;
-            return Ok(response);
-        }
 
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)

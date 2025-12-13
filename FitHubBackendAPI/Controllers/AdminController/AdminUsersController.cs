@@ -1,4 +1,4 @@
-﻿using FitHubBackendAPI.DTOs.UserDTOs;
+﻿using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
@@ -14,11 +14,11 @@ namespace FitHubBackendAPI.Controllers.UserController
     [Authorize(Roles = "Admin")]
     public class AdminUsersController : ControllerBase
     {
-        private readonly IAdminOwnerService _adminOwnerService;
+        private readonly IAdminUserService _adminUserService;
 
-        public AdminUsersController(IAdminOwnerService adminOwnerService)
+        public AdminUsersController(IAdminUserService adminUserService)
         {
-            _adminOwnerService = adminOwnerService;
+            _adminUserService = adminUserService;
 
         }
 
@@ -26,7 +26,7 @@ namespace FitHubBackendAPI.Controllers.UserController
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<List<AdminUserListItemDto>>> GetUsers()
         {
-            var users = await _adminOwnerService.GetAllUsersAsync();
+            var users = await _adminUserService.GetAllUsersAsync();
             var response = ResponseViewModel<List<AdminUserListItemDto>>.Success(
                     users,
                     "Users retrieved successfully"
@@ -38,5 +38,33 @@ namespace FitHubBackendAPI.Controllers.UserController
         }
 
 
+        [HttpPut("{id}/UpdateUser")]
+        public async Task<IActionResult> UpdateUser(
+            int id,
+            [FromBody] AdminUpdateUserDto dto)
+        {
+            await _adminUserService.UpdateUserAsync(id, dto);
+
+            return Ok(
+                ResponseViewModel<string>.Success(
+                    null,
+                    "User updated successfully"
+                )
+            );
+        }
+
+
+        [HttpDelete("{id}/DeleteUser")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _adminUserService.DeleteUserAsync(id);
+
+            return Ok(
+                ResponseViewModel<string>.Success(
+                    null,
+                    "User suspended successfully"
+                )
+            );
+        }
     }
 }
