@@ -1,10 +1,11 @@
-﻿using FitHubBackendAPI.Entities.Enums;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FitHubBackendAPI.DTOs.AuthDTOs
 {
     public class SendOtpDto
     {
-        public string Email { get; set; } = null!;
-        public OtpType Type { get; set; }
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        public string Email { get; set; } = string.Empty;
     }
 }

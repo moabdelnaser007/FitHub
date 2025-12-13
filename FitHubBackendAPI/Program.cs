@@ -1,5 +1,7 @@
 using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Data.DataSeeder;
+using FitHubBackendAPI.Filters;
+using FitHubBackendAPI.Middlewares;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AdminServices;
@@ -9,6 +11,7 @@ using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -41,7 +44,6 @@ namespace FitHubBackendAPI
                 // options.UseLazyLoadingProxies(); // enable if needed
             });
 
-
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -52,11 +54,23 @@ namespace FitHubBackendAPI
 
             builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
 
-
             // ===============================
             // 3) Add AutoMapper
             // ===============================
             //builder.Services.AddAutoMapper(typeof(Program));
+
+            // disable automatic 400 ProblemDetails so we can return our custom ResponseViewModel
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            // register controllers and add the ModelStateValidationFilter globally
+            builder.Services.AddControllers(options =>
+            {
+                // register the filter globally so it applies to all controllers/actions
+                options.Filters.Add<ModelStateValidationFilter>();
+            });
 
             // ===============================
             // 4) Add FluentValidation
@@ -67,7 +81,6 @@ namespace FitHubBackendAPI
             // 5) Add Controllers
             // ===============================
             builder.Services.AddControllers();
-            //    .AddNewtonsoftJson(); // Optional - if you want Newtonsoft
 
             // ===============================
             // 6) Add CORS
@@ -92,27 +105,26 @@ namespace FitHubBackendAPI
             })
             .AddJwtBearer("Bearer", options =>
             {
-            options.RequireHttpsMetadata = false;
-            options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
 
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true,
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
 
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
 
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-        ),
-        ClockSkew = TimeSpan.Zero
-    };
-});
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            ),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
             builder.Services.AddAuthorization();
-
 
             // ===============================
             // 8) Add Swagger
@@ -131,6 +143,8 @@ namespace FitHubBackendAPI
             // ===============================
             // Middlewares
             // ===============================
+            app.UseMiddleware<GlobalExceptionMiddleware>();
+
             app.UseHttpsRedirection();
 
             app.UseCors("AllowAll");

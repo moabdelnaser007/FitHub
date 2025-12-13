@@ -1,19 +1,20 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
+using FitHubBackendAPI.Entities;
+using FitHubBackendAPI.Entities.Models;
 
 namespace FitHubBackendAPI.Services.Interfaces.AuthServices
 {
     public interface IAuthService
     {
-        Task RegisterUserAsync(RegisterUserDto dto);
-        Task RegisterOwnerAsync(RegisterOwnerDto dto);
+        Task<User> RegisterUserAsync(RegisterUserDto dto);
+        Task<GymOwner> RegisterOwnerAsync(RegisterOwnerDto dto);
 
         Task<string> LoginAsync(LoginDto dto);
 
-        Task SendOtpAsync(SendOtpDto dto);
+        Task SendOtpAsync(string email);
         Task VerifyOtpAsync(VerifyOtpDto dto);
 
         Task ForgotPasswordAsync(ForgotPasswordDto dto);
         Task ResetPasswordAsync(ResetPasswordDto dto);
-
     }
 }

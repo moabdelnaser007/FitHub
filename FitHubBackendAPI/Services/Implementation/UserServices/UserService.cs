@@ -31,7 +31,6 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 Email = user.Email,
                 Phone = user.Phone,
                 City = user.City,
-                Role = user.Role.ToString(),
                 Status = user.Status.ToString()
             };
         }
@@ -74,37 +73,9 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
         }
 
         
-        public async Task<List<AdminUserListItemDto>> GetAllUsersAsync()
-        {
-            var users = await _context.Users
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+        
 
-            return users.Select(u => new AdminUserListItemDto
-            {
-                Id = u.Id,
-                FullName = u.FullName,
-                Email = u.Email,
-                Phone = u.Phone,
-                City = u.City,
-                Role = u.Role.ToString(),
-                Status = u.Status.ToString(),
-                CreatedAt = u.CreatedAt
-            }).ToList();
-        }
-
-        public async Task UpdateUserStatusAsync(int userId, AccountStatus status)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.Id == userId);
-
-            if (user == null)
-                throw new Exception("User not found");
-
-            user.Status = status;
-
-            await _context.SaveChangesAsync();
-        }
+      
 
     }
 }
