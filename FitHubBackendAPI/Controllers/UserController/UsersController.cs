@@ -1,5 +1,7 @@
 ﻿using FitHubBackendAPI.DTOs.UserDTOs;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
+using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +34,13 @@ namespace FitHubBackendAPI.Controllers.UserController
         {
             var userId = GetCurrentUserId();
             var profile = await _userService.GetCurrentUserProfileAsync(userId);
-            return Ok(profile);
+            var response = ResponseViewModel<UserProfileDto>.Success(
+                    profile,
+                    "User profile retrieved successfully"
+                );
+            response.ErrorCode = ErrorCode.OK;
+
+            return Ok(response);
         }
 
        
@@ -41,7 +49,13 @@ namespace FitHubBackendAPI.Controllers.UserController
         {
             var userId = GetCurrentUserId();
             await _userService.UpdateCurrentUserProfileAsync(userId, dto);
-            return NoContent(); // 204
+            var response = ResponseViewModel<string>.Success(
+                    null,
+                    "Profile updated successfully"
+                );
+            response.ErrorCode = ErrorCode.OK;
+
+            return Ok(response);
         }
 
         
@@ -50,7 +64,13 @@ namespace FitHubBackendAPI.Controllers.UserController
         {
             var userId = GetCurrentUserId();
             await _userService.ChangePasswordAsync(userId, dto);
-            return NoContent();
+            var response = ResponseViewModel<string>.Success(
+                    null,
+                    "Password changed successfully"
+                );
+            response.ErrorCode = ErrorCode.OK;
+
+            return Ok(response);
         }
 
     }

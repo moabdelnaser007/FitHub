@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.Data;
+using FitHubBackendAPI.DTOs.UserDTOs;
 using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
@@ -20,10 +21,20 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
         }
 
         // Pending Owners
-        public async Task<List<GymOwner>> GetPendingOwnersAsync()
+        public async Task<List<PendingOwnerDto>> GetPendingOwnersAsync()
         {
             return await _context.GymOwners
-                .Where(x => x.ApplicationStatus == ApplicationStatus.PENDING && x.Status == AccountStatus.Active)
+                .Where(o => o.ApplicationStatus == ApplicationStatus.PENDING)
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => new PendingOwnerDto
+                {
+                    Id = o.Id,
+                    FullName = o.FullName,
+                    Email = o.Email,
+                    Phone = o.Phone,
+                    CommercialRegistrationNumber = o.CommercialRegistrationNumber,
+                    CreatedAt = o.CreatedAt
+                })
                 .ToListAsync();
         }
 
@@ -61,6 +72,25 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             await _emailService.SendAsync(owner.Email,
             "Gym Rejected",
             "Your gym registration was rejected");
+        }
+
+        public async Task<List<AdminUserListItemDto>> GetAllUsersAsync()
+        {
+            var users = await _context.Users
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            return users.Select(u => new AdminUserListItemDto
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Email = u.Email,
+                Phone = u.Phone,
+                City = u.City,
+                Role = u.Role.ToString(),
+                Status = u.Status.ToString(),
+                CreatedAt = u.CreatedAt
+            }).ToList();
         }
     }
 }

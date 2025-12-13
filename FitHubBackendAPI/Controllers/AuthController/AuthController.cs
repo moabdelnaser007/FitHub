@@ -1,6 +1,7 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
-using Microsoft.AspNetCore.Http;
+using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitHubBackendAPI.Controllers.AuthController
@@ -17,56 +18,97 @@ namespace FitHubBackendAPI.Controllers.AuthController
         }
 
         [HttpPost("register-user")]
-        public async Task<IActionResult> RegisterUser(RegisterUserDto dto)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
         {
-            await _authService.RegisterUserAsync(dto);
-            return Ok("User registered. OTP sent.");
+            var user = await _authService.RegisterUserAsync(dto);
+
+            var userResponse = new UserResponseDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                City = user.City,
+                Role = user.Role.ToString(),
+                Status = user.Status.ToString()
+            };
+
+            var response = ResponseViewModel<UserResponseDto>.Success(userResponse, "User registered successfully. Please login.");
+            response.ErrorCode = ErrorCode.Created;
+            return StatusCode((int)ErrorCode.Created, response);
         }
 
         [HttpPost("register-owner")]
         public async Task<IActionResult> RegisterOwner([FromForm] RegisterOwnerDto dto)
         {
-            await _authService.RegisterOwnerAsync(dto);
-            return Ok("Owner registered. Await admin approval.");
+            var owner = await _authService.RegisterOwnerAsync(dto);
+
+            var ownerResponse = new OwnerResponseDto
+            {
+                Id = owner.Id,
+                FullName = owner.FullName,
+                Email = owner.Email,
+                Phone = owner.Phone,
+                CommercialRegistrationNumber = owner.CommercialRegistrationNumber,
+                Status = owner.Status.ToString()
+            };
+
+            var response = ResponseViewModel<OwnerResponseDto>.Success(ownerResponse, "Owner registered. Await admin approval.");
+            response.ErrorCode = ErrorCode.Created;
+            return StatusCode((int)ErrorCode.Created, response);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var token = await _authService.LoginAsync(dto);
-            return Ok(new { token });
+
+            var tokenDto = new TokenResponseDto { Token = token };
+
+            var response = ResponseViewModel<TokenResponseDto>.Success(tokenDto, "Login successful.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
         }
 
         [HttpPost("send-otp")]
         public async Task<IActionResult> SendOtp([FromBody] SendOtpDto dto)
         {
-            await _authService.SendOtpAsync(dto);
-            return Ok(new { message = "OTP sent successfully" });
+            await _authService.SendOtpAsync(dto.Email);
+
+            var response = ResponseViewModel<string>.Success(null, "OTP sent successfully.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
         }
 
 
         [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOtp(VerifyOtpDto dto)
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
         {
             await _authService.VerifyOtpAsync(dto);
-            return Ok("Account activated");
+
+            var response = ResponseViewModel<string>.Success(null, "Account activated.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             await _authService.ForgotPasswordAsync(dto);
-            return Ok("OTP sent");
+
+            var response = ResponseViewModel<string>.Success(null, "OTP sent for password reset.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             await _authService.ResetPasswordAsync(dto);
-            return Ok("Password reset done");
 
-
-
+            var response = ResponseViewModel<string>.Success(null, "Password has been reset successfully.");
+            response.ErrorCode = ErrorCode.OK;
+            return Ok(response);
         }
     }
 }

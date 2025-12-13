@@ -1,11 +1,14 @@
-﻿using FitHubBackendAPI.Entities;
+﻿using FitHubBackendAPI.DTOs.UserDTOs;
+using FitHubBackendAPI.Entities;
 
 namespace FitHubBackendAPI.Services.Interfaces.AdminServices
 {
     public interface IAdminOwnerService
     {
-        Task<List<GymOwner>> GetPendingOwnersAsync();
+        Task<List<PendingOwnerDto>> GetPendingOwnersAsync();
         Task ApproveOwnerAsync(int ownerId);
         Task RejectOwnerAsync(int ownerId);
+        Task<List<AdminUserListItemDto>> GetAllUsersAsync();
+
     }
 }

@@ -11,8 +11,6 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
 
         Task ChangePasswordAsync(int userId, ChangePasswordDto dto);
 
-        Task<List<AdminUserListItemDto>> GetAllUsersAsync();
 
-        Task UpdateUserStatusAsync(int userId, AccountStatus status);
     }
 }
