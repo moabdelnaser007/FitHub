@@ -59,19 +59,28 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         {
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Password mismatch");
-
-            var owner = new GymOwner
+            var user = new User
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                CommercialRegistrationNumber = dto.CommercialRegistrationNumber,
-                LicenseFileUrl = "uploaded/path",
-                Status = AccountStatus.Pending
-            };
+                Role = UserRole.Owner,
+                Status = AccountStatus.Pending,
+                
 
-            await _context.GymOwners.AddAsync(owner);
+            };
+            var owner = new GymOwner
+            {
+                User=user,
+                CommercialRegistrationNumber = dto.CommercialRegistrationNumber,
+                LicenseFileUrl = "uploaded/path"
+            };
+            owner.User = user;
+
+            await _context.Users.AddAsync(user);
+            await _context.GymOwners.AddAsync(owner);  
             await _context.SaveChangesAsync();
+            await CreateOtpAndSend(dto.Email, OtpType.Register);
         }
 
         // ✅ LOGIN

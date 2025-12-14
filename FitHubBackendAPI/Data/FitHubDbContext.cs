@@ -40,7 +40,6 @@ namespace FitHubBackendAPI.Data
             // ✅ ENUM CONVERSIONS
             // =============================
 
-            modelBuilder.Entity<GymOwner>().Property(x => x.Status).HasConversion<string>();
             modelBuilder.Entity<GymOwner>().Property(x => x.ApplicationStatus).HasConversion<string>();
 
             modelBuilder.Entity<GymBranch>().Property(x => x.Status).HasConversion<string>();

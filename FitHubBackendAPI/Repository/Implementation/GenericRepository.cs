@@ -19,12 +19,13 @@ namespace FitHubBackendAPI.Repository.Implementation
 
         public async Task<T?> GetByIdAsync(int id)
         {
-            return await _db.FindAsync(id);
+            var entity = await _db.FindAsync(id);
+            return entity?.IsDeleted == false ? entity : null;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IQueryable<T>> GetAllAsync()
         {
-            return await _db.ToListAsync();
+            return _db.Where(x => !x.IsDeleted);
         }
 
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
@@ -46,6 +47,15 @@ namespace FitHubBackendAPI.Repository.Implementation
         {
             _db.Remove(entity);
         }
+        public async Task<bool> SoftDelete(T entity)
+        {
+            if(entity.IsDeleted)
+                return true;
+            entity.IsDeleted = true;
+            _db.Update(entity);
+            return true;
+        }
+
 
         public async Task<bool> SaveChangesAsync()
         {

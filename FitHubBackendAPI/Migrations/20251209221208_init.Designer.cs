@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251209033811_init")]
+    [Migration("20251209221208_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -50,14 +50,6 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("DocumentUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool?>("IsAcTive")
                         .HasColumnType("bit");
 
@@ -68,18 +60,7 @@ namespace FitHubBackendAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("RejectionReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -88,7 +69,13 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("GymOwners");
                 });
@@ -859,6 +846,17 @@ namespace FitHubBackendAPI.Migrations
                     b.ToTable("Visits");
                 });
 
+            modelBuilder.Entity("FitHubBackendAPI.Entities.GymOwner", b =>
+                {
+                    b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
+                        .WithOne("GymOwner")
+                        .HasForeignKey("FitHubBackendAPI.Entities.GymOwner", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Booking", b =>
                 {
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
@@ -1122,6 +1120,8 @@ namespace FitHubBackendAPI.Migrations
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.User", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("GymOwner");
 
                     b.Navigation("Reviews");
 
