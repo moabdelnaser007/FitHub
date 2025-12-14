@@ -267,7 +267,15 @@ namespace FitHubBackendAPI.Data
                 .WithMany(b => b.Reviews)
                 .HasForeignKey(r => r.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ✅ السطر السحري:
+            // بنقوله: عمود سعر الزيارة، لو مبعتلكش قيمة، او للصفوف القديمة، خليه بـ 50
+            modelBuilder.Entity<GymBranch>()
+            .Property(b => b.VisitCreditsCost)
+            .HasDefaultValue(50);
         }
+
+
     }
 }
 

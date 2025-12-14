@@ -10,6 +10,8 @@ namespace FitHubBackendAPI.Entities.Models
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
+        // price in credits for a single visit without a plan
+        public int VisitCreditsCost { get; set; }
 
         public TimeSpan? OpenTime { get; set; }
         public TimeSpan? CloseTime { get; set; }
