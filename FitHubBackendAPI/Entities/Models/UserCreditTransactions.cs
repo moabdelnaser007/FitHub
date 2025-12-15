@@ -5,11 +5,11 @@ namespace FitHubBackendAPI.Entities.Models
 {
     public class UserCreditTransactions : BaseEntity
     {
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
-        public int CreditsBefore { get; set; }
-        public int CreditsChanged { get; set; }
-        public int CreditsAfter { get; set; }
+        public int? CreditsBefore { get; set; }
+        public int? CreditsChanged { get; set; }
+        public int? CreditsAfter { get; set; }
 
         // ✅ التعديل الجديد: المبلغ المدفوع بالدولار وقت العملية
         [Column(TypeName = "decimal(18,2)")]
@@ -19,6 +19,6 @@ namespace FitHubBackendAPI.Entities.Models
 
         public int? ReferenceId { get; set; }
 
-        public User User { get; set; } = null!;
+        public User? User { get; set; }
     }
 }

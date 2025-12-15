@@ -1,11 +1,12 @@
 ﻿using FitHubBackendAPI.Data;
+using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace FitHubBackendAPI.Repository.Implementation
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly FitHubDbContext _context;
         private readonly DbSet<T> _db;
@@ -18,12 +19,13 @@ namespace FitHubBackendAPI.Repository.Implementation
 
         public async Task<T?> GetByIdAsync(int id)
         {
-            return await _db.FindAsync(id);
+            var entity = await _db.FindAsync(id);
+            return entity?.IsDeleted == false ? entity : null;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IQueryable<T>> GetAllAsync()
         {
-            return await _db.ToListAsync();
+            return _db.Where(x => !x.IsDeleted);
         }
 
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
@@ -83,10 +85,23 @@ namespace FitHubBackendAPI.Repository.Implementation
         {
             _db.Remove(entity);
         }
+        public async Task<bool> SoftDelete(T entity)
+        {
+            if(entity.IsDeleted)
+                return true;
+            entity.IsDeleted = true;
+            _db.Update(entity);
+            return true;
+        }
+
 
         public async Task<bool> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+        public Task<bool> IsExist(int id)
+        {
+            return _db.AnyAsync(e => e.Id == id && !e.IsDeleted);
         }
     }
 }

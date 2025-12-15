@@ -1,8 +1,14 @@
-﻿namespace FitHubBackendAPI.DTOs.AuthDTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FitHubBackendAPI.DTOs.AuthDTOs
 {
     public class LoginDto
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required.")]
+        public string Password { get; set; } = string.Empty;
     }
 }
