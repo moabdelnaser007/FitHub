@@ -6,16 +6,16 @@ namespace FitHubBackendAPI.Entities.Models
     {
         public int OwnerId { get; set; }
 
-        public string SettlementMonth { get; set; } = null!;
+        public string? SettlementMonth { get; set; }
 
-        public int TotalCreditsConsumed { get; set; }
-        public decimal TotalExpectedPayout { get; set; }
+        public int? TotalCreditsConsumed { get; set; }
+        public decimal? TotalExpectedPayout { get; set; }
 
         public SettlementStatus PayoutStatus { get; set; } = SettlementStatus.PENDING;
         public DateTime? PayoutDate { get; set; }
 
         public string? AdminNotes { get; set; }
 
-        public GymOwner Owner { get; set; } = null!;
+        public GymOwner? Owner { get; set; }
     }
 }

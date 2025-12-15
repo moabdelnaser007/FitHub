@@ -1,0 +1,70 @@
+﻿using FitHubBackendAPI.DTOs.AdminDtos;
+using FitHubBackendAPI.Entities.Enums;
+using FitHubBackendAPI.Services.Interfaces.AdminServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices;
+using FitHubBackendAPI.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FitHubBackendAPI.Controllers.UserController
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(Roles = "Admin")]
+    public class AdminUsersController : ControllerBase
+    {
+        private readonly IAdminUserService _adminUserService;
+
+        public AdminUsersController(IAdminUserService adminUserService)
+        {
+            _adminUserService = adminUserService;
+
+        }
+
+
+        [HttpGet("GetAllUsers")]
+        public async Task<ActionResult<List<AdminUserListItemDto>>> GetUsers()
+        {
+            var users = await _adminUserService.GetAllUsersAsync();
+            var response = ResponseViewModel<List<AdminUserListItemDto>>.Success(
+                    users,
+                    "Users retrieved successfully"
+                );
+
+            response.ErrorCode = ErrorCode.OK;
+
+            return Ok(response);
+        }
+
+
+        [HttpPut("{id}/UpdateUser")]
+        public async Task<IActionResult> UpdateUser(
+            int id,
+            [FromBody] AdminUpdateUserDto dto)
+        {
+            await _adminUserService.UpdateUserAsync(id, dto);
+
+            return Ok(
+                ResponseViewModel<string>.Success(
+                    null,
+                    "User updated successfully"
+                )
+            );
+        }
+
+
+        [HttpDelete("{id}/DeleteUser")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _adminUserService.DeleteUserAsync(id);
+
+            return Ok(
+                ResponseViewModel<string>.Success(
+                    null,
+                    "User suspended successfully"
+                )
+            );
+        }
+    }
+}

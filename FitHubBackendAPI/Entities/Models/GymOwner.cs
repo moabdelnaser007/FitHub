@@ -12,6 +12,7 @@ namespace FitHubBackendAPI.Entities
         public string? DocumentUrl { get; set; }
         public string? RejectionReason { get; set; }
 
+        public string? CommercialRegistrationNumber { get; set; }
 
         public string CommercialRegistrationNumber { get; set; }
         public string LicenseFileUrl { get; set; }
@@ -21,7 +22,7 @@ namespace FitHubBackendAPI.Entities
         // Navigation
         public User User { get; set; }
         public OwnerWallet? Wallet { get; set; }
-        public List<GymBranch> Branches { get; set; } = new();
-        public List<OwnerSettlement> Settlements { get; set; } = new();
+        public List<GymBranch>? Branches { get; set; } = new();
+        public List<OwnerSettlement>? Settlements { get; set; } = new();
     }
 }
