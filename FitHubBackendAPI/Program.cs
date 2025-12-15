@@ -4,9 +4,12 @@ using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
-using FitHubBackendAPI.Services.Implementation.GymServices;
+using FitHubBackendAPI.Services.Implementation.UserServices;
 using FitHubBackendAPI.Services.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices;
+using FitHubBackendAPI.Services.Implementation.GymServices;
+
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -63,16 +66,23 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
+            //add User "wallet" service
+            builder.Services.AddScoped<IUserWalletService, UserWalletService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 
+            //add User "subscription" service
+            builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            //add User "booking" service
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            
             // ===============================
             // 3) Add AutoMapper
             // ===============================
-            //builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(Program));
 
             // disable automatic 400 ProblemDetails so we can return our custom ResponseViewModel
             builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -95,7 +105,12 @@ namespace FitHubBackendAPI
             // ===============================
             // 5) Add Controllers
             // ===============================
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // ????? ?? ???: ????? ??????? ????? (0 -> "Active")
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
             // ===============================
             // 6) Add CORS
