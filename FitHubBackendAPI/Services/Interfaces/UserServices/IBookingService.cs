@@ -7,5 +7,8 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
     {
         // دالة الحجز: بتاخد داتا الحجز ورقم اليوزر، وبترجع رقم الحجز (Booking Code)
         Task<ResponseViewModel<string>> CreateBookingAsync(int userId, CreateBookingDto dto);
+
+        // for Booking History
+        Task<ResponseViewModel<IEnumerable<BookingHistoryDto>>> GetUserBookingsAsync(int userId);
     }
 }

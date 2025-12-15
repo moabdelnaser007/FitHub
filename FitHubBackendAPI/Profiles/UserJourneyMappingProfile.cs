@@ -19,6 +19,11 @@ namespace FitHubBackendAPI.Profiles
                 .ForMember(dest => dest.CreditsCost, opt => opt.Ignore()) // التكلفة: إحنا اللي هنحسبها في السيرفيس
                 .ForMember(dest => dest.UserId, opt => opt.Ignore());     // اليوزر: هنجيبه من التوكن
 
+            // Booking History Mapping
+            CreateMap<Booking, BookingHistoryDto>()
+                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.BranchName)) // بنجيب اسم الفرع
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())) // بنحول الـ Enum لنص
+                .ForMember(dest => dest.HasReview, opt => opt.MapFrom(src => src.Review != null)); // لو في ريفيو يبقى true
         }
     }
 }

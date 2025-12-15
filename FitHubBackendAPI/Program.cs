@@ -53,6 +53,7 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             //add User "booking" service
             builder.Services.AddScoped<IBookingService, BookingService>();
+            
             // ===============================
             // 3) Add AutoMapper
             // ===============================

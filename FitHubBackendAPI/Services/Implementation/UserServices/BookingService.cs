@@ -2,12 +2,12 @@
 using FitHubBackendAPI.DTOs.Bookings;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
-using FitHubBackendAPI.Services.Interfaces.UserServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices; 
 using FitHubBackendAPI.ViewModels;
 
 namespace FitHubBackendAPI.Services.Implementation.UserServices
 {
-    public class BookingService: IBookingService
+    public class BookingService : IBookingService
     {
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IGenericRepository<GymBranch> _branchRepo;
@@ -26,18 +26,21 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             _mapper = mapper;
         }
 
+        // ==========================================================
+        // 1. دالة إنشاء حجز جديد (Create Booking)
+        // ==========================================================
         public async Task<ResponseViewModel<string>> CreateBookingAsync(int userId, CreateBookingDto dto)
         {
             try
             {
-                // 1. نتأكد إن الفرع موجود
+                // أ) نتأكد إن الفرع موجود
                 var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
                 if (branch == null)
                     return ResponseViewModel<string>.Fail("Gym Branch not found");
 
-                int finalCost = 0; // هنحسبها دلوقتي
+                int finalCost = 0;
 
-                // 2. تحديد نوع الحجز (باشتراك ولا فردي؟)
+                // ب) تحديد نوع الحجز (باشتراك ولا زياره طايره؟)
                 if (dto.SubscriptionId.HasValue)
                 {
                     // --- حالة الحجز باشتراك ---
@@ -58,24 +61,23 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 else
                 {
                     // --- حالة الحجز الفردي (Pay As You Go) ---
-                    // التكلفة = سعر الزيارة المتسجل في الفرع (اللي ضفناه في الداتا بيز)
+                    // التكلفة = سعر الزيارة المتسجل في الفرع
                     finalCost = branch.VisitCreditsCost;
                 }
 
-                // 3. تحويل الـ DTO لـ Entity
+                // ج) تحويل الـ DTO لـ Entity
                 var booking = _mapper.Map<Booking>(dto);
 
-                // 4. ملء البيانات الناقصة يدويًا
+                // د) ملء البيانات الناقصة يدويًا
                 booking.UserId = userId;
-                booking.CreditsCost = finalCost; // السعر اللي حسبناه
-                booking.BookingCode = GenerateBookingCode(); // بنولد الكود هنا
+                booking.CreditsCost = finalCost;
+                booking.BookingCode = GenerateBookingCode();
                 booking.IsAcTive = true;
 
-                // 5. الحفظ في الداتا بيز
+                // هـ) الحفظ في الداتا بيز
                 await _bookingRepo.AddAsync(booking);
                 await _bookingRepo.SaveChangesAsync();
 
-                // نرجع الكود لليوزر عشان يظهره في الشاشة
                 return ResponseViewModel<string>.Success(booking.BookingCode, "Booking created successfully");
             }
             catch (Exception ex)
@@ -84,12 +86,37 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             }
         }
 
+        // ==========================================================
+        // 2. دالة عرض حجوزات اليوزر (Get My Bookings) - 
+        // ==========================================================
+        public async Task<ResponseViewModel<IEnumerable<BookingHistoryDto>>> GetUserBookingsAsync(int userId)
+        {
+            try
+            {
+                // بنجيب الحجوزات الخاصة باليوزر
+                // includeProperties: بنجيب بيانات الفرع (عشان الاسم) والريفيو (عشان نعرف قيم ولا لأ)
+                var bookings = await _bookingRepo.GetAsync(
+                    filter: b => b.UserId == userId,
+                    includeProperties: "Branch,Review",
+                    orderBy: q => q.OrderByDescending(b => b.ScheduledDateTime) // الأحدث الأول
+                );
+
+                // بنحولها للشكل اللي الفرونت محتاجه
+                var bookingDtos = _mapper.Map<IEnumerable<BookingHistoryDto>>(bookings);
+
+                return ResponseViewModel<IEnumerable<BookingHistoryDto>>.Success(bookingDtos);
+            }
+            catch (Exception ex)
+            {
+                return ResponseViewModel<IEnumerable<BookingHistoryDto>>.Fail($"Error fetching bookings: {ex.Message}");
+            }
+        }
+
         // ==========================================
         // دالة مساعدة لتوليد كود عشوائي (Helper Method)
         // ==========================================
         private string GenerateBookingCode()
         {
-            // بنعمل كود عشوائي زي: BKNG-A1B2C3
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
             string randomPart = new string(Enumerable.Repeat(chars, 6)

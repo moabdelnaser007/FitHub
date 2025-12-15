@@ -8,6 +8,14 @@ namespace FitHubBackendAPI.Repository.Interfaces
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 
+        // ✅✅ دي الدالة الجديدة "الجوكر" اللي هنضيفها
+        // بتقبل فلتر، وبتقبل Includes (عشان نجيب جداول مرتبطة)، وبتقبل ترتيب
+        Task<IEnumerable<T>> GetAsync(
+            Expression<Func<T, bool>>? filter = null,
+            string? includeProperties = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null
+        );
+
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);
