@@ -1,6 +1,8 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +41,7 @@ namespace FitHubBackendAPI.Controllers.AuthController
         }
 
         [HttpPost("register-owner")]
+
         public async Task<IActionResult> RegisterOwner([FromForm] RegisterOwnerDto dto)
         {
             var owner = await _authService.RegisterOwnerAsync(dto);
@@ -56,6 +59,14 @@ namespace FitHubBackendAPI.Controllers.AuthController
             var response = ResponseViewModel<OwnerResponseDto>.Success(ownerResponse, "Owner registered. Await admin approval.");
             response.ErrorCode = ErrorCode.Created;
             return StatusCode((int)ErrorCode.Created, response);
+        }
+        [HttpPost]
+        [Authorize(Roles = "Owner")]
+        [Route("register-staff")]
+        public async Task<IActionResult> RegisterStaffMember([FromForm] RegisterStaffDTO dto)
+        {
+            await _authService.RegisterStaffAsync(dto);
+            return Ok("Staff member registered. Await admin approval.");
         }
 
         [HttpPost("login")]

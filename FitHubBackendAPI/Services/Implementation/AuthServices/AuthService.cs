@@ -4,6 +4,8 @@ using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.Entities.Models;
+
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -51,6 +53,27 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             return user;
         }
 
+
+        // ✅ OWNER REGISTER
+        public async Task RegisterOwnerAsync(RegisterOwnerDto dto)
+        {
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Password mismatch");
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = UserRole.Owner,
+                Status = AccountStatus.Pending,
+                
+
+            };
+            var owner = new GymOwner
+            {
+                User=user,
+                CommercialRegistrationNumber = dto.CommercialRegistrationNumber,
+                LicenseFileUrl = "uploaded/path"
         public async Task<GymOwner> RegisterOwnerAsync(RegisterOwnerDto dto)
         {
             if (dto.Password != dto.ConfirmPassword)
@@ -81,10 +104,40 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 Status = AccountStatus.Pending,
                 ApplicationStatus = ApplicationStatus.PENDING
             };
+            owner.User = user;
 
-            await _context.GymOwners.AddAsync(owner);
+            await _context.Users.AddAsync(user);
+            await _context.GymOwners.AddAsync(owner);  
             await _context.SaveChangesAsync();
-            return owner;
+            await CreateOtpAndSend(dto.Email, OtpType.Register);
+        }
+        // Register Stuff
+        public async Task RegisterStaffAsync(RegisterStaffDTO dto)
+        {
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Password mismatch");
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = UserRole.Staff,
+                Status = AccountStatus.Pending,
+            };
+            var staff = new GymStaff
+            {
+                User = user,
+                BranchId = dto.BranchId,
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                Status = dto.Status
+            };
+            staff.User = user;
+            await _context.Users.AddAsync(user);
+            await _context.GymStaffs.AddAsync(staff);
+            await _context.SaveChangesAsync();
+            await CreateOtpAndSend(dto.Email, OtpType.Register);
         }
 
         public async Task<string> LoginAsync(LoginDto dto)

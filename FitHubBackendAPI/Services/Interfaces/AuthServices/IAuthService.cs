@@ -16,5 +16,7 @@ namespace FitHubBackendAPI.Services.Interfaces.AuthServices
 
         Task ForgotPasswordAsync(ForgotPasswordDto dto);
         Task ResetPasswordAsync(ResetPasswordDto dto);
+        Task RegisterStaffAsync(RegisterStaffDTO dto);
+
     }
 }

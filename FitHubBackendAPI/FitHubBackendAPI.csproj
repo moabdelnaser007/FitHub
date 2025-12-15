@@ -31,6 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\StuffDTOs\" />
+    <Folder Include="Validators\Gym validators\" />
     <Folder Include="Profiles\" />
   </ItemGroup>
 
