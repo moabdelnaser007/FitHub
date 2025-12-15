@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FitHubBackendAPI.DTOs.Bookings;
 using FitHubBackendAPI.DTOs.Wallet;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 
 namespace FitHubBackendAPI.Profiles 
@@ -31,6 +32,34 @@ namespace FitHubBackendAPI.Profiles
                 // ✅  دمجنا العنوان والمدينة عشان العنوان يبقى كامل
                 .ForMember(dest => dest.BranchAddress, opt => opt.MapFrom(src => $"{src.Branch.Address}, {src.Branch.City}"))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+
+
+            // Transaction History Mapping
+            CreateMap<UserCreditTransactions, TransactionHistoryDto>()
+                // 1. التاريخ: بنحوله لنص شيك زي الصورة (Oct 15, 2023)
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.CreatedAt.ToString("MMM dd, yyyy")))
+
+                // 2. الفلوس: بنجيبها من العمود الجديد اللي ضفناه
+                .ForMember(dest => dest.AmountPaid, opt => opt.MapFrom(src => src.PaymentAmount))
+
+                // 3. النقط: لو خصم (DEDUCT) بنحط سالب، غير كده موجب
+                .ForMember(dest => dest.Credits, opt => opt.MapFrom(src =>
+                    src.TransactionType == TransactionType.DEDUCT ? -src.CreditsChanged : src.CreditsChanged))
+
+                // 4. الإشارة (للألوان): الشحن والاسترجاع موجب (أخضر)، الخصم سالب (أحمر)
+                .ForMember(dest => dest.IsPositive, opt => opt.MapFrom(src =>
+                    src.TransactionType == TransactionType.RECHARGE ||
+                    src.TransactionType == TransactionType.REFUND ||
+                    (src.TransactionType == TransactionType.ADMIN_ADJUST && src.CreditsChanged > 0)))
+
+                // 5. الوصف: بنكتب وصف مفهوم لليوزر بدل كلام الداتا بيز الناشف
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src =>
+                    src.TransactionType == TransactionType.RECHARGE ? "Wallet Top-up" :
+                    src.TransactionType == TransactionType.DEDUCT && src.Source == TransactionSource.BOOKING ? "Class Booking" :
+                    src.TransactionType == TransactionType.DEDUCT && src.Source == TransactionSource.SUBSCRIPTION ? "Subscription Payment" :
+                    src.TransactionType == TransactionType.REFUND ? "Refunded Booking" :
+                    "Adjustment"));
         }
     }
 }

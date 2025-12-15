@@ -49,6 +49,24 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             return Ok(result);
         }
+
+
+        // 3. Endpoint لعرض سجل المعاملات
+        // GET: api/users/wallet/transactions
+        [HttpGet("transactions")]
+        public async Task<IActionResult> GetTransactions()
+        {
+            // مثبتين اليوزر 3 زي ما اتفقنا للتجربة
+            // بعدين هنغيرها لـ: int.Parse(User.FindFirst("uid")?.Value);
+            int userId = 3;
+
+            var result = await _walletService.GetMyTransactionsAsync(userId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }
 

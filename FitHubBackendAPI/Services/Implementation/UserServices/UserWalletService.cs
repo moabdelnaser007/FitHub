@@ -66,10 +66,6 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 wallet.Balance = newBalance;
                 wallet.LastUpdated = DateTime.UtcNow;
 
-                // ❌❌❌ ملحوظة مهمة: شيلنا سطر _walletRepo.Update(wallet) من هنا ❌❌❌
-                // السبب: عشان لو المحفظة جديدة (لسه معملناش Save)، السطر ده كان بيعمل إيرور
-                // الـ EF Core ذكي وهيفهم التغيير لوحده
-
                 // 4. تسجيل العملية في الهيستوري
                 var transaction = new UserCreditTransactions
                 {
@@ -77,6 +73,10 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     CreditsBefore = oldBalance,
                     CreditsChanged = creditsToAdd,
                     CreditsAfter = newBalance,
+
+                    // ✅✅✅ التعديل الجديد ✅✅✅
+                    // بناخد المبلغ من الـ DTO ونخزنه عشان يظهر في الهيستوري
+                    PaymentAmount = dto.AmountPaid,
 
                     TransactionType = TransactionType.RECHARGE,
                     Source = TransactionSource.MANUAL,
@@ -87,7 +87,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 await _transactionRepo.AddAsync(transaction);
 
-                // 5. حفظ التغييرات (هنا بيتم الحفظ الفعلي وإنشاء الـ IDs)
+                // 5. حفظ التغييرات (هنا بيتم الحفظ الفعلي لكل العمليات مرة واحدة)
                 await _walletRepo.SaveChangesAsync();
 
                 return ResponseViewModel<bool>.Success(true, $"Wallet charged successfully with {creditsToAdd} credits");
@@ -115,6 +115,33 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             var walletDto = _mapper.Map<WalletBalanceDto>(wallet);
             return ResponseViewModel<WalletBalanceDto>.Success(walletDto);
+        }
+
+
+        // ==========================================
+        // 3. دالة عرض سجل المعاملات (History)
+        // ==========================================
+        public async Task<ResponseViewModel<IEnumerable<TransactionHistoryDto>>> GetMyTransactionsAsync(int userId)
+        {
+            try
+            {
+                // 1. نجيب المعاملات الخاصة باليوزر
+                // ونرتبها تنازلي (الأحدث يظهر فوق) باستخدام CreatedAt
+                var transactions = await _transactionRepo.GetAsync(
+                    filter: t => t.UserId == userId,
+                    orderBy: q => q.OrderByDescending(t => t.CreatedAt)
+                );
+
+                // 2. نحولها لـ DTO باستخدام المابنج الذكي اللي لسه عاملينه
+                var dtos = _mapper.Map<IEnumerable<TransactionHistoryDto>>(transactions);
+
+                // 3. نرجع النتيجة
+                return ResponseViewModel<IEnumerable<TransactionHistoryDto>>.Success(dtos);
+            }
+            catch (Exception ex)
+            {
+                return ResponseViewModel<IEnumerable<TransactionHistoryDto>>.Fail($"Error fetching transactions: {ex.Message}");
+            }
         }
     }
 }

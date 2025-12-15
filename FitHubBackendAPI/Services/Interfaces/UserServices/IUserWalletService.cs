@@ -11,5 +11,8 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
 
         // دالة الاستعلام عن الرصيد: بترجع كلاس الرصيد
         Task<ResponseViewModel<WalletBalanceDto>> GetWalletBalanceAsync(int userId);
+
+        // دالة لجلب تاريخ المعاملات
+        Task<ResponseViewModel<IEnumerable<TransactionHistoryDto>>> GetMyTransactionsAsync(int userId);
     }
 }
