@@ -3,6 +3,7 @@ using AutoMapper;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Entities.Models;
+using FitHubBackendAPI.Entities.Enums;
 
 namespace FitHubBackendAPI.Services.Implementation.GymServices
 {
@@ -15,9 +16,12 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             _mapper = mapper;
             _planRepository = planRepository;
         }
-        public Task ActivatePlanAsync(int planId)
+        public async Task ActivatePlanAsync(int planId)
         {
-            throw new NotImplementedException();
+            var plan = await _planRepository.GetByIdAsync(planId);
+            if (plan == null) return;
+            plan.Status = PlanStatus.ACTIVE;
+            _planRepository.Update(plan);
         }
 
         public async Task<GetPlanByIdDTO> CreatePlanAsync(CreatePlanDTO createPlanDto)
@@ -28,9 +32,12 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             return new GetPlanByIdDTO();
         }
 
-        public Task DeactivatePlanAsync(int planId)
+        public async Task DeactivatePlanAsync(int planId)
         {
-            throw new NotImplementedException();
+            var plan = await _planRepository.GetByIdAsync(planId);
+            if (plan == null) return;
+            plan.Status = PlanStatus.INACTIVE;
+            _planRepository.Update(plan);
         }
 
         public async Task<bool> DeletePlanAsync(int planId)

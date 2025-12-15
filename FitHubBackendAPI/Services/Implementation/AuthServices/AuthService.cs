@@ -54,6 +54,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await CreateOtpAndSend(dto.Email, OtpType.Register);
         }
 
+
         // ✅ OWNER REGISTER
         public async Task RegisterOwnerAsync(RegisterOwnerDto dto)
         {
@@ -79,6 +80,34 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
 
             await _context.Users.AddAsync(user);
             await _context.GymOwners.AddAsync(owner);  
+            await _context.SaveChangesAsync();
+            await CreateOtpAndSend(dto.Email, OtpType.Register);
+        }
+        // Register Stuff
+        public async Task RegisterStaffAsync(RegisterStaffDTO dto)
+        {
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Password mismatch");
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = UserRole.Staff,
+                Status = AccountStatus.Pending,
+            };
+            var staff = new GymStaff
+            {
+                User = user,
+                BranchId = dto.BranchId,
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                Status = dto.Status
+            };
+            staff.User = user;
+            await _context.Users.AddAsync(user);
+            await _context.GymStaffs.AddAsync(staff);
             await _context.SaveChangesAsync();
             await CreateOtpAndSend(dto.Email, OtpType.Register);
         }

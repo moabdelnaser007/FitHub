@@ -56,6 +56,7 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IGymBranchService, GymBranchService>();
             builder.Services.AddScoped<IPlanService, PlanService>();
+            builder.Services.AddScoped<IOwnerToStaffService, OwnerToStaffService>();
             //register automapper
 
             builder.Services.AddScoped<IJwtService, JwtService>();

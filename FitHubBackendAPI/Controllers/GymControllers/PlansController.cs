@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FitHubBackendAPI.Controllers.GymControllers
 {
-    [Route("api/owner/[controller]/[action]")]
+    [Route("api/owner/[controller]")]
     [ApiController]
     [Authorize(Roles = "Owner")]
     public class PlansController : ControllerBase
@@ -18,13 +18,26 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         { 
             _planService = planService;
         }
+
+
         [HttpPost]
-        public async Task<ResponseViewModel<CreatePlanDTO>> CreatePlan(CreatePlanDTO createPlanDto)
+        [ValidateAntiForgeryToken]
+        [Route("{branchId}/Create")]
+        public async Task<ResponseViewModel<CreatePlanDTO>> CreatePlan(int branchId, CreatePlanDTO createPlanDto)
         {
+
+            if (createPlanDto == null)
+            {
+                return ResponseViewModel<CreatePlanDTO>.Fail("Invalid plan data.");
+            }
+            createPlanDto.BranchId = branchId;
             var result = await _planService.CreatePlanAsync(createPlanDto);
             return ResponseViewModel<CreatePlanDTO>.Success(createPlanDto, "Plan created successfully.");
         }
+
+
         [HttpDelete]
+        [Route("Delete/{planId}")]
         public async Task<ResponseViewModel<bool>> DeletePlan(int planId)
         {
             var result = await _planService.DeletePlanAsync(planId);
@@ -33,7 +46,10 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             else
                 return ResponseViewModel<bool>.Fail("Plan deletion failed.");
         }
+
+
         [HttpGet]
+        [Route("ByBranch/{branchId}")]
         public async Task<ResponseViewModel<IEnumerable<GetPlanByBranchIdDTO>>> GetPlansByBranchId(int branchId)
         {
             var result = await _planService.GetPlansByBranchIdAsync(branchId);
@@ -41,6 +57,8 @@ namespace FitHubBackendAPI.Controllers.GymControllers
                 return ResponseViewModel<IEnumerable<GetPlanByBranchIdDTO>>.Fail("No plans found for the specified branch.");
             return ResponseViewModel<IEnumerable<GetPlanByBranchIdDTO>>.Success(result, "Plans retrieved successfully.");
         }
+
+
         [HttpGet]
         [Route("{planId}")]
         public async Task<ResponseViewModel<GetPlanByIdDTO>> GetPlanById(int planId)
@@ -50,7 +68,10 @@ namespace FitHubBackendAPI.Controllers.GymControllers
                 return ResponseViewModel<GetPlanByIdDTO>.Fail("Plan not found.");
             return ResponseViewModel<GetPlanByIdDTO>.Success(result, "Plan retrieved successfully.");
         }
+
+
         [HttpPut]
+        [Route("Update")]
         public async Task<ResponseViewModel<GetPlanByIdDTO>> UpdatePlan(UpdatePlanDTO updatePlanDto)
         {
             var result = await _planService.UpdatePlanAsync(updatePlanDto);

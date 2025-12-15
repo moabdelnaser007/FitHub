@@ -1,5 +1,6 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,10 +25,19 @@ namespace FitHubBackendAPI.Controllers.AuthController
         }
 
         [HttpPost("register-owner")]
+
         public async Task<IActionResult> RegisterOwner([FromForm] RegisterOwnerDto dto)
         {
             await _authService.RegisterOwnerAsync(dto);
             return Ok("Owner registered. Await admin approval.");
+        }
+        [HttpPost]
+        [Authorize(Roles = "Owner")]
+        [Route("register-staff")]
+        public async Task<IActionResult> RegisterStaffMember([FromForm] RegisterStaffDTO dto)
+        {
+            await _authService.RegisterStaffAsync(dto);
+            return Ok("Staff member registered. Await admin approval.");
         }
 
         [HttpPost("login")]

@@ -61,5 +61,9 @@ namespace FitHubBackendAPI.Repository.Implementation
         {
             return await _context.SaveChangesAsync() > 0;
         }
+        public Task<bool> IsExist(int id)
+        {
+            return _db.AnyAsync(e => e.Id == id && !e.IsDeleted);
+        }
     }
 }

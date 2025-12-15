@@ -15,7 +15,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
     public class BranchController : ControllerBase
     {
         IGymBranchService _gymBranchService;
-        public BranchController( IGymBranchService gymBranchService)
+        public BranchController(IGymBranchService gymBranchService)
         {
             _gymBranchService = gymBranchService;
         }
@@ -24,15 +24,16 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         [Authorize(Roles = "Owner")]
         public ResponseViewModel<CreateGymBranchDTO> CreateBranch(CreateGymBranchDTO dto)
         {
-            
+
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            _gymBranchService.CreateGymBranchAsync(userId,dto);
+            string userName = User.FindFirst(ClaimTypes.Name)!.Value;
+            _gymBranchService.CreateGymBranchAsync(userId, dto);
 
             return ResponseViewModel<CreateGymBranchDTO>.Success(dto, "Gym branch created successfully.");
         }
         [HttpPut]
         [Route("{id}")]
-        [Authorize(Roles ="Owner")]
+        [Authorize(Roles = "Owner")]
         public async Task<ResponseViewModel<GetGymBranchByIdDTO>> UpdateBranch(UpdateGymBranchDTO dto)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -41,7 +42,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(branch, "Gym branch updated successfully.");
         }
         [HttpPost]
-        [Authorize(Roles ="Owner")]
+        [Authorize(Roles = "Owner")]
         public ResponseViewModel<AddStuffDTO> AddStuff(AddStuffDTO dto)
         {
             // Implementation for adding stuff to a gym branch would go here.
@@ -49,7 +50,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             return ResponseViewModel<AddStuffDTO>.Success(dto, "Stuff added successfully.");
         }
         [HttpGet]
-        [Authorize(Roles ="Owner")]
+        [Authorize(Roles = "Owner")]
         public async Task<ResponseViewModel<IEnumerable<GetAllBranchDTO>>> GetAllBranchesAsync()
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -61,13 +62,13 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         [Route("{id:int}")]
         public async Task<ResponseViewModel<GetGymBranchByIdDTO>> GetBranchById(int id)
         {
-            var branch =await  _gymBranchService.GetGymBranchByIdAsync(id);
+            var branch = await _gymBranchService.GetGymBranchByIdAsync(id);
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(branch, "Branche retrieved successfully.");
 
         }
 
         [HttpPut]
-        [Authorize(Roles ="Owner")]
+        [Authorize(Roles = "Owner")]
         [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> ActivateGymBranch(int id)
         {
@@ -76,7 +77,24 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             return ResponseViewModel<bool>.Success(true, "Branche Activated successfully.");
 
         }
-
+        [HttpPut]
+        [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
+        public async Task<ResponseViewModel<bool>> DeactivateGymBranch(int id)
+        {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            await _gymBranchService.DeactivateBranchAsync(userId, id);
+            return ResponseViewModel<bool>.Success(true, "Branche Deactivated successfully.");
+        }
+        [HttpDelete]
+        [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
+        public async Task<ResponseViewModel<bool>> DeleteGymBranch(int id)
+        {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            await _gymBranchService.DeleteGymBranchAsync(userId, id);
+            return ResponseViewModel<bool>.Success(true, "Branche Deleted successfully.");
+        }
+    }
 
     }
-}

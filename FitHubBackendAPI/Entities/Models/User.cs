@@ -16,6 +16,7 @@ namespace FitHubBackendAPI.Entities.Models
         public AccountStatus Status { get; set; }
 
         public GymOwner? GymOwner { get; set; }
+        public GymStaff? GymStaff { get; set; }
         public UserWallet? Wallet { get; set; }
         public List<UserCreditTransactions> WalletTransactions { get; set; } = new();
         public List<Subscription> Subscriptions { get; set; } = new();

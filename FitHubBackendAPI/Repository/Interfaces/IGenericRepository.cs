@@ -14,5 +14,6 @@ namespace FitHubBackendAPI.Repository.Interfaces
         void Delete(T entity);
         Task<bool> SoftDelete(T entity);
         Task<bool> SaveChangesAsync();
+        Task<bool> IsExist(int id);
     }
 }
