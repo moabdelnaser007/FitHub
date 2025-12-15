@@ -24,6 +24,13 @@ namespace FitHubBackendAPI.Profiles
                 .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.BranchName)) // بنجيب اسم الفرع
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())) // بنحول الـ Enum لنص
                 .ForMember(dest => dest.HasReview, opt => opt.MapFrom(src => src.Review != null)); // لو في ريفيو يبقى true
+
+            // Booking Details Mapping
+            CreateMap<Booking, BookingDetailsDto>()
+                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch.BranchName))
+                // ✅  دمجنا العنوان والمدينة عشان العنوان يبقى كامل
+                .ForMember(dest => dest.BranchAddress, opt => opt.MapFrom(src => $"{src.Branch.Address}, {src.Branch.City}"))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
         }
     }
 }

@@ -124,5 +124,74 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             return $"BKNG-{randomPart}";
         }
+
+
+        // ==========================================================
+        // 3. دالة تفاصيل الحجز (Get Booking Details)
+        // ==========================================================
+        public async Task<ResponseViewModel<BookingDetailsDto>> GetBookingDetailsAsync(int userId, int bookingId)
+        {
+            try
+            {
+                // بنستخدم دالة GetAsync الجوكر عشان نجيب بيانات الفرع (Branch)
+                // عشان محتاجين الاسم والعنوان من جوا الفرع
+                var bookings = await _bookingRepo.GetAsync(
+                    filter: b => b.Id == bookingId,
+                    includeProperties: "Branch"
+                );
+
+                var booking = bookings.FirstOrDefault();
+
+                // تحققات
+                if (booking == null)
+                    return ResponseViewModel<BookingDetailsDto>.Fail("Booking not found");
+
+                // لازم نتأكد إن الحجز ده بتاع اليوزر اللي باعت الطلب
+                if (booking.UserId != userId)
+                    return ResponseViewModel<BookingDetailsDto>.Fail("You are not authorized to view this booking");
+
+                // التحويل باستخدام المابنج اللي ظبطناه
+                var dto = _mapper.Map<BookingDetailsDto>(booking);
+
+                return ResponseViewModel<BookingDetailsDto>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                return ResponseViewModel<BookingDetailsDto>.Fail($"Error fetching details: {ex.Message}");
+            }
+        }
+
+        // ==========================================================
+        // 4. دالة إلغاء الحجز (Cancel Booking)
+        // ==========================================================
+        public async Task<ResponseViewModel<bool>> CancelBookingAsync(int userId, int bookingId)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetByIdAsync(bookingId);
+
+                if (booking == null)
+                    return ResponseViewModel<bool>.Fail("Booking not found");
+
+                if (booking.UserId != userId)
+                    return ResponseViewModel<bool>.Fail("Not authorized to cancel this booking");
+
+                // نسمح بالإلغاء فقط لو الحالة CONFIRMED (يعني لسه مرحش)
+                if (booking.Status != FitHubBackendAPI.Entities.Enums.BookingStatus.CONFIRMED)
+                    return ResponseViewModel<bool>.Fail("Cannot cancel this booking because it is already completed or cancelled");
+
+                // تغيير الحالة لـ CANCELLED
+                booking.Status = FitHubBackendAPI.Entities.Enums.BookingStatus.CANCELLED;
+
+                _bookingRepo.Update(booking);
+                await _bookingRepo.SaveChangesAsync();
+
+                return ResponseViewModel<bool>.Success(true, "Booking cancelled successfully");
+            }
+            catch (Exception ex)
+            {
+                return ResponseViewModel<bool>.Fail($"Error cancelling: {ex.Message}");
+            }
+        }
     }
 }

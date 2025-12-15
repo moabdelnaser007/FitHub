@@ -61,5 +61,44 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             return Ok(result);
         }
+
+        // ==========================================================
+        // 3. عرض تفاصيل حجز معين
+        // URL: GET /api/bookings/{id}
+        // ==========================================================
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookingDetails(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim.Value);
+
+            var result = await _bookingService.GetBookingDetailsAsync(userId, id);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        // ==========================================================
+        // 4. إلغاء حجز
+        // URL: PUT /api/bookings/cancel/{id}
+        // ==========================================================
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim.Value);
+
+            var result = await _bookingService.CancelBookingAsync(userId, id);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
     }
 }
