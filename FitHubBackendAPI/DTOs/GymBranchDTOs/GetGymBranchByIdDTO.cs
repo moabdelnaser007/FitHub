@@ -15,7 +15,7 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
         public TimeSpan? OpenTime { get; set; }
         public TimeSpan? CloseTime { get; set; }
 
-        public GymGenderType GenderType { get; set; } 
-        public BranchStatus Status { get; set; } 
+        public GymGenderType? GenderType { get; set; }= GymGenderType.Mixed;
+        public BranchStatus? Status { get; set; }= BranchStatus.ACTIVE;
     }
 }

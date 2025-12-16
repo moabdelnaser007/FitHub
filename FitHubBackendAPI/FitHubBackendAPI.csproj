@@ -32,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="DTOs\StuffDTOs\" />
     <Folder Include="Validators\Gym validators\" />
     <Folder Include="Profiles\" />

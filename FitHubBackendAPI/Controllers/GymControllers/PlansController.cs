@@ -21,7 +21,6 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Route("{branchId}/Create")]
         public async Task<ResponseViewModel<CreatePlanDTO>> CreatePlan(int branchId, CreatePlanDTO createPlanDto)
         {

@@ -12,7 +12,6 @@ namespace FitHubBackendAPI.Entities
         public string? DocumentUrl { get; set; }
         public string? RejectionReason { get; set; }
 
-        public string? CommercialRegistrationNumber { get; set; }
 
         public string CommercialRegistrationNumber { get; set; }
         public string LicenseFileUrl { get; set; }

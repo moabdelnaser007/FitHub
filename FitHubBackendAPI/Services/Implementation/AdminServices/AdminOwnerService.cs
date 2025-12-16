@@ -23,15 +23,15 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
         // Pending Owners
         public async Task<List<PendingOwnerDto>> GetPendingOwnersAsync()
         {
-            return await _context.GymOwners
+            return await _context.GymOwners.Include(o => o.User)
                 .Where(o => o.ApplicationStatus == ApplicationStatus.PENDING)
                 .OrderByDescending(o => o.CreatedAt)
                 .Select(o => new PendingOwnerDto
                 {
                     Id = o.Id,
-                    FullName = o.FullName,
-                    Email = o.Email,
-                    Phone = o.Phone,
+                    FullName = o.User.FullName,
+                    Email = o.User.Email,
+                    Phone = o.User.Phone,
                     CommercialRegistrationNumber = o.CommercialRegistrationNumber,
                     CreatedAt = o.CreatedAt
                 })
@@ -41,17 +41,17 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
         // Approve
         public async Task ApproveOwnerAsync(int ownerId)
         {
-            var owner = await _context.GymOwners.FindAsync(ownerId);
+            var owner = await _context.GymOwners.Include(o => o.User).FirstOrDefaultAsync(o => o.Id == ownerId);
 
             if (owner == null)
                 throw new Exception("Owner not found");
 
-            owner.Status = AccountStatus.Active;
+            owner.User.Status = AccountStatus.Active;
             owner.ApplicationStatus = ApplicationStatus.APPROVED;
 
             await _context.SaveChangesAsync();
 
-            await _emailService.SendAsync(owner.Email,
+            await _emailService.SendAsync(owner.User.Email,
             "Gym Approved",
             "Your gym has been approved successfully");
         }
@@ -59,17 +59,17 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
         // Reject
         public async Task RejectOwnerAsync(int ownerId)
         {
-            var owner = await _context.GymOwners.FindAsync(ownerId);
+            var owner = await _context.GymOwners.Include(o => o.User).FirstOrDefaultAsync(o => o.Id == ownerId);
 
             if (owner == null)
                 throw new Exception("Owner not found");
 
-            owner.Status = AccountStatus.Rejected;
+            owner.User.Status = AccountStatus.Rejected;
             owner.ApplicationStatus = ApplicationStatus.REJECTED;
 
             await _context.SaveChangesAsync();
 
-            await _emailService.SendAsync(owner.Email,
+            await _emailService.SendAsync(owner.User.Email,
             "Gym Rejected",
             "Your gym registration was rejected");
         }

@@ -49,11 +49,11 @@ namespace FitHubBackendAPI.Controllers.AuthController
             var ownerResponse = new OwnerResponseDto
             {
                 Id = owner.Id,
-                FullName = owner.FullName,
-                Email = owner.Email,
-                Phone = owner.Phone,
+                FullName = owner.User.FullName,
+                Email = owner.User.Email,
+                Phone = owner.User.Phone,
                 CommercialRegistrationNumber = owner.CommercialRegistrationNumber,
-                Status = owner.Status.ToString()
+                Status = owner.User.Status.ToString()
             };
 
             var response = ResponseViewModel<OwnerResponseDto>.Success(ownerResponse, "Owner registered. Await admin approval.");

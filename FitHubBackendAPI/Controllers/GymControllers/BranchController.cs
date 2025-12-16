@@ -1,5 +1,6 @@
 ﻿using FitHubBackendAPI.DTOs.GymBranchDTOs;
-using FitHubBackendAPI.Services.Interfaces.GymBranch;
+
+using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,15 +23,37 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPost]
         [Authorize(Roles = "Owner")]
-        public ResponseViewModel<CreateGymBranchDTO> CreateBranch(CreateGymBranchDTO dto)
+        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> CreateBranch(CreateGymBranchDTO dto)
         {
 
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            string userName = User.FindFirst(ClaimTypes.Name)!.Value;
-            _gymBranchService.CreateGymBranchAsync(userId, dto);
+            if (userId <= 0) {
+                return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Invalid user ID.",Entities.Enums.ErrorCode.Unauthorized);
+            }
 
-            return ResponseViewModel<CreateGymBranchDTO>.Success(dto, "Gym branch created successfully.");
+            var branch = await _gymBranchService.CreateGymBranchAsync(userId, dto);
+            if (branch == null)
+            {
+                return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Failed to create gym branch.", Entities.Enums.ErrorCode.BadRequest);
+            }
+            var createdBranch = new GetGymBranchByIdDTO
+            {
+                Id = branch.Id,
+                OwnerId = branch.OwnerId,
+                BranchName = branch.BranchName,
+                Phone = branch.Phone,
+                Address = branch.Address,
+                City = branch.City,
+                OpenTime = branch.OpenTime,
+                CloseTime = branch.CloseTime,
+                GenderType = branch.GenderType,
+                Status = branch.Status
+
+            };
+            return ResponseViewModel<GetGymBranchByIdDTO>.Success(createdBranch, "Gym branch created successfully.");
         }
+
+
         [HttpPut]
         [Route("{id}")]
         [Authorize(Roles = "Owner")]
@@ -38,17 +61,10 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             await _gymBranchService.UpdateGymBranchAsync(userId, dto);
-            var branch = await _gymBranchService.GetGymBranchByIdAsync(userId);
+            var branch = await _gymBranchService.GetGymBranchByIdAsync(dto.Id);
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(branch, "Gym branch updated successfully.");
         }
-        [HttpPost]
-        [Authorize(Roles = "Owner")]
-        public ResponseViewModel<AddStuffDTO> AddStuff(AddStuffDTO dto)
-        {
-            // Implementation for adding stuff to a gym branch would go here.
-            // For now, we return a success response with the provided DTO.
-            return ResponseViewModel<AddStuffDTO>.Success(dto, "Stuff added successfully.");
-        }
+        
         [HttpGet]
         [Authorize(Roles = "Owner")]
         public async Task<ResponseViewModel<IEnumerable<GetAllBranchDTO>>> GetAllBranchesAsync()

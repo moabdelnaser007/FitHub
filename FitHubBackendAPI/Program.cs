@@ -19,6 +19,12 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using FitHubBackendAPI.Profiles;
+using FitHubBackendAPI.Services.Interfaces.AdminServices;
+using Microsoft.AspNetCore.Mvc;
+using FitHubBackendAPI.Middlewares;
+using FitHubBackendAPI.Data.DataSeeder;
+using FitHubBackendAPI.Filters;
+using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 
 namespace FitHubBackendAPI
 {
@@ -145,31 +151,31 @@ namespace FitHubBackendAPI
                     };
                 });
 
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ValidateLifetime = true,
 
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+            //        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            //        ValidAudience = builder.Configuration["Jwt:Audience"],
 
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-            ),
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+            //        IssuerSigningKey = new SymmetricSecurityKey(
+            //    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            //),
+            //        ClockSkew = TimeSpan.Zero
+            //    };
+            //});
             builder.Services.AddAuthorization();
 
             //add polcys 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-                options.AddPolicy("Owner", policy => policy.RequireRole("Owner"));
-            });
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            //    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+            //    options.AddPolicy("Owner", policy => policy.RequireRole("Owner"));
+            //});
 
 
 

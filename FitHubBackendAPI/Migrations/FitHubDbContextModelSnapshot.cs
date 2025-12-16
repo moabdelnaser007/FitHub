@@ -77,73 +77,6 @@ namespace FitHubBackendAPI.Migrations
                     b.ToTable("GymOwners");
                 });
 
-            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
-            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Booking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommercialRegistrationNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<byte[]>("Document")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsAcTive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<byte[]>("LicenseFile")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("LicenseFileType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RejectionReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GymOwners");
-                });
-
-            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
@@ -191,10 +124,6 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("VisitCreditsCost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(50);
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
@@ -209,6 +138,113 @@ namespace FitHubBackendAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAcTive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("GymAmenities");
+                });
+
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BranchName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CloseTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GenderType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAcTive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OpenTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VisitCreditsCost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(50);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("GymBranches");
                 });
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymPlan", b =>
@@ -491,7 +527,7 @@ namespace FitHubBackendAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BranchId")
+                    b.Property<int>("BranchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -500,7 +536,7 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsAcTive")
@@ -509,10 +545,10 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PlanId")
+                    b.Property<int>("PlanId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("StartDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -525,13 +561,13 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VisitsAllowed")
+                    b.Property<int>("VisitsAllowed")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VisitsUsed")
+                    b.Property<int>("VisitsUsed")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -633,9 +669,11 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Source")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TransactionType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -806,6 +844,17 @@ namespace FitHubBackendAPI.Migrations
                     b.ToTable("Visits");
                 });
 
+            modelBuilder.Entity("FitHubBackendAPI.Entities.GymOwner", b =>
+                {
+                    b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
+                        .WithOne("GymOwner")
+                        .HasForeignKey("FitHubBackendAPI.Entities.GymOwner", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Booking", b =>
                 {
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
@@ -905,8 +954,7 @@ namespace FitHubBackendAPI.Migrations
                     b.HasOne("FitHubBackendAPI.Entities.GymOwner", "Owner")
                         .WithOne("Wallet")
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.OwnerWallet", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Owner");
                 });
@@ -916,8 +964,7 @@ namespace FitHubBackendAPI.Migrations
                     b.HasOne("FitHubBackendAPI.Entities.Models.Booking", "Booking")
                         .WithOne("Review")
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.Review", "BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
                         .WithMany("Reviews")
@@ -941,17 +988,20 @@ namespace FitHubBackendAPI.Migrations
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
                         .WithMany("Subscriptions")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymPlan", "Plan")
                         .WithMany("Subscriptions")
                         .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
                         .WithMany("Subscriptions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Branch");
 
@@ -975,8 +1025,7 @@ namespace FitHubBackendAPI.Migrations
                     b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
                         .WithOne("Wallet")
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.UserWallet", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -986,8 +1035,7 @@ namespace FitHubBackendAPI.Migrations
                     b.HasOne("FitHubBackendAPI.Entities.Models.Booking", "Booking")
                         .WithOne("VisitRecord")
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.Visit", "BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
                         .WithMany("Visits")

@@ -60,7 +60,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 // 3. خصم الرصيد
                 int cost = plan.CreditsCost.Value;
-                int oldBalance = wallet.Balance;
+                int? oldBalance = wallet.Balance;
 
                 wallet.Balance -= cost;
                 wallet.LastUpdated = DateTime.UtcNow;

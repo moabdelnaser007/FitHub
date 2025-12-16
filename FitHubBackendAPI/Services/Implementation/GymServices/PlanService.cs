@@ -22,6 +22,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             if (plan == null) return;
             plan.Status = PlanStatus.ACTIVE;
             _planRepository.Update(plan);
+            await _planRepository.SaveChangesAsync();
         }
 
         public async Task<GetPlanByIdDTO> CreatePlanAsync(CreatePlanDTO createPlanDto)
@@ -38,6 +39,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             if (plan == null) return;
             plan.Status = PlanStatus.INACTIVE;
             _planRepository.Update(plan);
+            await _planRepository.SaveChangesAsync();
         }
 
         public async Task<bool> DeletePlanAsync(int planId)

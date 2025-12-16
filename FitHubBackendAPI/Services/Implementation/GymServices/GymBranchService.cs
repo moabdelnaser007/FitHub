@@ -1,9 +1,11 @@
 ﻿using FitHubBackendAPI.Data;
 using FitHubBackendAPI.DTOs.GymBranchDTOs;
+using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
-using FitHubBackendAPI.Services.Interfaces.GymBranch;
+
+using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -13,16 +15,19 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
     {
 
         private readonly IGenericRepository<GymBranch> _repository;
-        public GymBranchService(IGenericRepository<GymBranch> repository)
+        private readonly IGenericRepository<GymOwner> _ownerRepository;
+        public GymBranchService(IGenericRepository<GymBranch> repository, IGenericRepository<GymOwner> ownerRepository)
         {
-
+            _ownerRepository = ownerRepository;
             _repository = repository;
         }
-        public async Task<GetGymBranchByIdDTO> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto)
+        public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto)
         {
-            await _repository.AddAsync(new GymBranch
+            var owners = await _ownerRepository.FindAsync(o=>o.UserId==userId);
+            var owner = owners.FirstOrDefault();
+            Entities.Models.GymBranch branch = new Entities.Models.GymBranch
             {
-                OwnerId = userId,
+                OwnerId = owner.Id,
                 BranchName = dto.BranchName,
                 Phone = dto.Phone,
                 Address = dto.Address,
@@ -31,34 +36,40 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 CloseTime = dto.CloseTime,
                 GenderType = dto.GenderType,
                 Status = dto.Status
-            });
+            };
+            await _repository.AddAsync(branch);
+                
             await _repository.SaveChangesAsync();
 
-            return new GetGymBranchByIdDTO();
+            return branch;
         }
 
-        public Task DeactivateBranchAsync(int userId, int branchId)
+        public async Task DeactivateBranchAsync(int userId, int branchId)
         {
-            var branch = _repository.GetByIdAsync(branchId).Result;
+            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
+            var owner = owners.FirstOrDefault();
+            var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {
                 throw new Exception("Branch not found");
             }
-            if (branch.OwnerId != userId)
+            if (branch.OwnerId != owner.Id)
             {
                 throw new Exception("You are not authorized to update this branch");
             }
             branch.Status = BranchStatus.INACTIVE;
             _repository.Update(branch);
-            _repository.SaveChangesAsync();
-            return Task.CompletedTask;
+            await _repository.SaveChangesAsync();
+            
 
         }
 
         public async Task<IEnumerable<GetAllBranchDTO>> GetAllBranchesAsync(int userId)
         {
+            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
+            var owner = owners.FirstOrDefault();
             var branches = _repository.GetAllAsync().Result
-                .Where(b => b.OwnerId == userId)
+                .Where(b => b.OwnerId == owner.Id)
                 .Select(b => new GetAllBranchDTO
                 {
                     Id = b.Id,
@@ -97,14 +108,16 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             };
         }
 
-        public Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto)
+        public async Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto)
         {
-            var branch = _repository.GetByIdAsync(dto.Id).Result;
+            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
+            var owner = owners.FirstOrDefault();
+            var branch = await _repository.GetByIdAsync(dto.Id);
             if (branch == null)
             {
                 throw new Exception("Branch not found");
             }
-            if (branch.OwnerId != userId)
+            if (branch.OwnerId != owner.Id)
             {
                 throw new Exception("You are not authorized to update this branch");
             }
@@ -117,39 +130,41 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             branch.GenderType = dto.GenderType;
             branch.Status = dto.Status;
             _repository.Update(branch);
-            _repository.SaveChangesAsync();
-            return Task.CompletedTask;
+            await _repository.SaveChangesAsync();
+            
         }
-        public Task ActivateGymBranchAsync(int userId, int branchId)
+        public async Task ActivateGymBranchAsync(int userId, int branchId)
         {
-            var branch = _repository.GetByIdAsync(branchId).Result;
+            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
+            var owner = owners.FirstOrDefault();
+            var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {
                 throw new Exception("Branch not found");
             }
-            if (branch.OwnerId != userId)
+            if (branch.OwnerId != owner.Id)
             {
                 throw new Exception("You are not authorized to update this branch");
             }
             branch.Status = BranchStatus.ACTIVE;
             _repository.Update(branch);
-            _repository.SaveChangesAsync();
-            return Task.CompletedTask;
+            await _repository.SaveChangesAsync();
         }
-        public Task DeleteGymBranchAsync(int userId, int branchId)
+        public async Task DeleteGymBranchAsync(int userId, int branchId)
         {
-            var branch = _repository.GetByIdAsync(branchId).Result;
+            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
+            var owner = owners.FirstOrDefault();
+            var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {
                 throw new Exception("Branch not found");
             }
-            if (branch.OwnerId != userId)
+            if (branch.OwnerId != owner.Id)
             {
                 throw new Exception("You are not authorized to delete this branch");
             }
             _repository.Delete(branch);
-            _repository.SaveChangesAsync();
-            return Task.CompletedTask;
+            await _repository.SaveChangesAsync();
         }
     }
 }

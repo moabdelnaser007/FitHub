@@ -59,8 +59,8 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 int creditsToAdd = dto.AmountPaid * conversionRate;
 
                 // 2. بنحسب الرصيد القديم والجديد
-                int oldBalance = wallet.Balance;
-                int newBalance = oldBalance + creditsToAdd;
+                int? oldBalance = wallet.Balance;
+                int? newBalance = oldBalance + creditsToAdd;
 
                 // 3. نحدث رصيد المحفظة الفعلي
                 wallet.Balance = newBalance;

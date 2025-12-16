@@ -1,11 +1,12 @@
 ﻿using FitHubBackendAPI.DTOs.GymBranchDTOs;
 
-namespace FitHubBackendAPI.Services.Interfaces.GymBranch
+
+namespace FitHubBackendAPI.Services.Interfaces.OwnerServices
 {
     public interface IGymBranchService
     {
-        
-        Task<GetGymBranchByIdDTO> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto);
+
+        Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto);
         Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto);
         Task<IEnumerable<GetAllBranchDTO>> GetAllBranchesAsync(int userId);
         Task<GetGymBranchByIdDTO> GetGymBranchByIdAsync(int branchId);
