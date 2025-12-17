@@ -57,6 +57,7 @@ namespace FitHubBackendAPI
             var mapperConfig = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<GymPlanProfile>();
+                cfg.AddProfile<GymPlanProfile>();
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

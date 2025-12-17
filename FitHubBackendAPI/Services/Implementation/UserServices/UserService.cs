@@ -45,6 +45,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 throw new Exception("User not found");
 
             user.FullName = dto.FullName ?? user.FullName;
+            user.Email = dto.Email ?? dto.Email;
             user.Phone = dto.Phone ?? user.Phone;
             user.City = dto.City ?? user.City;
 

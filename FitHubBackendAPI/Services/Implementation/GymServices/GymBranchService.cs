@@ -163,7 +163,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             {
                 throw new Exception("You are not authorized to delete this branch");
             }
-            _repository.Delete(branch);
+            await _repository.SoftDelete(branch);
             await _repository.SaveChangesAsync();
         }
     }

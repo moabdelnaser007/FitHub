@@ -126,7 +126,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = UserRole.Staff,
-                Status = AccountStatus.Pending,
+                Status = AccountStatus.Active,
             };
             var staff = new GymStaff
             {
@@ -134,6 +134,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 BranchId = dto.BranchId,
                 FullName = dto.FullName,
                 Email = dto.Email,
+                Role= "Staff",
                 Phone = dto.Phone,
                 Status = dto.Status
             };
@@ -141,7 +142,6 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await _context.Users.AddAsync(user);
             await _context.GymStaffs.AddAsync(staff);
             await _context.SaveChangesAsync();
-            await CreateOtpAndSend(dto.Email, OtpType.Register);
         }
 
         //public async Task<string> LoginAsync(LoginDto dto)

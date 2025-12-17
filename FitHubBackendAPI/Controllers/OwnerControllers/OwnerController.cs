@@ -1,4 +1,5 @@
-﻿using FitHubBackendAPI.Services.Interfaces.GymBranch;
+﻿using FitHubBackendAPI.DTOs.StuffDTOs;
+using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,28 @@ namespace FitHubBackendAPI.Controllers.OwnerControllers
         public OwnerController(IOwnerToStaffService ownerToStaffService)
         {
             _ownerToStaffService = ownerToStaffService;
+        }
+        [HttpGet]
+        [Route("GetStaffMembers/{branchId}")]
+        public async Task<ResponseViewModel<IEnumerable<GetStuffDTO>>> GetAllBranchStaff(int branchId)
+        {
+            var members = await _ownerToStaffService.GetAllStaffMembersAsync(branchId);
+            if(members.Count()==0)
+            {
+                return ResponseViewModel<IEnumerable<GetStuffDTO>>.Fail("no Staff member in this Gym",Entities.Enums.ErrorCode.NoContent);
+            }
+            return ResponseViewModel<IEnumerable<GetStuffDTO>>.Success(members, "Staff members retreved successfully");
+        }
+        [HttpGet]
+        [Route("GetStaffMember/{staffId}")]
+        public async Task<ResponseViewModel<GetStuffDTO>> GetStaffMember(int staffId)
+        {
+            var members = await _ownerToStaffService.GetStaffMemberByIdAsync(staffId);
+            if (members == null)
+            {
+                return ResponseViewModel<GetStuffDTO>.Fail("no Staff member not Found", Entities.Enums.ErrorCode.NotFound);
+            }
+            return ResponseViewModel<GetStuffDTO>.Success(members, "Staff members retreved successfully");
         }
 
         [HttpDelete]

@@ -1,4 +1,6 @@
-﻿using FitHubBackendAPI.Entities.Models;
+﻿using AutoMapper;
+using FitHubBackendAPI.DTOs.StuffDTOs;
+using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 
@@ -7,9 +9,32 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
     public class OwnerToStaffService : IOwnerToStaffService
     {
         private readonly IGenericRepository<GymStaff> _staffMemberRepository;
-        public OwnerToStaffService(IGenericRepository<GymStaff> staffMemberRepository)
+        private readonly IMapper _mapper;
+
+        public OwnerToStaffService(IGenericRepository<GymStaff> staffMemberRepository, IMapper mapper)
         {
             _staffMemberRepository = staffMemberRepository;
+        }
+        public async Task<GetStuffDTO?> GetStaffMemberByIdAsync(int staffId)
+        {
+              var staffMember= await _staffMemberRepository.GetByIdAsync(staffId);
+              return _mapper.Map<GetStuffDTO>(staffMember);
+        }
+        public async Task<IEnumerable<GetStuffDTO>> GetAllStaffMembersAsync(int branchId)
+        {
+            var staffMembers = (await _staffMemberRepository.GetAllAsync()).Where(s => s.BranchId == branchId);
+            return _mapper.Map<IEnumerable<GetStuffDTO>>(staffMembers.ToList());
+        }
+        public async Task<UpdateStaffDTO> UpdateStaff(UpdateStaffDTO dto)
+        {
+            var staffMember = await _staffMemberRepository.GetByIdAsync(dto.Id);
+            if (staffMember == null) return null;
+
+            _mapper.Map(dto, staffMember);
+            _staffMemberRepository.Update(staffMember);
+            await _staffMemberRepository.SaveChangesAsync();
+
+            return _mapper.Map<UpdateStaffDTO>(staffMember);
         }
 
         public async Task<bool> AssignStaffToBranch(int staffId, int branchId)
@@ -17,6 +42,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             var member =await _staffMemberRepository.GetByIdAsync(staffId);
             member.BranchId = branchId;
             _staffMemberRepository.Update(member);
+            await _staffMemberRepository.SaveChangesAsync();
             return true;
         }
 
