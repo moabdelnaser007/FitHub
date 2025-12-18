@@ -53,7 +53,18 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(createdBranch, "Gym branch created successfully.");
         }
 
-
+        [HttpGet]
+        [Authorize]
+        [Route("GetAllGyms")]
+        public async Task<ResponseViewModel<IEnumerable<GetAllBranchDTO>>> GetAllGyms()
+        {
+            var branches = await _gymBranchService.GetAllBranchesForAllUsers();
+            if (branches == null || !branches.Any())
+            {
+                return ResponseViewModel<IEnumerable<GetAllBranchDTO>>.Fail("No gyms found.", Entities.Enums.ErrorCode.NotFound);
+            }
+            return ResponseViewModel<IEnumerable<GetAllBranchDTO>>.Success(branches, "Gyms retrieved successfully.");
+        }
         [HttpPut]
         [Route("{id}")]
         [Authorize(Roles = "Owner")]

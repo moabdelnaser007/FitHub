@@ -13,5 +13,6 @@ namespace FitHubBackendAPI.Services.Interfaces.OwnerServices
         Task DeactivateBranchAsync(int userId, int branchId);
         Task ActivateGymBranchAsync(int userId, int branchId);
         Task DeleteGymBranchAsync(int userId, int branchId);
+        Task<IEnumerable<GetAllBranchDTO>> GetAllBranchesForAllUsers();
     }
 }

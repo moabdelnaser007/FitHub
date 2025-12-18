@@ -43,7 +43,23 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
 
             return branch;
         }
-
+        public async Task<IEnumerable<GetAllBranchDTO>> GetAllBranchesForAllUsers()
+        {
+            var branches = (await _repository.GetAllAsync())
+                .Select(b => new GetAllBranchDTO
+                {
+                    Id = b.Id,
+                    OwnerId = b.OwnerId,
+                    BranchName = b.BranchName,
+                    Phone = b.Phone,
+                    Address = b.Address,
+                    City = b.City,
+                    OpenTime = b.OpenTime,
+                    CloseTime = b.CloseTime,
+                }
+                );
+            return await branches.ToListAsync();
+        }
         public async Task DeactivateBranchAsync(int userId, int branchId)
         {
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
