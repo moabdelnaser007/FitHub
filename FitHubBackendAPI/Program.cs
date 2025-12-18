@@ -54,14 +54,7 @@ namespace FitHubBackendAPI
             });
 
             //builder.Services.AddAutoMapper(typeof(GymPlanProfile));
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<GymPlanProfile>();
-                cfg.AddProfile<GymPlanProfile>();
-            });
-
-            IMapper mapper = mapperConfig.CreateMapper();
-            builder.Services.AddSingleton(mapper);
+           
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -90,6 +83,10 @@ namespace FitHubBackendAPI
             // 3) Add AutoMapper
             // ===============================
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 
             // disable automatic 400 ProblemDetails so we can return our custom ResponseViewModel
             builder.Services.Configure<ApiBehaviorOptions>(options =>

@@ -14,17 +14,39 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         public OwnerToStaffService(IGenericRepository<GymStaff> staffMemberRepository, IMapper mapper)
         {
             _staffMemberRepository = staffMemberRepository;
+            _mapper = mapper;
         }
         public async Task<GetStuffDTO?> GetStaffMemberByIdAsync(int staffId)
         {
-              var staffMember= await _staffMemberRepository.GetByIdAsync(staffId);
-              return _mapper.Map<GetStuffDTO>(staffMember);
+            var staffMember = await _staffMemberRepository.GetByIdAsync(staffId);
+
+            if (staffMember == null)
+                return null;
+
+            return _mapper.Map<GetStuffDTO>(staffMember);
         }
+
         public async Task<IEnumerable<GetStuffDTO>> GetAllStaffMembersAsync(int branchId)
         {
-            var staffMembers = (await _staffMemberRepository.GetAllAsync()).Where(s => s.BranchId == branchId);
-            return _mapper.Map<IEnumerable<GetStuffDTO>>(staffMembers.ToList());
+            var staffMembers = await _staffMemberRepository
+                .FindAsync(s => s.BranchId == branchId);
+
+            if (staffMembers == null || !staffMembers.Any())
+                return new List<GetStuffDTO>();
+
+            return staffMembers.Select(s => new GetStuffDTO
+            {
+                Id = s.Id,
+                UserId = s.UserId,
+                BranchId = s.BranchId,
+                FullName = s.FullName,
+                Email = s.Email,
+                Phone = s.Phone,
+                Role = s.Role,
+                Status = s.Status
+            }).ToList();
         }
+
         public async Task<UpdateStaffDTO> UpdateStaff(UpdateStaffDTO dto)
         {
             var staffMember = await _staffMemberRepository.GetByIdAsync(dto.Id);

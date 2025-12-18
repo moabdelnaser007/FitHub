@@ -9,7 +9,7 @@ namespace FitHubBackendAPI.Profiles
         public GymStaffProfile()
         {
             CreateMap<GymStaff, GetStuffDTO>();
-            CreateMap<UpdateStaffDTO, GymStaff>();
+            CreateMap<GymStaff, UpdateStaffDTO>().ReverseMap();
         }
     }
 }

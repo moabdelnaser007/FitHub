@@ -49,11 +49,6 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             user.Phone = dto.Phone ?? user.Phone;
             user.City = dto.City ?? user.City;
 
-            if (dto.Role.HasValue)
-                user.Role = dto.Role.Value;
-
-            if (dto.Status.HasValue)
-                user.Status = dto.Status.Value;
 
             await _context.SaveChangesAsync();
         }
