@@ -1,13 +1,16 @@
 ﻿using FitHubBackendAPI.DTOs.Subscriptions;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace FitHubBackendAPI.Controllers.User_Controller
 {
-    [Route("api/subscriptions")]
+    [Route("api/user/subscriptions")]
     [ApiController]
+    [Authorize]
+
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subService;

@@ -66,7 +66,7 @@ namespace FitHubBackendAPI.Controllers.AuthController
         public async Task<IActionResult> RegisterStaffMember([FromForm] RegisterStaffDTO dto)
         {
             await _authService.RegisterStaffAsync(dto);
-            return Ok("Staff member registered. Await admin approval.");
+            return Ok("Staff member registered.");
         }
 
         [HttpPost("login")]

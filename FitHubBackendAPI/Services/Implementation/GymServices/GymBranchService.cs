@@ -72,8 +72,8 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 .Where(b => b.OwnerId == owner.Id)
                 .Select(b => new GetAllBranchDTO
                 {
-                    Id = b.Id,
-                    OwnerId = b.OwnerId,
+                    //Id = b.Id,
+                    //OwnerId = b.OwnerId,
                     BranchName = b.BranchName,
                     Phone = b.Phone,
                     Address = b.Address,
@@ -94,8 +94,8 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             
             return new GetGymBranchByIdDTO
             {
-                Id = branch.Id,
-                OwnerId = branch.OwnerId,
+                //Id = branch.Id,
+                //OwnerId = branch.OwnerId,
                 BranchName = branch.BranchName,
                 Phone = branch.Phone,
                 Address = branch.Address,
@@ -108,19 +108,26 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             };
         }
 
-        public async Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto)
+        public async Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto, int BranchId)
         {
-            var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
-            var owner = owners.FirstOrDefault();
-            var branch = await _repository.GetByIdAsync(dto.Id);
+            // 1️⃣ هات الـ Owner
+            var owner = (await _ownerRepository.FindAsync(o => o.UserId == userId))
+                        .FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
+
+            // 2️⃣ هات الفرع
+            var branch = await _repository.GetByIdAsync(BranchId);
+
             if (branch == null)
-            {
                 throw new Exception("Branch not found");
-            }
+
+            // 3️⃣ تأكد إن الفرع تابع لنفس الـ Owner
             if (branch.OwnerId != owner.Id)
-            {
                 throw new Exception("You are not authorized to update this branch");
-            }
+
+            // 4️⃣ Update
             branch.BranchName = dto.BranchName;
             branch.Phone = dto.Phone;
             branch.Address = dto.Address;
@@ -129,9 +136,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             branch.CloseTime = dto.CloseTime;
             branch.GenderType = dto.GenderType;
             branch.Status = dto.Status;
+
             _repository.Update(branch);
             await _repository.SaveChangesAsync();
-            
+
         }
         public async Task ActivateGymBranchAsync(int userId, int branchId)
         {

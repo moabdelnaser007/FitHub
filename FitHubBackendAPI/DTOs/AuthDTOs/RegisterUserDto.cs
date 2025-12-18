@@ -13,10 +13,8 @@ namespace FitHubBackendAPI.DTOs.AuthDTOs
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required.")]
-        [RegularExpression(@"^(010|011|012|015)[0-9]{8}$",
-        ErrorMessage = "Please enter a valid Egyptian phone number.")]
+        [RegularExpression(@"^(010|011|012|015)[0-9]{8}$",ErrorMessage = "Please enter a valid Egyptian phone number.")]
         public string Phone { get; set; } = string.Empty;
-
 
         [Required(ErrorMessage = "City is required.")]
         [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]

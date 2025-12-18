@@ -4,7 +4,6 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
 {
     public class UpdateGymBranchDTO
     {
-        public int Id { get; set; }
 
         public string BranchName { get; set; } = null!;
         public string? Phone { get; set; }
