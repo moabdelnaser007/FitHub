@@ -43,6 +43,42 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
 
             return branch;
         }
+        //get all branches for all users Except is deleted or inactive
+        public async Task<IEnumerable<GetAllBranchDTO>> GetAllActiveBranchesAsync()
+        {
+            var branches =await  _repository.GetAllAsync();
+               return branches.Where(b => b.Status == BranchStatus.ACTIVE)
+                .Select(b => new GetAllBranchDTO
+                {
+                    //Id = b.Id,
+                    //OwnerId = b.OwnerId,
+                    BranchName = b.BranchName,
+                    Phone = b.Phone,
+                    Address = b.Address,
+                    City = b.City,
+                    OpenTime = b.OpenTime,
+                    CloseTime = b.CloseTime,
+
+                }).ToList();
+        }
+        //get a branch by id if it's active
+        public async Task<GetGymBranchByIdDTO> GetActiveGymBranchByIdAsync(int branchId)
+        {
+            var branch = await _repository.GetByIdAsync(branchId);
+            if (branch == null || branch.Status != BranchStatus.ACTIVE)
+                throw new Exception("Branch not found or inactive");
+            return new GetGymBranchByIdDTO
+            {
+                //Id = branch.Id,
+                //OwnerId = branch.OwnerId,
+                BranchName = branch.BranchName,
+                Phone = branch.Phone,
+                Address = branch.Address,
+                City = branch.City,
+                OpenTime = branch.OpenTime,
+                CloseTime = branch.CloseTime
+                };
+        }
 
         public async Task DeactivateBranchAsync(int userId, int branchId)
         {

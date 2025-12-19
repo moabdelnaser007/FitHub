@@ -43,6 +43,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 Email = s.Email,
                 Phone = s.Phone,
                 Role = s.Role,
+                
                 Status = s.Status
             }).ToList();
         }
