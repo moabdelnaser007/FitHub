@@ -25,7 +25,8 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         }
 
         public async Task<User> RegisterUserAsync(RegisterUserDto dto)
-        {
+        { 
+
             if (dto.Password != dto.ConfirmPassword)
                 throw new ValidationException("Passwords do not match.");
 
@@ -56,12 +57,19 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         // ✅ OWNER REGISTER
         public async Task<GymOwner> RegisterOwnerAsync(RegisterOwnerDto dto)
         {
+
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Password mismatch");
+
+            if (await _context.Users.AnyAsync(x => x.Email == dto.Email))
+                throw new ValidationException("Email already exists");
+
             var user = new User
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
+                Phone = dto.Phone,
+                City = dto.City,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = UserRole.Owner,
                 Status = AccountStatus.Pending,
@@ -71,14 +79,11 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             var owner = new GymOwner
             {
                 User = user,
-                
                 CommercialRegistrationNumber = dto.CommercialRegistrationNumber,
-                LicenseFileUrl = "uploaded/path"
             };
-            await _context.Users.AddAsync(user);
             await _context.GymOwners.AddAsync(owner);
             await _context.SaveChangesAsync();
-            await CreateOtpAndSend(dto.Email, OtpType.Register);
+
             return owner;
         }
         //public async Task<GymOwner> RegisterOwnerAsync(RegisterOwnerDto dto)
@@ -131,15 +136,15 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             var staff = new GymStaff
             {
                 User = user,
-                BranchId = dto.BranchId,
                 FullName = dto.FullName,
                 Email = dto.Email,
-                Role= "Staff",
+                Role= "staff",
                 Phone = dto.Phone,
+                City = dto.City,
                 Status = dto.Status
             };
             staff.User = user;
-            await _context.Users.AddAsync(user);
+
             await _context.GymStaffs.AddAsync(staff);
             await _context.SaveChangesAsync();
         }
@@ -208,7 +213,8 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 throw new Exception("Invalid email or password");
 
             if (user.Status != AccountStatus.Active)
-                throw new Exception("Account not activated");
+                throw new Exception("Account not activated wait for admin approval");
+
             if(user.Role == UserRole.Owner)
             {
                 var owner = await _context.GymOwners.FirstOrDefaultAsync(x => x.UserId == user.Id);
@@ -251,7 +257,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
 
         public async Task VerifyOtpAsync(VerifyOtpDto dto)
         {
-            var otp = await _context.VerificationCodes
+        var otp = await _context.VerificationCodes
         .FirstOrDefaultAsync(x =>
             x.Email == dto.Email &&
             x.Code == dto.Otp &&
@@ -284,10 +290,11 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 throw new ValidationException("Passwords do not match.");
 
             var otp = await _context.VerificationCodes
-                .FirstOrDefaultAsync(x => x.Email == dto.Email
+                .FirstOrDefaultAsync(
+                x => x.Email == dto.Email
                     && x.Code == dto.Otp
                     && x.Type == OtpType.ForgotPassword
-                    && x.UsedAt != null
+                    && x.UsedAt == null
                     && x.ExpireAt > DateTime.UtcNow);
 
             if (otp == null)

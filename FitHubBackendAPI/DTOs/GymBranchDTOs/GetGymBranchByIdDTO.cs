@@ -4,8 +4,8 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
 {
     public class GetGymBranchByIdDTO
     {
-        public int Id { get; set; }
-        public int OwnerId { get; set; }
+        //public int Id { get; set; }
+        //public int OwnerId { get; set; }
 
         public string BranchName { get; set; } = null!;
         public string? Phone { get; set; }

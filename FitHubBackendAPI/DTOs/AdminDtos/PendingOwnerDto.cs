@@ -9,6 +9,8 @@ namespace FitHubBackendAPI.DTOs.AdminDtos
         public string? Email { get; set; } = null!;
         public string? Phone { get; set; }
         public string? CommercialRegistrationNumber { get; set; } = null!;
+        //public IFormFile LicenseFile { get; set; } = default!;
+
         public DateTime CreatedAt { get; set; }
     }
 }

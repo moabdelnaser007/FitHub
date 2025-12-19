@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitHubBackendAPI.DTOs.Bookings;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.UserServices; 
@@ -12,79 +13,172 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IGenericRepository<GymBranch> _branchRepo;
         private readonly IGenericRepository<Subscription> _subRepo;
+        private readonly IGenericRepository<UserWallet> _walletRepo;
+        private readonly IGenericRepository<UserCreditTransactions> _transactionRepo;
         private readonly IMapper _mapper;
 
         public BookingService(
             IGenericRepository<Booking> bookingRepo,
             IGenericRepository<GymBranch> branchRepo,
             IGenericRepository<Subscription> subRepo,
+            IGenericRepository<UserWallet> walletRepo,
+            IGenericRepository<UserCreditTransactions> transactionRepo,
             IMapper mapper)
         {
             _bookingRepo = bookingRepo;
             _branchRepo = branchRepo;
             _subRepo = subRepo;
+            _walletRepo = walletRepo;
+            _transactionRepo = transactionRepo;
             _mapper = mapper;
         }
 
         // ==========================================================
         // 1. دالة إنشاء حجز جديد (Create Booking)
         // ==========================================================
+        //public async Task<ResponseViewModel<string>> CreateBookingAsync(int userId, CreateBookingDto dto)
+        //{
+        //    try
+        //    {
+        //        // أ) نتأكد إن الفرع موجود
+        //        var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
+        //        if (branch == null)
+        //            return ResponseViewModel<string>.Fail("Gym Branch not found");
+
+        //        int finalCost = 0;
+
+        //        // ب) تحديد نوع الحجز (باشتراك ولا زياره طايره؟)
+        //        if (dto.SubscriptionId.HasValue)
+        //        {
+        //            // --- حالة الحجز باشتراك ---
+        //            var sub = await _subRepo.GetByIdAsync(dto.SubscriptionId.Value);
+
+        //            // تحققات الاشتراك
+        //            if (sub == null) return ResponseViewModel<string>.Fail("Subscription not found");
+        //            if (sub.UserId != userId) return ResponseViewModel<string>.Fail("This subscription does not belong to you");
+        //            if (sub.Status != FitHubBackendAPI.Entities.Enums.SubscriptionStatus.ACTIVE) return ResponseViewModel<string>.Fail("Subscription is not active");
+        //            if (sub.VisitsUsed >= sub.VisitsAllowed) return ResponseViewModel<string>.Fail("No visits remaining in this subscription");
+        //            if (sub.EndDate < DateTime.UtcNow) return ResponseViewModel<string>.Fail("Subscription expired");
+
+        //            // هل الاشتراك ده يخص الفرع ده؟
+        //            if (sub.BranchId != dto.BranchId) return ResponseViewModel<string>.Fail("This subscription is not for this branch");
+
+        //            finalCost = 0; // الحجز مجاني، الخصم هيحصل من الزيارات وقت الـ Check-in
+        //        }
+        //        else
+        //        {
+        //            // --- حالة الحجز الفردي (Pay As You Go) ---
+        //            // التكلفة = سعر الزيارة المتسجل في الفرع
+        //            finalCost = branch.VisitCreditsCost;
+        //        }
+
+        //        // ج) تحويل الـ DTO لـ Entity
+        //        var booking = _mapper.Map<Booking>(dto);
+
+        //        // د) ملء البيانات الناقصة يدويًا
+        //        booking.UserId = userId;
+        //        booking.CreditsCost = finalCost;
+        //        booking.BookingCode = GenerateBookingCode();
+        //        booking.IsAcTive = true;
+
+        //        // هـ) الحفظ في الداتا بيز
+        //        await _bookingRepo.AddAsync(booking);
+        //        await _bookingRepo.SaveChangesAsync();
+
+        //        return ResponseViewModel<string>.Success(booking.BookingCode, "Booking created successfully");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ResponseViewModel<string>.Fail($"Error creating booking: {ex.Message}");
+        //    }
+        //}
+
+
         public async Task<ResponseViewModel<string>> CreateBookingAsync(int userId, CreateBookingDto dto)
         {
-            try
+            // 1️⃣ التأكد إن الفرع موجود
+            var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
+            if (branch == null)
+                return ResponseViewModel<string>.Fail("Gym Branch not found");
+
+            int finalCost;
+            Subscription? subscription = null;
+
+            // 2️⃣ تحديد نوع الحجز
+            if (dto.SubscriptionId.HasValue)
             {
-                // أ) نتأكد إن الفرع موجود
-                var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
-                if (branch == null)
-                    return ResponseViewModel<string>.Fail("Gym Branch not found");
+                subscription = await _subRepo.GetByIdAsync(dto.SubscriptionId.Value);
 
-                int finalCost = 0;
+                if (subscription == null)
+                    return ResponseViewModel<string>.Fail("Subscription not found");
 
-                // ب) تحديد نوع الحجز (باشتراك ولا زياره طايره؟)
-                if (dto.SubscriptionId.HasValue)
-                {
-                    // --- حالة الحجز باشتراك ---
-                    var sub = await _subRepo.GetByIdAsync(dto.SubscriptionId.Value);
+                if (subscription.UserId != userId)
+                    return ResponseViewModel<string>.Fail("This subscription does not belong to you");
 
-                    // تحققات الاشتراك
-                    if (sub == null) return ResponseViewModel<string>.Fail("Subscription not found");
-                    if (sub.UserId != userId) return ResponseViewModel<string>.Fail("This subscription does not belong to you");
-                    if (sub.Status != FitHubBackendAPI.Entities.Enums.SubscriptionStatus.ACTIVE) return ResponseViewModel<string>.Fail("Subscription is not active");
-                    if (sub.VisitsUsed >= sub.VisitsAllowed) return ResponseViewModel<string>.Fail("No visits remaining in this subscription");
-                    if (sub.EndDate < DateTime.UtcNow) return ResponseViewModel<string>.Fail("Subscription expired");
+                if (subscription.Status != SubscriptionStatus.ACTIVE)
+                    return ResponseViewModel<string>.Fail("Subscription is not active");
 
-                    // هل الاشتراك ده يخص الفرع ده؟
-                    if (sub.BranchId != dto.BranchId) return ResponseViewModel<string>.Fail("This subscription is not for this branch");
+                if (subscription.VisitsUsed >= subscription.VisitsAllowed)
+                    return ResponseViewModel<string>.Fail("No visits remaining");
 
-                    finalCost = 0; // الحجز مجاني، الخصم هيحصل من الزيارات وقت الـ Check-in
-                }
-                else
-                {
-                    // --- حالة الحجز الفردي (Pay As You Go) ---
-                    // التكلفة = سعر الزيارة المتسجل في الفرع
-                    finalCost = branch.VisitCreditsCost;
-                }
+                if (subscription.EndDate < DateTime.UtcNow)
+                    return ResponseViewModel<string>.Fail("Subscription expired");
 
-                // ج) تحويل الـ DTO لـ Entity
-                var booking = _mapper.Map<Booking>(dto);
+                if (subscription.BranchId != dto.BranchId)
+                    return ResponseViewModel<string>.Fail("Subscription not valid for this branch");
 
-                // د) ملء البيانات الناقصة يدويًا
-                booking.UserId = userId;
-                booking.CreditsCost = finalCost;
-                booking.BookingCode = GenerateBookingCode();
-                booking.IsAcTive = true;
-
-                // هـ) الحفظ في الداتا بيز
-                await _bookingRepo.AddAsync(booking);
-                await _bookingRepo.SaveChangesAsync();
-
-                return ResponseViewModel<string>.Success(booking.BookingCode, "Booking created successfully");
+                finalCost = 0; // اشتراك = مفيش خصم
             }
-            catch (Exception ex)
+            else
             {
-                return ResponseViewModel<string>.Fail($"Error creating booking: {ex.Message}");
+                finalCost = branch.VisitCreditsCost;
             }
+
+            // 3️⃣ إنشاء الحجز
+            var booking = _mapper.Map<Booking>(dto);
+            booking.UserId = userId;
+            booking.CreditsCost = finalCost;
+            booking.BookingCode = GenerateBookingCode();
+            booking.Status = BookingStatus.CONFIRMED;
+            booking.IsAcTive = true;
+
+            if (subscription != null)
+                booking.SubscriptionId = subscription.Id;
+
+            // 4️⃣ خصم الكريدت (لو زيارة طايرة)
+            if (finalCost > 0)
+            {
+                var wallet = (await _walletRepo.FindAsync(w => w.UserId == userId))
+                    .FirstOrDefault();
+
+                if (wallet == null || wallet.Balance < finalCost)
+                    return ResponseViewModel<string>.Fail("Insufficient wallet balance");
+
+                wallet.Balance -= finalCost;
+
+                await _transactionRepo.AddAsync(new UserCreditTransactions
+                {
+                    UserId = userId,
+                    CreditsBefore = wallet.Balance + finalCost,
+                    CreditsChanged = -finalCost,
+                    CreditsAfter = wallet.Balance,
+                    TransactionType = TransactionType.DEDUCT,
+                    Source = TransactionSource.BOOKING,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            await _bookingRepo.AddAsync(booking);
+            await _bookingRepo.SaveChangesAsync();
+
+            return ResponseViewModel<string>.Success(
+                booking.BookingCode,
+                "Booking created successfully"
+            );
         }
+
+
+
 
         // ==========================================================
         // 2. دالة عرض حجوزات اليوزر (Get My Bookings) - 

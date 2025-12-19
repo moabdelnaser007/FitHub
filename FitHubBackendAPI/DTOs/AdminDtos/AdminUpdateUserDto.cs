@@ -9,7 +9,6 @@ namespace FitHubBackendAPI.DTOs.AdminDtos
         public string? Phone { get; set; }
         public string? City { get; set; }
 
-        public UserRole? Role { get; set; }
-        public AccountStatus? Status { get; set; }
+      
     }
 }

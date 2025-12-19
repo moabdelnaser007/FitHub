@@ -38,8 +38,8 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             }
             var createdBranch = new GetGymBranchByIdDTO
             {
-                Id = branch.Id,
-                OwnerId = branch.OwnerId,
+                //Id = branch.Id,
+                //OwnerId = branch.OwnerId,
                 BranchName = branch.BranchName,
                 Phone = branch.Phone,
                 Address = branch.Address,
@@ -55,13 +55,12 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
 
         [HttpPut]
-        [Route("{id}")]
         [Authorize(Roles = "Owner")]
-        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> UpdateBranch(UpdateGymBranchDTO dto)
+        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> UpdateBranch(int Id ,UpdateGymBranchDTO dto)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            await _gymBranchService.UpdateGymBranchAsync(userId, dto);
-            var branch = await _gymBranchService.GetGymBranchByIdAsync(dto.Id);
+            await _gymBranchService.UpdateGymBranchAsync(userId, dto,Id);
+            var branch = await _gymBranchService.GetGymBranchByIdAsync(Id);
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(branch, "Gym branch updated successfully.");
         }
         
@@ -85,7 +84,6 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPut]
         [Authorize(Roles = "Owner")]
-        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> ActivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -95,7 +93,6 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpPut]
         [Authorize(Roles = "Owner")]
-        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeactivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -104,7 +101,6 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpDelete]
         [Authorize(Roles = "Owner")]
-        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeleteGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -113,4 +109,4 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
     }
 
-    }
+}
