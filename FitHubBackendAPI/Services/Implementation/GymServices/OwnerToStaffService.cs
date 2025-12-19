@@ -15,9 +15,18 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         {
             _staffMemberRepository = staffMemberRepository;
         }
-        public async Task<GetStuffDTO?> GetStaffMemberByIdAsync(int staffId)
+        public async Task<GetStuffDTO> GetStaffMemberByIdAsync(int staffId)
         {
               var staffMember= await _staffMemberRepository.GetByIdAsync(staffId);
+              //return new GetStuffDTO
+              //{
+              //    Id = staffMember.Id,
+              //    FullName = staffMember.FullName,
+              //    Email = staffMember.Email,
+              //    Phone = staffMember.Phone,
+              //    BranchId = staffMember.BranchId,
+              //    Status = staffMember.Status
+              //};
               return _mapper.Map<GetStuffDTO>(staffMember);
         }
         public async Task<IEnumerable<GetStuffDTO>> GetAllStaffMembersAsync(int branchId)

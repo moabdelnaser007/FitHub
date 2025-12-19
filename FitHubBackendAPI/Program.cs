@@ -57,11 +57,12 @@ namespace FitHubBackendAPI
             var mapperConfig = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<GymPlanProfile>();
-                cfg.AddProfile<GymPlanProfile>();
+                cfg.AddProfile<GymStaffProfile>();
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
+            // ===============================
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddScoped<IAuthService, AuthService>();
