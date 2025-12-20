@@ -5,6 +5,7 @@ namespace FitHubBackendAPI.Services.Interfaces.GymBranch
     public interface IOwnerToStaffService
     {
         Task<GetStuffDTO?> GetStaffMemberByIdAsync(int staffId);
+        Task<IEnumerable<GetStuffDTO>> GetAllStaffAsync(int ownerId);
         Task<IEnumerable<GetStuffDTO>> GetAllStaffMembersAsync(int branchId);
         Task<UpdateStaffDTO> UpdateStaff(UpdateStaffDTO dto);
         Task<bool> DeleteStaffMemberAsync(int staffId);

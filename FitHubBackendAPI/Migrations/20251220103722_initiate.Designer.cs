@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251218001553_updatestaff")]
-    partial class updatestaff
+    [Migration("20251220103722_initiate")]
+    partial class initiate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -282,6 +282,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Status")
@@ -330,6 +331,9 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GymOwnerId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
 
@@ -358,6 +362,8 @@ namespace FitHubBackendAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
+
+                    b.HasIndex("GymOwnerId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -928,6 +934,11 @@ namespace FitHubBackendAPI.Migrations
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("FitHubBackendAPI.Entities.GymOwner", "GymOwner")
+                        .WithMany("StaffMembers")
+                        .HasForeignKey("GymOwnerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
                         .WithOne("GymStaff")
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.GymStaff", "UserId")
@@ -935,6 +946,8 @@ namespace FitHubBackendAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Branch");
+
+                    b.Navigation("GymOwner");
 
                     b.Navigation("User");
                 });
@@ -1067,6 +1080,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Navigation("Branches");
 
                     b.Navigation("Settlements");
+
+                    b.Navigation("StaffMembers");
 
                     b.Navigation("Wallet");
                 });

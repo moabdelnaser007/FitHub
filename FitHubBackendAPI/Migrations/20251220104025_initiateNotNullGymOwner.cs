@@ -5,35 +5,13 @@
 namespace FitHubBackendAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class updatestaff : Migration
+    public partial class initiateNotNullGymOwner : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<int>(
-                name: "BranchId",
-                table: "GymStaffs",
-                type: "int",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int");
-
-            migrationBuilder.AddColumn<string>(
-                name: "City",
-                table: "GymStaffs",
-                type: "nvarchar(max)",
-                nullable: true);
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "City",
-                table: "GymStaffs");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "BranchId",
+                name: "GymOwnerId",
                 table: "GymStaffs",
                 type: "int",
                 nullable: false,
@@ -41,6 +19,18 @@ namespace FitHubBackendAPI.Migrations
                 oldClrType: typeof(int),
                 oldType: "int",
                 oldNullable: true);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<int>(
+                name: "GymOwnerId",
+                table: "GymStaffs",
+                type: "int",
+                nullable: true,
+                oldClrType: typeof(int),
+                oldType: "int");
         }
     }
 }

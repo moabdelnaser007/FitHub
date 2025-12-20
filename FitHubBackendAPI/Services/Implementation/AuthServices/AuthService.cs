@@ -121,10 +121,13 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             
         //}
         // Register Stuff
-        public async Task RegisterStaffAsync(RegisterStaffDTO dto)
+        public async Task RegisterStaffAsync(RegisterStaffDTO dto,int ownerId)
         {
+            if(ownerId <= 0)
+                throw new Exception("Invalid Owner Id");
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Password mismatch");
+            var owner = await _context.GymOwners.FirstOrDefaultAsync(x => x.UserId == ownerId);
             var user = new User
             {
                 FullName = dto.FullName,
@@ -136,6 +139,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             var staff = new GymStaff
             {
                 User = user,
+                GymOwnerId = owner.Id,
                 FullName = dto.FullName,
                 Email = dto.Email,
                 Role= "staff",

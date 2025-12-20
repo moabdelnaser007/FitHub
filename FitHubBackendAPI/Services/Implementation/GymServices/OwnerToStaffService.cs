@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitHubBackendAPI.DTOs.StuffDTOs;
+using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
@@ -9,11 +10,13 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
     public class OwnerToStaffService : IOwnerToStaffService
     {
         private readonly IGenericRepository<GymStaff> _staffMemberRepository;
+        private readonly IGenericRepository<GymOwner> _gymOwnerRepository;
         private readonly IMapper _mapper;
 
-        public OwnerToStaffService(IGenericRepository<GymStaff> staffMemberRepository, IMapper mapper)
+        public OwnerToStaffService(IGenericRepository<GymStaff> staffMemberRepository, IGenericRepository<GymOwner> gymOwnerRepository, IMapper mapper)
         {
             _staffMemberRepository = staffMemberRepository;
+            _gymOwnerRepository = gymOwnerRepository;
             _mapper = mapper;
         }
         public async Task<GetStuffDTO> GetStaffMemberByIdAsync(int staffId)
@@ -24,6 +27,27 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 return null;
 
             return _mapper.Map<GetStuffDTO>(staffMember);
+        }
+        public async Task<IEnumerable<GetStuffDTO>> GetAllStaffAsync(int ownerId)
+        {
+            var gymOwner = await _gymOwnerRepository.FindAsync(o => o.UserId == ownerId);
+            var staffMembers = await _staffMemberRepository
+                .FindAsync(s => s.GymOwnerId == gymOwner.FirstOrDefault().Id);
+
+            if (staffMembers == null || !staffMembers.Any())
+                return new List<GetStuffDTO>();
+
+            return staffMembers.Select(s => new GetStuffDTO
+            {
+                Id = s.Id,
+                UserId = s.UserId,
+                BranchId = s.BranchId,
+                FullName = s.FullName,
+                Email = s.Email,
+                Phone = s.Phone,
+                Role = s.Role,
+                Status = s.Status
+            }).ToList();
         }
 
         public async Task<IEnumerable<GetStuffDTO>> GetAllStaffMembersAsync(int branchId)
