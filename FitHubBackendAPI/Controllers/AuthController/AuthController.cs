@@ -61,6 +61,8 @@ namespace FitHubBackendAPI.Controllers.AuthController
             response.ErrorCode = ErrorCode.Created;
             return StatusCode((int)ErrorCode.Created, response);
         }
+
+
         [HttpPost]
         [Authorize(Roles = "Owner")]
         [Route("register-staff")]
@@ -77,6 +79,7 @@ namespace FitHubBackendAPI.Controllers.AuthController
             return Ok("Staff member registered.");
         }
 
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -89,6 +92,7 @@ namespace FitHubBackendAPI.Controllers.AuthController
             return Ok(response);
         }
 
+
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
         {
@@ -98,6 +102,7 @@ namespace FitHubBackendAPI.Controllers.AuthController
             response.ErrorCode = ErrorCode.OK;
             return Ok(response);
         }
+
 
         [HttpPost("Resend-otp")]
         public async Task<IActionResult> ReSendOtp([FromBody] ReSendOtpDto dto)

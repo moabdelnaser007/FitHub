@@ -32,6 +32,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                     FullName = o.User.FullName,
                     Email = o.User.Email,
                     Phone = o.User.Phone,
+                    City = o.User.City,
                     CommercialRegistrationNumber = o.CommercialRegistrationNumber,
                     CreatedAt = o.CreatedAt
                 })

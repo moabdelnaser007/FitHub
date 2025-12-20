@@ -20,6 +20,11 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             _subService = subService;
         }
 
+        private int GetUserId()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        }
+
         // POST: api/subscriptions/purchase
         [HttpPost("purchase")]
         public async Task<IActionResult> Purchase([FromBody] PurchaseSubscriptionDto dto)
@@ -28,7 +33,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             //get id from token 
             // int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            int userId = 3; // مؤقتاً لحد الـ Auth
+            //int userId = 3; // مؤقتاً لحد الـ Auth
+            int userId = GetUserId();
+
             var result = await _subService.PurchaseSubscriptionAsync(userId, dto);
 
             if (!result.IsSuccess) return BadRequest(result);
@@ -39,7 +46,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpGet("my")]
         public async Task<IActionResult> GetMySubscriptions()
         {
-            int userId = 3;
+            //int userId = 3;
+            int userId = GetUserId();
+
             var result = await _subService.GetMySubscriptionsAsync(userId);
 
             if (!result.IsSuccess) return BadRequest(result);
@@ -50,7 +59,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpPatch("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
-            int userId = 3;
+            //int userId = 3;
+            int userId = GetUserId();
+
             var result = await _subService.CancelSubscriptionAsync(userId, id);
 
             if (!result.IsSuccess) return BadRequest(result);

@@ -24,12 +24,7 @@ namespace FitHubBackendAPI.Controllers.AdminController
         public async Task<IActionResult> GetPendingOwners()
         {
             var owners = await _adminOwnerService.GetPendingOwnersAsync();
-            return Ok(
-                            ResponseViewModel<List<PendingOwnerDto>>.Success(
-                                owners,
-                                "Pending owners retrieved successfully"
-                            )
-                        );
+            return Ok(ResponseViewModel<List<PendingOwnerDto>>.Success(owners,"Pending owners retrieved successfully"));
         }
 
         // Approve Owner
@@ -37,12 +32,7 @@ namespace FitHubBackendAPI.Controllers.AdminController
         public async Task<IActionResult> ApproveOwner(int id)
         {
             await _adminOwnerService.ApproveOwnerAsync(id);
-            return Ok(
-                            ResponseViewModel<string>.Success(
-                                null,
-                                "Owner approved successfully"
-                            )
-                        );
+            return Ok(ResponseViewModel<string>.Success(null,"Owner approved successfully"));
         }
 
         // Reject Owner
@@ -50,12 +40,7 @@ namespace FitHubBackendAPI.Controllers.AdminController
         public async Task<IActionResult> RejectOwner(int id)
         {
             await _adminOwnerService.RejectOwnerAsync(id);
-            return Ok(
-                            ResponseViewModel<string>.Success(
-                                null,
-                                "Owner rejected successfully"
-                            )
-                        );
+            return Ok(ResponseViewModel<string>.Success(null,"Owner rejected successfully"));
         }
     }
 }
