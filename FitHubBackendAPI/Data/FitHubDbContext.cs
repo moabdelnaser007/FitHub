@@ -159,6 +159,16 @@ namespace FitHubBackendAPI.Data
                 .WithOne(v => v.Staff)
                 .HasForeignKey(v => v.StaffId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<GymStaff>()
+                .HasOne(s => s.GymOwner)
+                .WithMany(o => o.StaffMembers)
+                .HasForeignKey(s => s.GymOwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<GymStaff>()
+                .HasOne(s => s.Branch)
+                .WithMany(b => b.Staff)
+                .HasForeignKey(s => s.BranchId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             // ----- GymPlan -----
@@ -174,6 +184,9 @@ namespace FitHubBackendAPI.Data
                 .HasForeignKey(b => b.PlanId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<GymPlan>()
+                .Property(x => x.Price)
+                .HasPrecision(18, 2);
 
             // ----- User -----
             modelBuilder.Entity<User>()

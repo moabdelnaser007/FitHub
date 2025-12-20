@@ -4,6 +4,7 @@ using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitHubBackendAPI.Controllers.User_Controller
 {
@@ -23,6 +24,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [Route("GetAllActiveBranches")]
         public async Task<ResponseViewModel<IEnumerable<GetAllBranchDTO>>> GetAllActiveBranches()
         {
+
             var branches = await _gymBranchService.GetAllActiveBranchesAsync();
             if (branches == null || !branches.Any())
             {

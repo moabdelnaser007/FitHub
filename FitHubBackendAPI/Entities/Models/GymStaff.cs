@@ -7,6 +7,7 @@ namespace FitHubBackendAPI.Entities.Models
     {
         public int UserId { get; set; }
         public int? BranchId { get; set; }
+        public int GymOwnerId { get; set; }
 
         public string? FullName { get; set; }
         public string? Email { get; set; }
@@ -22,6 +23,8 @@ namespace FitHubBackendAPI.Entities.Models
 
         [ForeignKey("BranchId")]
         public GymBranch Branch { get; set; } = null!;
+        [ForeignKey("GymOwnerId")]
+        public GymOwner GymOwner { get; set; } 
         public List<Visit> VisitsCheckInHandled { get; set; } = new();
     }
 }

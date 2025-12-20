@@ -1,8 +1,7 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
-using FitHubBackendAPI.Entities.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FitHubBackendAPI.Entities
+namespace FitHubBackendAPI.Entities.Models
 {
     public class GymOwner : BaseEntity
     {
@@ -21,6 +20,7 @@ namespace FitHubBackendAPI.Entities
         public User User { get; set; }
         public OwnerWallet? Wallet { get; set; }
         public List<GymBranch>? Branches { get; set; } = new();
+        public List<GymStaff>? StaffMembers { get; set; } = new();
         public List<OwnerSettlement>? Settlements { get; set; } = new();
     }
 }

@@ -1,10 +1,11 @@
 ﻿using FitHubBackendAPI.DTOs.AuthDTOs;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
+using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitHubBackendAPI.Controllers.AuthController
 {
@@ -65,7 +66,14 @@ namespace FitHubBackendAPI.Controllers.AuthController
         [Route("register-staff")]
         public async Task<IActionResult> RegisterStaffMember([FromForm] RegisterStaffDTO dto)
         {
-            await _authService.RegisterStaffAsync(dto);
+            int ownerId = int.Parse(
+    User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"
+);
+            if (ownerId == 0)
+            {
+                return Unauthorized("Invalid owner ID.");
+            }
+            await _authService.RegisterStaffAsync(dto,ownerId);
             return Ok("Staff member registered.");
         }
 
