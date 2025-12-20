@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using FitHubBackendAPI.DTOs.StuffDTOs;
-using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
