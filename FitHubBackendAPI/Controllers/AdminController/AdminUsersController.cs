@@ -27,10 +27,7 @@ namespace FitHubBackendAPI.Controllers.UserController
         public async Task<ActionResult<List<AdminUserListItemDto>>> GetUsers()
         {
             var users = await _adminUserService.GetAllUsersAsync();
-            var response = ResponseViewModel<List<AdminUserListItemDto>>.Success(
-                    users,
-                    "Users retrieved successfully"
-                );
+            var response = ResponseViewModel<List<AdminUserListItemDto>>.Success(users,"Users retrieved successfully");
 
             response.ErrorCode = ErrorCode.OK;
 
@@ -39,18 +36,11 @@ namespace FitHubBackendAPI.Controllers.UserController
 
 
         [HttpPut("{id}/UpdateUser")]
-        public async Task<IActionResult> UpdateUser(
-            int id,
-            [FromBody] AdminUpdateUserDto dto)
+        public async Task<IActionResult> UpdateUser(int id,[FromBody] AdminUpdateUserDto dto)
         {
             await _adminUserService.UpdateUserAsync(id, dto);
 
-            return Ok(
-                ResponseViewModel<string>.Success(
-                    null,
-                    "User updated successfully"
-                )
-            );
+            return Ok(ResponseViewModel<string>.Success(null,"User updated successfully"));
         }
 
 
@@ -59,12 +49,7 @@ namespace FitHubBackendAPI.Controllers.UserController
         {
             await _adminUserService.DeleteUserAsync(id);
 
-            return Ok(
-                ResponseViewModel<string>.Success(
-                    null,
-                    "User suspended successfully"
-                )
-            );
+            return Ok(ResponseViewModel<string>.Success( null,"User suspended successfully" ));
         }
     }
 }
