@@ -1,11 +1,11 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
 
-namespace FitHubBackendAPI.DTOs.GymBranchDTOs
+namespace FitHubBackendAPI.DTOs.AdminDtos
 {
-    public class GetAllBranchDTO
+    public class GetBranchForAdminDto
     {
         public int Id { get; set; }
-        //public int OwnerId { get; set; }
+        public int OwnerId { get; set; }
 
         public string BranchName { get; set; } = null!;
         public string? Phone { get; set; }
@@ -15,7 +15,10 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
         public TimeSpan? OpenTime { get; set; }
         public TimeSpan? CloseTime { get; set; }
 
-        public GymGenderType? GenderType { get; set; }= GymGenderType.Mixed;
-        public BranchStatus? Status { get; set; }= BranchStatus.ACTIVE;
+        public GymGenderType? GenderType { get; set; } 
+        public BranchStatus? Status { get; set; }
+        
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

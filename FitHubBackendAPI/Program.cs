@@ -1,24 +1,20 @@
 using FitHubBackendAPI.Data;
-using AutoMapper;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Implementation.UserServices;
-using FitHubBackendAPI.Services.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FitHubBackendAPI.Services.Implementation.GymServices;
 
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
-using FitHubBackendAPI.Profiles;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using Microsoft.AspNetCore.Mvc;
 using FitHubBackendAPI.Middlewares;
@@ -72,6 +68,7 @@ namespace FitHubBackendAPI
 
             builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+            builder.Services.AddScoped<IAdminGymService, AdminGymService>();
 
 
             //add User "subscription" service

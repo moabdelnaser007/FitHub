@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.DTOs.AdminDtos;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -42,5 +43,16 @@ namespace FitHubBackendAPI.Controllers.AdminController
             await _adminOwnerService.RejectOwnerAsync(id);
             return Ok(ResponseViewModel<string>.Success(null,"Owner rejected successfully"));
         }
+        [HttpGet("GetAllOwners")]
+        public async Task<ResponseViewModel<IEnumerable<GetOwnerForAdminDto>>> GetAllOwners()
+        {
+            var owners = await _adminOwnerService.GetAllGymOwners();
+            if (owners == null || !owners.Any())
+            {
+                return ResponseViewModel<IEnumerable<GetOwnerForAdminDto>>.Fail("No owners found", ErrorCode.NotFound);
+            }
+            return ResponseViewModel<IEnumerable<GetOwnerForAdminDto>>.Success(owners, "Owners retrieved successfully");
+        }
+
     }
 }

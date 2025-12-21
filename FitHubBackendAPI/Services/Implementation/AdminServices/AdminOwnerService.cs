@@ -1,4 +1,6 @@
-﻿using FitHubBackendAPI.Data;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using FitHubBackendAPI.Data;
 using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Enums;
@@ -12,12 +14,14 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
     {
         private readonly FitHubDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly IMapper _mapper;
 
 
-        public AdminOwnerService(FitHubDbContext context, IEmailService emailService)
+        public AdminOwnerService(FitHubDbContext context, IEmailService emailService, IMapper mapper)
         {
             _context = context;
             _emailService = emailService;
+            _mapper = mapper;
         }
 
         // Pending Owners
@@ -74,7 +78,15 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             "Gym Rejected",
             "Your gym registration was rejected");
         }
+        public async Task<IEnumerable<GetOwnerForAdminDto>> GetAllGymOwners()
+        {
+            return await _context.GymOwners
+            .AsNoTracking()
+            .Include(o => o.User) 
+            .ProjectTo<GetOwnerForAdminDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+        }
 
-       
+
     }
 }

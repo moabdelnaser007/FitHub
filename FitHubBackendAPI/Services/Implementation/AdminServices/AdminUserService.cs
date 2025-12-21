@@ -1,5 +1,6 @@
 ﻿using FitHubBackendAPI.Data;
 using FitHubBackendAPI.DTOs.AdminDtos;
+using FitHubBackendAPI.DTOs.UserDTOs;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,55 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             _context = context;
         }
 
+        // ============================
+        public async Task<GetUserDataDto> GetUserByIdAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                throw new KeyNotFoundException("User not found");
+            var subscriptions = await _context.Subscriptions
+                .Where(s => s.UserId == userId)
+                .ToListAsync();
+            var Reviews = await _context.Reviews
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
+
+            return new GetUserDataDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                City = user.City,
+                Role = user.Role,
+                Status = user.Status,
+                CreatedAt = user.CreatedAt,
+                Subscriptions = subscriptions.Select(s => new GetUserSubscriptionDataDto
+                {
+                    Id = s.Id,
+                    PlanId = s.PlanId,
+                    BranchId = s.BranchId,
+                    StartDate = s.StartDate,
+                    EndDate = s.EndDate,
+                    VisitsAllowed = s.VisitsAllowed,
+                    VisitsUsed = s.VisitsUsed,
+                    Status = s.Status
+                }).ToList(),
+                Reviews = Reviews.Select(r => new GetUserReviewDto
+                {
+                    Id = r.Id,
+                    BranchId = r.BranchId,
+                    BookingId = r.BookingId,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt
+                }).ToList()
+            };
+        }
         public async Task<List<AdminUserListItemDto>> GetAllUsersAsync()
         {
             var users = await _context.Users
+                .Where(x => x.Role != UserRole.Admin)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 

@@ -47,7 +47,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         public async Task<IEnumerable<GetAllBranchDTO>> GetAllActiveBranchesAsync()
         {
             var branches =await  _repository.GetAllAsync();
-               return branches.Where(b => b.Status == BranchStatus.ACTIVE)
+               return branches.Where(b => b.IsAcTive  == true)
                 .Select(b => new GetAllBranchDTO
                 {
                     //Id = b.Id,
@@ -65,7 +65,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         public async Task<GetGymBranchByIdDTO> GetActiveGymBranchByIdAsync(int branchId)
         {
             var branch = await _repository.GetByIdAsync(branchId);
-            if (branch == null || branch.Status != BranchStatus.ACTIVE)
+            if (branch == null || branch.IsAcTive != true)
                 throw new Exception("Branch not found or inactive");
             return new GetGymBranchByIdDTO
             {
@@ -127,7 +127,8 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
                 throw new Exception("Branch not found");
-            
+            if(branch.IsAcTive == false)
+                throw new Exception("Branch is Suspended");
             return new GetGymBranchByIdDTO
             {
                 //Id = branch.Id,
@@ -164,17 +165,25 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 throw new Exception("You are not authorized to update this branch");
 
             // 4️⃣ Update
-            branch.BranchName = dto.BranchName;
-            branch.Phone = dto.Phone;
-            branch.Address = dto.Address;
-            branch.City = dto.City;
-            branch.OpenTime = dto.OpenTime;
-            branch.CloseTime = dto.CloseTime;
-            branch.GenderType = dto.GenderType;
-            branch.Status = dto.Status;
+            if(branch.IsAcTive)
+            {
+                branch.BranchName = dto.BranchName;
+                branch.Phone = dto.Phone;
+                branch.Address = dto.Address;
+                branch.City = dto.City;
+                branch.OpenTime = dto.OpenTime;
+                branch.CloseTime = dto.CloseTime;
+                branch.GenderType = dto.GenderType;
+                branch.Status = dto.Status;
+                branch.UpdatedAt = DateTime.UtcNow;
 
-            _repository.Update(branch);
-            await _repository.SaveChangesAsync();
+                _repository.Update(branch);
+                await _repository.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Cannot update a suspended branch");
+            }
 
         }
         public async Task ActivateGymBranchAsync(int userId, int branchId)

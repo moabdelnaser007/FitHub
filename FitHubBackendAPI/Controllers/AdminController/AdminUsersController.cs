@@ -22,6 +22,17 @@ namespace FitHubBackendAPI.Controllers.UserController
 
         }
 
+        [HttpGet("GetUser/{id}")]
+        public async Task<ResponseViewModel<GetUserDataDto>> GetUser(int id)
+        {
+            var user = await _adminUserService.GetUserByIdAsync(id);
+            if(user == null)
+            {
+                return ResponseViewModel<GetUserDataDto>.Fail("User not found", ErrorCode.NotFound);
+            }
+            return ResponseViewModel<GetUserDataDto>.Success(user,"User retrieved successfully");
+            
+        }
 
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<List<AdminUserListItemDto>>> GetUsers()
