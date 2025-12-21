@@ -30,7 +30,8 @@ namespace FitHubBackendAPI.Repository.Implementation
 
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _db.Where(predicate).ToListAsync();
+            var entities = await _db.Where(predicate).ToListAsync();
+            return entities.Where(x => !x.IsDeleted);
         }
 
         // =========================================================================

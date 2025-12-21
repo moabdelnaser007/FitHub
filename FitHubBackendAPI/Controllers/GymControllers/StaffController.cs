@@ -19,11 +19,10 @@ namespace FitHubBackendAPI.Controllers.GymControllers
     public class StaffController : ControllerBase
     {
         private readonly IOwnerToStaffService _ownerToStaffService;
-        private readonly IMapper _mapper;
-        public StaffController(IOwnerToStaffService staffMemberRepository,IMapper mapper)
+        public StaffController(IOwnerToStaffService staffMemberRepository)
         {
             _ownerToStaffService = staffMemberRepository;
-            _mapper = mapper; 
+            
         }
         [HttpGet]
         [Route("GetAllBranchStaff")]
