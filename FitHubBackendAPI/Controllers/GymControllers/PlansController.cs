@@ -49,6 +49,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpGet]
         [Route("ByBranch/{branchId}")]
+        [AllowAnonymous]
         public async Task<ResponseViewModel<IEnumerable<GetPlanByBranchIdDTO>>> GetPlansByBranchId(int branchId)
         {
             var result = await _planService.GetPlansByBranchIdAsync(branchId);

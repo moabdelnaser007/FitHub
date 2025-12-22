@@ -56,7 +56,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 var wallet = wallets.FirstOrDefault();
 
                 if (wallet == null || wallet.Balance < plan.CreditsCost)
-                    return ResponseViewModel<bool>.Fail("Insufficient balance");
+                    return ResponseViewModel<bool>.Fail("روح اشحن");
 
                 // 3. خصم الرصيد
                 int cost = plan.CreditsCost.Value;

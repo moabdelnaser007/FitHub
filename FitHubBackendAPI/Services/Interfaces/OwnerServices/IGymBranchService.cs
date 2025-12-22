@@ -6,7 +6,7 @@ namespace FitHubBackendAPI.Services.Interfaces.OwnerServices
     public interface IGymBranchService
     {
 
-        Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto);
+        Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto, List<IFormFile> images);
         Task UpdateGymBranchAsync(int userId, UpdateGymBranchDTO dto,int BranchId);
         Task<IEnumerable<GetAllBranchDTO>> GetAllBranchesAsync(int userId);
         Task<GetGymBranchByIdDTO> GetGymBranchByIdAsync(int branchId);

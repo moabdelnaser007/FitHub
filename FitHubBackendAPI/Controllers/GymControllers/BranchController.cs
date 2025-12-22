@@ -23,7 +23,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPost]
         [Authorize(Roles = "Owner")]
-        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> CreateBranch(CreateGymBranchDTO dto)
+        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> CreateBranch([FromForm] CreateGymBranchDTO dto, List<IFormFile> images)
         {
 
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -31,7 +31,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
                 return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Invalid user ID.",Entities.Enums.ErrorCode.Unauthorized);
             }
 
-            var branch = await _gymBranchService.CreateGymBranchAsync(userId, dto);
+            var branch = await _gymBranchService.CreateGymBranchAsync(userId, dto, images);
             if (branch == null)
             {
                 return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Failed to create gym branch.", Entities.Enums.ErrorCode.BadRequest);

@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="Validators\Gym validators\" />
+    <Folder Include="wwwroot\images\Gym\" />
   </ItemGroup>
 
 </Project>

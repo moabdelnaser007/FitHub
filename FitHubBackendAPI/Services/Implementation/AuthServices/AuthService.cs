@@ -46,7 +46,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 Role = UserRole.User,
                 Status = AccountStatus.Active
             };
-
+            
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 

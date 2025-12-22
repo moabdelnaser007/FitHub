@@ -1,13 +1,11 @@
-﻿using FitHubBackendAPI.Data;
-using FitHubBackendAPI.DTOs.GymBranchDTOs;
-using FitHubBackendAPI.Entities;
+﻿using FitHubBackendAPI.DTOs.GymBranchDTOs;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
 
 using FitHubBackendAPI.Services.Interfaces.OwnerServices;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace FitHubBackendAPI.Services.Implementation.GymServices
 {
@@ -16,13 +14,26 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
 
         private readonly IGenericRepository<GymBranch> _repository;
         private readonly IGenericRepository<GymOwner> _ownerRepository;
-        public GymBranchService(IGenericRepository<GymBranch> repository, IGenericRepository<GymOwner> ownerRepository)
+        private readonly IGenericRepository<GymAmenities> _amenitiesRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public GymBranchService(IGenericRepository<GymBranch> repository, IGenericRepository<GymOwner> ownerRepository, IGenericRepository<GymAmenities> amenitiesRepository, IWebHostEnvironment webHostEnvironment)
         {
             _ownerRepository = ownerRepository;
             _repository = repository;
+            _amenitiesRepository = amenitiesRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
-        public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto)
+        public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto,List<IFormFile>images)
         {
+            /*
+             -list ifile
+            -dto of create
+            -create gym
+            -get gymid
+            -handle images and save them with gymid
+            -save image entity
+             
+             */
             var owners = await _ownerRepository.FindAsync(o=>o.UserId==userId);
             var owner = owners.FirstOrDefault();
             Entities.Models.GymBranch branch = new Entities.Models.GymBranch
@@ -35,9 +46,42 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 OpenTime = dto.OpenTime,
                 CloseTime = dto.CloseTime,
                 GenderType = dto.GenderType,
-                Status = dto.Status
+                Status = dto.Status,
+                Description = dto.Description,
+                WorkingDays = dto.WorkingDays,
+                VisitCreditsCost = dto.VisitCreditsCost
             };
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string folderPath = Path.Combine(wwwRootPath,"images\\Gym",branch.BranchName);
+
+            // Create the directory if it doesn't exist
+            Directory.CreateDirectory(folderPath);
+            foreach (var image in images)
+            {
+                
+                if (image != null)
+                {
+                    var fileName = $"{Guid.NewGuid().ToString()}-{branch.BranchName}" + Path.GetExtension(image.FileName);
+                    string filePath = Path.Combine(folderPath,fileName);
+                    
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    Image imageEntity = new Image
+                    {
+                        imagePath = filePath,
+                        branch = branch
+                    };
+                    branch.Images.Add(imageEntity);
+                }
+                
+            }
             await _repository.AddAsync(branch);
+
+            
                 
             await _repository.SaveChangesAsync();
 
