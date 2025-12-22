@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.DTOs.Subscriptions;
+using FitHubBackendAPI.Services.Interfaces; 
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,6 @@ namespace FitHubBackendAPI.Controllers.User_Controller
     [Route("api/user/subscriptions")]
     [ApiController]
     [Authorize]
-
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subService;
@@ -20,12 +20,18 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             _subService = subService;
         }
 
+        // دالة مساعدة لجلب الـ ID من التوكن
         private int GetUserId()
         {
+            // ممكن تستخدم السطر ده لو بتجرب من غير توكن مؤقتاً
+            // return 3; 
             return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         }
 
-        // POST: api/subscriptions/purchase
+        // ====================================================
+        // 1. شراء اشتراك جديد
+        // POST: api/user/subscriptions/purchase
+        // ====================================================
         [HttpPost("purchase")]
         public async Task<IActionResult> Purchase([FromBody] PurchaseSubscriptionDto dto)
         {
@@ -42,7 +48,10 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             return Ok(result);
         }
 
-        // GET: api/subscriptions/my
+        // ====================================================
+        // 2. عرض قائمة اشتراكاتي
+        // GET: api/user/subscriptions/my
+        // ====================================================
         [HttpGet("my")]
         public async Task<IActionResult> GetMySubscriptions()
         {
@@ -55,7 +64,26 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             return Ok(result);
         }
 
-        // PATCH: api/subscriptions/1/cancel
+        // ====================================================
+        // 3. عرض تفاصيل اشتراك معين + سجل مدفوعاته (NEW ✅)
+        // GET: api/user/subscriptions/{id}/details
+        // ====================================================
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetSubscriptionDetails(int id)
+        {
+            int userId = GetUserId();
+
+            // بننده السيرفيس اللي بترجع تفاصيل الكارت + الجدول
+            var result = await _subService.GetSubscriptionDetailsAsync(userId, id);
+
+            if (!result.IsSuccess) return BadRequest(result);
+            return Ok(result);
+        }
+
+        // ====================================================
+        // 4. إلغاء اشتراك
+        // PATCH: api/user/subscriptions/1/cancel
+        // ====================================================
         [HttpPatch("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
@@ -69,4 +97,3 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         }
     }
 }
-

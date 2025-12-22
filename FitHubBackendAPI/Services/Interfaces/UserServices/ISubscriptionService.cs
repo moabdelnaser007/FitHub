@@ -13,5 +13,8 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
 
         // عرض اشتراكاتي
         Task<ResponseViewModel<List<MySubscriptionDto>>> GetMySubscriptionsAsync(int userId);
+
+        // الدالة دي هتجيب تفاصيل الاشتراك + سجل مدفوعاته
+        Task<ResponseViewModel<SubscriptionDetailsDto>> GetSubscriptionDetailsAsync(int userId, int subscriptionId);
     }
 }
