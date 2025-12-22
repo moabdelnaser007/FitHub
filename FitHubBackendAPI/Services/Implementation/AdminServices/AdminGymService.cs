@@ -1,5 +1,6 @@
 ﻿using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.DTOs.GymBranchDTOs;
+using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
@@ -32,6 +33,10 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 CloseTime = b.CloseTime,
                 GenderType=b.GenderType,
                 Status = b.Status,
+                VisitCreditsCost = b.VisitCreditsCost,
+                Description = b.Description,
+                WorkingDays = b.WorkingDays,
+                AmenitiesAvailable = b.AmenitiesAvailable,
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();
@@ -53,6 +58,10 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 CloseTime = b.CloseTime,
                 GenderType = b.GenderType,
                 Status = b.Status,
+                VisitCreditsCost = b.VisitCreditsCost,
+                Description = b.Description,
+                WorkingDays = b.WorkingDays,
+                AmenitiesAvailable = b.AmenitiesAvailable,
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();
@@ -75,6 +84,10 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 CloseTime = branch.CloseTime,
                 GenderType = branch.GenderType,
                 Status = branch.Status,
+                VisitCreditsCost = branch.VisitCreditsCost,
+                Description = branch.Description,
+                WorkingDays = branch.WorkingDays,
+                AmenitiesAvailable = branch.AmenitiesAvailable,
                 CreatedAt = branch.CreatedAt,
                 UpdatedAt = branch.UpdatedAt
             };
@@ -97,6 +110,10 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 CloseTime = b.CloseTime,
                 GenderType = b.GenderType,
                 Status = b.Status,
+                VisitCreditsCost = b.VisitCreditsCost,
+                Description = b.Description,
+                WorkingDays = b.WorkingDays,
+                AmenitiesAvailable = b.AmenitiesAvailable,
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();
@@ -108,6 +125,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             if (branch == null) return false;
 
             branch.IsAcTive = true;
+            branch.Status = BranchStatus.ACTIVE;
             await _branchRepository.SaveChangesAsync();
             return true;
         }
@@ -118,6 +136,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             if (branch == null) return false;
 
             branch.IsAcTive = false;
+            branch.Status = BranchStatus.INACTIVE;
             await _branchRepository.SaveChangesAsync();
             return true;
         }
@@ -135,6 +154,10 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             branch.CloseTime = dto.CloseTime;
             branch.GenderType = dto.GenderType;
             branch.Status = dto.Status;
+            branch.Description = dto.Description;
+            branch.VisitCreditsCost = dto.VisitCreditsCost;
+            branch.WorkingDays = dto.WorkingDays;
+            branch.AmenitiesAvailable = dto.AmenitiesAvailable;
             branch.UpdatedAt = DateTime.UtcNow;
 
             await _branchRepository.SaveChangesAsync();

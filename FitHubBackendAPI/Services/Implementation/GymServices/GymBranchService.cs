@@ -23,7 +23,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             _amenitiesRepository = amenitiesRepository;
             _webHostEnvironment = webHostEnvironment;
         }
-        public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto,List<IFormFile>images)
+        public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto)
         {
             /*
              -list ifile
@@ -49,36 +49,37 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 Status = dto.Status,
                 Description = dto.Description,
                 WorkingDays = dto.WorkingDays,
-                VisitCreditsCost = dto.VisitCreditsCost
+                VisitCreditsCost = dto.VisitCreditsCost,
+                AmenitiesAvailable = dto.AmenitiesAvailable
             };
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             string folderPath = Path.Combine(wwwRootPath,"images\\Gym",branch.BranchName);
 
-            // Create the directory if it doesn't exist
-            Directory.CreateDirectory(folderPath);
-            foreach (var image in images)
-            {
+            //// Create the directory if it doesn't exist
+            //Directory.CreateDirectory(folderPath);
+            //foreach (var image in images)
+            //{
                 
-                if (image != null)
-                {
-                    var fileName = $"{Guid.NewGuid().ToString()}-{branch.BranchName}" + Path.GetExtension(image.FileName);
-                    string filePath = Path.Combine(folderPath,fileName);
+            //    if (image != null)
+            //    {
+            //        var fileName = $"{Guid.NewGuid().ToString()}-{branch.BranchName}" + Path.GetExtension(image.FileName);
+            //        string filePath = Path.Combine(folderPath,fileName);
                     
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await image.CopyToAsync(stream);
-                    }
+            //        using (var stream = new FileStream(filePath, FileMode.Create))
+            //        {
+            //            await image.CopyToAsync(stream);
+            //        }
 
-                    Image imageEntity = new Image
-                    {
-                        imagePath = filePath,
-                        branch = branch
-                    };
-                    branch.Images.Add(imageEntity);
-                }
+            //        Image imageEntity = new Image
+            //        {
+            //            imagePath = filePath,
+            //            branch = branch
+            //        };
+            //        branch.Images.Add(imageEntity);
+            //    }
                 
-            }
+            //}
             await _repository.AddAsync(branch);
 
             
@@ -94,7 +95,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                return branches.Where(b => b.IsAcTive  == true)
                 .Select(b => new GetAllBranchDTO
                 {
-                    //Id = b.Id,
+                    Id = b.Id,
                     //OwnerId = b.OwnerId,
                     BranchName = b.BranchName,
                     Phone = b.Phone,
@@ -102,6 +103,12 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                     City = b.City,
                     OpenTime = b.OpenTime,
                     CloseTime = b.CloseTime,
+                    GenderType = b.GenderType,
+                    Status = b.Status,
+                    Description = b.Description,
+                    WorkingDays = b.WorkingDays,
+                    VisitCreditsCost = b.VisitCreditsCost,
+                    AmenitiesAvailable = b.AmenitiesAvailable
 
                 }).ToList();
         }
@@ -113,15 +120,21 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 throw new Exception("Branch not found or inactive");
             return new GetGymBranchByIdDTO
             {
-                //Id = branch.Id,
-                //OwnerId = branch.OwnerId,
+                Id = branch.Id,
+                //OwnerId = b.OwnerId,
                 BranchName = branch.BranchName,
                 Phone = branch.Phone,
                 Address = branch.Address,
                 City = branch.City,
                 OpenTime = branch.OpenTime,
-                CloseTime = branch.CloseTime
-                };
+                CloseTime = branch.CloseTime,
+                GenderType = branch.GenderType,
+                Status = branch.Status,
+                Description = branch.Description,
+                WorkingDays = branch.WorkingDays,
+                VisitCreditsCost = branch.VisitCreditsCost,
+                AmenitiesAvailable = branch.AmenitiesAvailable
+            };
         }
 
         public async Task DeactivateBranchAsync(int userId, int branchId)
@@ -152,7 +165,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 .Where(b => b.OwnerId == owner.Id)
                 .Select(b => new GetAllBranchDTO
                 {
-                    //Id = b.Id,
+                    Id = b.Id,
                     //OwnerId = b.OwnerId,
                     BranchName = b.BranchName,
                     Phone = b.Phone,
@@ -161,7 +174,11 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                     OpenTime = b.OpenTime,
                     CloseTime = b.CloseTime,
                     GenderType = b.GenderType,
-                    Status = b.Status
+                    Status = b.Status,
+                    Description = b.Description,
+                    WorkingDays = b.WorkingDays,
+                    VisitCreditsCost = b.VisitCreditsCost,
+                    AmenitiesAvailable = b.AmenitiesAvailable
                 });
             return await branches.ToListAsync();
         }
@@ -175,8 +192,8 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 throw new Exception("Branch is Suspended");
             return new GetGymBranchByIdDTO
             {
-                //Id = branch.Id,
-                //OwnerId = branch.OwnerId,
+                Id = branch.Id,
+                //OwnerId = b.OwnerId,
                 BranchName = branch.BranchName,
                 Phone = branch.Phone,
                 Address = branch.Address,
@@ -184,7 +201,11 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 OpenTime = branch.OpenTime,
                 CloseTime = branch.CloseTime,
                 GenderType = branch.GenderType,
-                Status = branch.Status
+                Status = branch.Status,
+                Description = branch.Description,
+                WorkingDays = branch.WorkingDays,
+                VisitCreditsCost = branch.VisitCreditsCost,
+                AmenitiesAvailable = branch.AmenitiesAvailable
 
             };
         }
@@ -219,6 +240,11 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 branch.CloseTime = dto.CloseTime;
                 branch.GenderType = dto.GenderType;
                 branch.Status = dto.Status;
+                branch.Description = dto.Description;
+                branch.WorkingDays = dto.WorkingDays;
+                branch.VisitCreditsCost = dto.VisitCreditsCost;
+                branch.AmenitiesAvailable = dto.AmenitiesAvailable;
+
                 branch.UpdatedAt = DateTime.UtcNow;
 
                 _repository.Update(branch);
@@ -242,6 +268,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             if (branch.OwnerId != owner.Id)
             {
                 throw new Exception("You are not authorized to update this branch");
+            }
+            if(branch.IsAcTive == false)
+            {
+                throw new Exception("Cannot activate a Suspended branch");
             }
             branch.Status = BranchStatus.ACTIVE;
             _repository.Update(branch);

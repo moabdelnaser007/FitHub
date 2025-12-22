@@ -20,6 +20,7 @@ namespace FitHubBackendAPI.Entities.Models
         public GymGenderType? GenderType { get; set; } = GymGenderType.Mixed;
         public BranchStatus? Status { get; set; } = BranchStatus.ACTIVE;
         public Days? WorkingDays { get; set; } 
+        public GymAmenity? AmenitiesAvailable { get; set; }
         public List<Image>? Images { get; set; } = new();
 
 
