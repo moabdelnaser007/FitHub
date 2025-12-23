@@ -13,6 +13,9 @@ public class UserJourneyMappingProfile : Profile
             .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId ?? 0))
             .ForMember(d => d.Balance, o => o.MapFrom(s => s.Balance ?? 0));
 
+        // ================= SYSYEMPlans =================
+        CreateMap<FithubPlan, FithubPlanDto>();
+
         // ================= Transactions =================
         CreateMap<UserCreditTransactions, TransactionHistoryDto>()
             .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

@@ -23,5 +23,7 @@ namespace FitHubBackendAPI.Entities.Models
         public List<Booking>? Bookings { get; set; } = new();
         public List<Visit>? Visits { get; set; } = new();
         public List<Review>? Reviews { get; set; } = new();
+        //for Fithub Plans (Many-to-Many)
+        public List<FithubUserPlan>? PurchasedPlans { get; set; } = new();
     }
 }
