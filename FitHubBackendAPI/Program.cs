@@ -70,6 +70,8 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
             builder.Services.AddScoped<IAdminGymService, AdminGymService>();
 
+            builder.Services.AddScoped<IGymSearchService, GymSearchService>();
+
 
             //add User "subscription" service
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -107,11 +109,12 @@ namespace FitHubBackendAPI
             // 5) Add Controllers
             // ===============================
             builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        // ????? ?? ???: ????? ??????? ????? (0 -> "Active")
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-    });
+           .AddJsonOptions(options =>
+           {
+           options.JsonSerializerOptions.Converters
+           .Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+           options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+           });
 
             // ===============================
             // 6) Add CORS

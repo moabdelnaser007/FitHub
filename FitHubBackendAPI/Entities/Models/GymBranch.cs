@@ -24,11 +24,10 @@ namespace FitHubBackendAPI.Entities.Models
         public List<Image>? Images { get; set; } = new();
 
 
-
         // Navigation
         public GymOwner? Owner { get; set; }
         public List<GymStaff>? Staff { get; set; } = new();
-        public List<GymAmenities>? Amenities { get; set; } = new();
+        //public List<GymAmenities>? Amenities { get; set; } = new();
         public List<GymPlan>? Plans { get; set; } = new();
         public List<Subscription>? Subscriptions { get; set; } = new();
         public List<Booking>? Bookings { get; set; } = new();

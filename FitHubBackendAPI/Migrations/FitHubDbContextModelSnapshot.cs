@@ -931,7 +931,7 @@ namespace FitHubBackendAPI.Migrations
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
                 {
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
-                        .WithMany("Amenities")
+                        .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1141,8 +1141,6 @@ namespace FitHubBackendAPI.Migrations
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
                 {
-                    b.Navigation("Amenities");
-
                     b.Navigation("Bookings");
 
                     b.Navigation("Images");

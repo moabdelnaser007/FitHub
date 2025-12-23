@@ -116,11 +116,11 @@ namespace FitHubBackendAPI.Data
                 .HasForeignKey(s => s.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<GymBranch>()
-                .HasMany(b => b.Amenities)
-                .WithOne(a => a.Branch)
-                .HasForeignKey(a => a.BranchId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<GymBranch>()
+            //    .HasMany(b => b.Amenities)
+            //    .WithOne(a => a.Branch)
+            //    .HasForeignKey(a => a.BranchId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Plans)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251222185550_addAmenityEnum")]
-    partial class addAmenityEnum
+    [Migration("20251222222747_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
