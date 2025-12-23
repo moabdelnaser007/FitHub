@@ -87,6 +87,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPut]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> ActivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -96,6 +97,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpPut]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeactivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -104,6 +106,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpDelete]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeleteGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -112,6 +115,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpPost]
         [Authorize(Roles = "Owner")]
+        [Route("{branchId}")]
         public async Task<ResponseViewModel<bool>> AddImagesToBranch(int branchId, [FromForm] List<IFormFile> images)
         {
             if (images == null || images.Count == 0)
@@ -144,6 +148,21 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             }
             return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Success(imagePathDto, "Image path retrieved successfully.");
         }
-
+        [HttpDelete]
+        [Authorize(Roles = "Owner")]
+        [Route("{branchId}")]
+        public async Task<ResponseViewModel<bool>> DeleteBranchImage(int branchId, string imageName)
+        {
+            if (branchId <= 0 || string.IsNullOrEmpty(imageName))
+            {
+                return ResponseViewModel<bool>.Fail("Invalid branch ID or image name.");
+            }
+            bool result = await _gymBranchService.RemoveImageFromBranchAsync(branchId, imageName);
+            if (!result)
+            {
+                return ResponseViewModel<bool>.Fail("Failed to delete image.");
+            }
+            return ResponseViewModel<bool>.Success(true, "Image deleted successfully.");
+        }
     }
 }
