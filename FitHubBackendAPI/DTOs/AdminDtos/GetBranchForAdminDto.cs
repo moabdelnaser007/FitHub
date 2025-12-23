@@ -1,4 +1,5 @@
-﻿using FitHubBackendAPI.Entities.Enums;
+﻿using FitHubBackendAPI.DTOs.GymBranchDTOs;
+using FitHubBackendAPI.Entities.Enums;
 
 namespace FitHubBackendAPI.DTOs.AdminDtos
 {
@@ -25,6 +26,7 @@ namespace FitHubBackendAPI.DTOs.AdminDtos
             get; set;
         }
         public GymAmenity? AmenitiesAvailable { get; set; }
+
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

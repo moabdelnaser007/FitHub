@@ -37,6 +37,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 Description = b.Description,
                 WorkingDays = b.WorkingDays,
                 AmenitiesAvailable = b.AmenitiesAvailable,
+                
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();
@@ -62,6 +63,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 Description = b.Description,
                 WorkingDays = b.WorkingDays,
                 AmenitiesAvailable = b.AmenitiesAvailable,
+                
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();
@@ -88,6 +90,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 Description = branch.Description,
                 WorkingDays = branch.WorkingDays,
                 AmenitiesAvailable = branch.AmenitiesAvailable,
+                
                 CreatedAt = branch.CreatedAt,
                 UpdatedAt = branch.UpdatedAt
             };
@@ -114,6 +117,7 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
                 Description = b.Description,
                 WorkingDays = b.WorkingDays,
                 AmenitiesAvailable = b.AmenitiesAvailable,
+                
                 CreatedAt = b.CreatedAt,
                 UpdatedAt = b.UpdatedAt
             }).ToList();

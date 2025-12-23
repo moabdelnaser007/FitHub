@@ -25,5 +25,6 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
             get; set;
         }
         public GymAmenity? AmenitiesAvailable { get; set; }
+        public List<GetBranchImagePathDto>? Images { get; set; } 
     }
 }

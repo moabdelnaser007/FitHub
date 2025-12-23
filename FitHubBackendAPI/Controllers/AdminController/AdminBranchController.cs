@@ -103,5 +103,15 @@ namespace FitHubBackendAPI.Controllers.AdminController
             }
             return ResponseViewModel<UpdateGymBranchDTO>.Success(updatedBranch, "Branch updated successfully");
         }
+        [HttpGet("GetSuspendedBranches")]
+        public async Task<ResponseViewModel<IEnumerable<GetBranchForAdminDto>>> GetSuspendedBranches()
+        {
+            var branches = await _adminGymService.GetSuspendedBranches();
+            if (branches == null || !branches.Any())
+            {
+                return ResponseViewModel<IEnumerable<GetBranchForAdminDto>>.Fail("No suspended branches found", ErrorCode.NotFound);
+            }
+            return ResponseViewModel<IEnumerable<GetBranchForAdminDto>>.Success(branches, "Suspended branches retrieved successfully");
+        }
     }
 }

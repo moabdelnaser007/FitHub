@@ -30,6 +30,7 @@ namespace FitHubBackendAPI.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<OwnerSettlement> OwnerSettlements { get; set; }
         public DbSet<VerificationCode> VerificationCodes { get; set; }
+        public DbSet<Image> Image { get; set; }
 
 
 

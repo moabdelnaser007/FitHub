@@ -15,5 +15,9 @@ namespace FitHubBackendAPI.Services.Interfaces.OwnerServices
         Task DeleteGymBranchAsync(int userId, int branchId);
         Task<GetGymBranchByIdDTO> GetActiveGymBranchByIdAsync(int branchId);
         Task<IEnumerable<GetAllBranchDTO>> GetAllActiveBranchesAsync();
+        Task<bool> AddImagesToBranchAsync(int branchId, List<IFormFile> images);
+        Task<IEnumerable<GetBranchImagePathDto>> GetBranchImagesAsync(int  branchId);
+        Task<bool> RemoveImageFromBranchAsync(int branchId, string imageName);
+        Task<GetBranchImagePathDto> GetBranchImagePathAsync(int branchId, string imageName);
     }
 }

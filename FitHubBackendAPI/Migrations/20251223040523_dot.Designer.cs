@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251222222747_init")]
-    partial class init
+    [Migration("20251223040523_dot")]
+    partial class dot
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -408,6 +408,9 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
+
+                    b.Property<string>("imageName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("imagePath")
                         .HasColumnType("nvarchar(max)");
@@ -934,7 +937,7 @@ namespace FitHubBackendAPI.Migrations
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
                 {
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
-                        .WithMany("Amenities")
+                        .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1144,8 +1147,6 @@ namespace FitHubBackendAPI.Migrations
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
                 {
-                    b.Navigation("Amenities");
-
                     b.Navigation("Bookings");
 
                     b.Navigation("Images");
