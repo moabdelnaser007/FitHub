@@ -16,6 +16,7 @@ public class UserJourneyMappingProfile : Profile
         // ================= SYSYEMPlans =================
         CreateMap<FithubPlan, FithubPlanDto>();
 
+      
         // ================= Transactions =================
         CreateMap<UserCreditTransactions, TransactionHistoryDto>()
             .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
@@ -29,14 +30,20 @@ public class UserJourneyMappingProfile : Profile
                 s.TransactionType == TransactionType.RECHARGE ||
                 s.TransactionType == TransactionType.REFUND ||
                 (s.TransactionType == TransactionType.ADMIN_ADJUST && s.CreditsChanged > 0)))
+
+            // 👇👇👇 التعديل الجوهري هنا 👇👇👇
             .ForMember(d => d.Description, o => o.MapFrom(s =>
+                // 1. الأولوية للكلام المتسجل في الداتا بيز (زي Purchased Gold Plan)
+                !string.IsNullOrEmpty(s.Description) ? s.Description :
+
+                // 2. لو مفيش، نستخدم اللوجيك القديم كـ Fallback (عشان العمليات القديمة)
                 s.TransactionType == TransactionType.RECHARGE ? "Wallet Top-up" :
                 s.TransactionType == TransactionType.DEDUCT && s.Source == TransactionSource.BOOKING ? "Class Booking" :
                 s.TransactionType == TransactionType.DEDUCT && s.Source == TransactionSource.SUBSCRIPTION ? "Subscription Payment" :
                 s.TransactionType == TransactionType.REFUND ? "Refunded Booking" :
                 "Adjustment"))
-            .ForMember(d => d.Type, o => o.MapFrom(s => s.TransactionType.ToString()));
 
+            .ForMember(d => d.Type, o => o.MapFrom(s => s.TransactionType.ToString()));
 
         //part of screen : Subscription Details
         // 1. مابنج الاشتراك (الجزء العلوي)
