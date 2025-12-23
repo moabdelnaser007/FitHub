@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitHubBackendAPI.DTOs.Bookings;
 using FitHubBackendAPI.DTOs.Subscriptions;
 using FitHubBackendAPI.DTOs.Wallet;
 using FitHubBackendAPI.Entities.Enums;
@@ -59,5 +60,26 @@ public class UserJourneyMappingProfile : Profile
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.CreatedAt.ToString("MMM dd, yyyy"))) // Oct 15, 2024
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.PaymentAmount)) // العمود الجديد اللي ضفناه
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => "Monthly Renewal")); // وصف ثابت للتجديد
+
+
+        // ==============================================
+        // 🔥🔥🔥 Bookings Mappings 🔥🔥🔥
+        // ==============================================
+
+        // 1. Create Booking
+        CreateMap<CreateBookingDto, Booking>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => BookingStatus.CONFIRMED));
+
+        // 2. Booking History 
+        CreateMap<Booking, BookingHistoryDto>()
+            .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch != null ? src.Branch.BranchName : "Unknown Gym"))
+            .ForMember(dest => dest.HasReview, opt => opt.MapFrom(src => src.Review != null))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+        // 3. Booking Details (للتفاصيل)
+        CreateMap<Booking, BookingDetailsDto>()
+            .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch != null ? src.Branch.BranchName : ""))
+            .ForMember(dest => dest.BranchAddress, opt => opt.MapFrom(src => src.Branch != null ? src.Branch.Address : "No Address"))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
     }
 }

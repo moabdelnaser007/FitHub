@@ -87,7 +87,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpPatch("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
-            //int userId = 3;
+            
             int userId = GetUserId();
 
             var result = await _subService.CancelSubscriptionAsync(userId, id);

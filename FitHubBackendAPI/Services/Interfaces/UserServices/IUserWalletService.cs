@@ -9,7 +9,7 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
         // دي اللي الفرونت هيندهها عشان يعرض الكروت
         Task<ResponseViewModel<List<FithubPlanDto>>> GetAllPlansAsync();
 
-        // 2. دالة شراء باقة (بديلة لدالة الشحن القديمة)
+        // 2. دالة شراء باقة (باقات السيستم)
         // بتاخد ايدي اليوزر وايدي الباقة وبتحسب الضريبة وتضيف الكريديت
         Task<ResponseViewModel<bool>> PurchasePlanAsync(int userId, int planId);
 
