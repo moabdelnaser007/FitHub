@@ -4,6 +4,7 @@ using FitHubBackendAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    partial class FitHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251222234415_AddDescriptionCol")]
+    partial class AddDescriptionCol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -269,9 +272,6 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("AmenitiesAvailable")
-                        .HasColumnType("int");
 
                     b.Property<string>("BranchName")
                         .HasColumnType("nvarchar(max)");
@@ -537,9 +537,6 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
-
-                    b.Property<string>("imageName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("imagePath")
                         .HasColumnType("nvarchar(max)");
@@ -1089,7 +1086,7 @@ namespace FitHubBackendAPI.Migrations
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
                 {
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymBranch", "Branch")
-                        .WithMany()
+                        .WithMany("Amenities")
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1304,6 +1301,8 @@ namespace FitHubBackendAPI.Migrations
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
                 {
+                    b.Navigation("Amenities");
+
                     b.Navigation("Bookings");
 
                     b.Navigation("Images");

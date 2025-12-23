@@ -30,6 +30,8 @@ namespace FitHubBackendAPI.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<OwnerSettlement> OwnerSettlements { get; set; }
         public DbSet<VerificationCode> VerificationCodes { get; set; }
+        public DbSet<FithubPlan> FithubPlans { get; set; }
+        public DbSet<FithubUserPlan> FithubUserPlans { get; set; }
         public DbSet<Image> Image { get; set; }
 
 
@@ -287,7 +289,47 @@ namespace FitHubBackendAPI.Data
             modelBuilder.Entity<GymBranch>()
             .Property(b => b.VisitCreditsCost)
             .HasDefaultValue(50);
+
+
+            // 👇 FIXED : Seeding Fithub Plans
+            modelBuilder.Entity<FithubPlan>().HasData(
+                new FithubPlan
+                {
+                    Id = 1, // لازم نحدد الـ Id يدوي هنا
+                    Name = "Basic",
+                    Description = "Perfect for starters",
+                    Price = 250,
+                    CreditsValue = 250,
+                    IsAcTive = true,
+                    IsDeleted = false,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new FithubPlan
+                {
+                    Id = 2,
+                    Name = "Premium",
+                    Description = "Most Popular Choice",
+                    Price = 500,
+                    CreditsValue = 500,
+                    IsAcTive = true,
+                    IsDeleted = false,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new FithubPlan
+                {
+                    Id = 3,
+                    Name = "Gold",
+                    Description = "Best Value for Pros",
+                    Price = 800,
+                    CreditsValue = 800,
+                    IsAcTive = true,
+                    IsDeleted = false,
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
+
         }
+
 
 
     }

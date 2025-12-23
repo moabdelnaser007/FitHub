@@ -11,97 +11,121 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
     public class UserWalletService : IUserWalletService
     {
         private readonly IGenericRepository<UserWallet> _walletRepo;
-        private readonly IGenericRepository<UserCreditTransactions> _transactionRepo;
+        private readonly IGenericRepository<UserCreditTransactions> _transRepo;
+        private readonly IGenericRepository<FithubPlan> _planRepo;
+        private readonly IGenericRepository<FithubUserPlan> _userPlanRepo;
         private readonly IMapper _mapper;
 
         public UserWalletService(
             IGenericRepository<UserWallet> walletRepo,
-            IGenericRepository<UserCreditTransactions> transactionRepo,
-            IMapper mapper)
+            IGenericRepository<UserCreditTransactions> transRepo,
+            IGenericRepository<FithubPlan> planRepo,
+            IGenericRepository<FithubUserPlan> userPlanRepo,
+            IMapper _mapper)
         {
             _walletRepo = walletRepo;
-            _transactionRepo = transactionRepo;
-            _mapper = mapper;
+            _transRepo = transRepo;
+            _planRepo = planRepo;
+            _userPlanRepo = userPlanRepo;
+            this._mapper = _mapper;
         }
 
         // ==========================================
-        // 1. دالة الشحن (Charge) 
+        // 1. دالة عرض الباقات (Plans)
         // ==========================================
-        public async Task<ResponseViewModel<bool>> ChargeWalletAsync(int userId, ChargeWalletDto dto)
+        public async Task<ResponseViewModel<List<FithubPlanDto>>> GetAllPlansAsync()
+        {
+            var plans = await _planRepo.GetAsync(p => p.IsAcTive && !p.IsDeleted);
+            var dtos = _mapper.Map<List<FithubPlanDto>>(plans);
+            return ResponseViewModel<List<FithubPlanDto>>.Success(dtos);
+        }
+
+        // ==========================================
+        // 2. دالة شراء باقة (Purchase)
+        // ==========================================
+        public async Task<ResponseViewModel<bool>> PurchasePlanAsync(int userId, int planId)
         {
             try
             {
-                // 1. بنروح ندور هل اليوزر ده عنده محفظة أصلاً ولا لأ
+                // أ: التأكد من وجود الباقة
+                var plan = await _planRepo.GetByIdAsync(planId);
+                if (plan == null || !plan.IsAcTive)
+                    return ResponseViewModel<bool>.Fail("Selected plan not found.");
+
+                // ب: حسابات الفلوس
+                decimal basePrice = plan.Price;
+                decimal taxRate = 0.15m;
+                decimal taxAmount = basePrice * taxRate;
+                decimal totalAmount = basePrice + taxAmount;
+
+                // ج: التعامل مع المحفظة
                 var wallets = await _walletRepo.FindAsync(w => w.UserId == userId);
                 var wallet = wallets.FirstOrDefault();
+                int oldBalance = 0;
 
-                // لو معندوش محفظة (أول مرة يشحن)، بنعمله واحدة جديدة
                 if (wallet == null)
                 {
                     wallet = new UserWallet
                     {
                         UserId = userId,
                         Balance = 0,
-                        LastUpdated = DateTime.UtcNow
+                        IsAcTive = true,
+                        CreatedAt = DateTime.UtcNow
                     };
-                    // بنضيفها للكونتكس (حالتها دلوقتي Added)
                     await _walletRepo.AddAsync(wallet);
                 }
 
-                // ====================================================
-                // ✅ حساب الكريديت داخل الباك إند (Security Logic)
-                // ====================================================
+                oldBalance = wallet.Balance ?? 0;
 
-                // هنا بنحدد سعر التحويل (حالياً 1 جنيه = 1 كريديت)
-                int conversionRate = 1;
-
-                // بنحسب عدد الكريديت اللي هيتضاف
-                int creditsToAdd = dto.AmountPaid * conversionRate;
-
-                // 2. بنحسب الرصيد القديم والجديد
-                int? oldBalance = wallet.Balance;
-                int? newBalance = oldBalance + creditsToAdd;
-
-                // 3. نحدث رصيد المحفظة الفعلي
-                wallet.Balance = newBalance;
+                // د: تحديث الرصيد
+                wallet.Balance = oldBalance + plan.CreditsValue;
                 wallet.LastUpdated = DateTime.UtcNow;
+                _walletRepo.Update(wallet);
 
-                // 4. تسجيل العملية في الهيستوري
+                // هـ: تسجيل الفاتورة
+                var userPlan = new FithubUserPlan
+                {
+                    UserId = userId,
+                    PlanId = plan.Id,
+                    BasePrice = basePrice,
+                    TaxAmount = taxAmount,
+                    TotalAmount = totalAmount,
+                    PurchaseDate = DateTime.UtcNow,
+                    IsAcTive = true
+                };
+                await _userPlanRepo.AddAsync(userPlan);
+
+                // و: تسجيل الحركة في الهيستوري
                 var transaction = new UserCreditTransactions
                 {
                     UserId = userId,
                     CreditsBefore = oldBalance,
-                    CreditsChanged = creditsToAdd,
-                    CreditsAfter = newBalance,
+                    CreditsChanged = plan.CreditsValue,
+                    CreditsAfter = wallet.Balance,
 
-                    // ✅✅✅ التعديل الجديد ✅✅✅
-                    // بناخد المبلغ من الـ DTO ونخزنه عشان يظهر في الهيستوري
-                    PaymentAmount = dto.AmountPaid,
+                    TransactionType = TransactionType.RECHARGE, // نوع العملية: شحن
+                    Source = TransactionSource.MANUAL,          // المصدر: يدوي (لأن اليوزر هو اللي اشترى بنفسه)
 
-                    TransactionType = TransactionType.RECHARGE,
-                    Source = TransactionSource.MANUAL,
-
+                    PaymentAmount = totalAmount,
+                    Description = $"Purchased {plan.Name} Plan",
                     IsAcTive = true,
                     CreatedAt = DateTime.UtcNow
                 };
+                await _transRepo.AddAsync(transaction);
 
-                await _transactionRepo.AddAsync(transaction);
-
-                // 5. حفظ التغييرات (هنا بيتم الحفظ الفعلي لكل العمليات مرة واحدة)
+                // ز: حفظ التغييرات
                 await _walletRepo.SaveChangesAsync();
 
-                return ResponseViewModel<bool>.Success(true, $"Wallet charged successfully with {creditsToAdd} credits");
+                return ResponseViewModel<bool>.Success(true, "Plan purchased successfully.");
             }
             catch (Exception ex)
             {
-                // بنعرض الـ InnerException عشان لو فيه تفاصيل أكتر للإيرور تظهر
-                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return ResponseViewModel<bool>.Fail($"Error charging wallet: {msg}");
+                return ResponseViewModel<bool>.Fail($"Purchase failed: {ex.Message}");
             }
         }
 
         // ==========================================
-        // 2. دالة عرض الرصيد (Get Balance)
+        // 3. دالة عرض الرصيد
         // ==========================================
         public async Task<ResponseViewModel<WalletBalanceDto>> GetWalletBalanceAsync(int userId)
         {
@@ -109,38 +133,30 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var wallet = wallets.FirstOrDefault();
 
             if (wallet == null)
-            {
-                return ResponseViewModel<WalletBalanceDto>.Success(new WalletBalanceDto { Balance = 0 });
-            }
+                return ResponseViewModel<WalletBalanceDto>.Success(new WalletBalanceDto { UserId = userId, Balance = 0 });
 
             var walletDto = _mapper.Map<WalletBalanceDto>(wallet);
             return ResponseViewModel<WalletBalanceDto>.Success(walletDto);
         }
 
-
         // ==========================================
-        // 3. دالة عرض سجل المعاملات (History)
+        // 4. دالة سجل المعاملات
         // ==========================================
-        public async Task<ResponseViewModel<IEnumerable<TransactionHistoryDto>>> GetMyTransactionsAsync(int userId)
+        public async Task<ResponseViewModel<List<TransactionHistoryDto>>> GetTransactionHistoryAsync(int userId)
         {
             try
             {
-                // 1. نجيب المعاملات الخاصة باليوزر
-                // ونرتبها تنازلي (الأحدث يظهر فوق) باستخدام CreatedAt
-                var transactions = await _transactionRepo.GetAsync(
+                var transactions = await _transRepo.GetAsync(
                     filter: t => t.UserId == userId,
                     orderBy: q => q.OrderByDescending(t => t.CreatedAt)
                 );
 
-                // 2. نحولها لـ DTO باستخدام المابنج الذكي اللي لسه عاملينه
-                var dtos = _mapper.Map<IEnumerable<TransactionHistoryDto>>(transactions);
-
-                // 3. نرجع النتيجة
-                return ResponseViewModel<IEnumerable<TransactionHistoryDto>>.Success(dtos);
+                var dtos = _mapper.Map<List<TransactionHistoryDto>>(transactions);
+                return ResponseViewModel<List<TransactionHistoryDto>>.Success(dtos);
             }
             catch (Exception ex)
             {
-                return ResponseViewModel<IEnumerable<TransactionHistoryDto>>.Fail($"Error fetching transactions: {ex.Message}");
+                return ResponseViewModel<List<TransactionHistoryDto>>.Fail($"Error fetching transactions: {ex.Message}");
             }
         }
     }

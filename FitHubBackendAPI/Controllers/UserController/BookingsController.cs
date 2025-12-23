@@ -1,6 +1,6 @@
 ﻿using FitHubBackendAPI.DTOs.Bookings;
-using FitHubBackendAPI.Services.Interfaces.UserServices; // اتأكد ان ده المسار الصح للانترفيس بتاعك
-using FitHubBackendAPI.ViewModels; // عشان ResponseViewModel
+using FitHubBackendAPI.Services.Interfaces.UserServices;
+using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -9,7 +9,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 {
     [Route("api/user/bookings")]
     [ApiController]
-    [Authorize] // 🔒 لازم يكون مسجل دخول عشان يشوف حجوزاته
+    [Authorize] // 🔒 أمان: لازم يكون مسجل دخول
     public class BookingsController : ControllerBase
     {
         private readonly IBookingService _bookingService;
@@ -19,43 +19,46 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             _bookingService = bookingService;
         }
 
+        // ==========================================
+        // Helper: دالة لاستخراج ID اليوزر من التوكن
+        // ==========================================
+        private int GetUserId()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        }
+
         // ==========================================================
-        // 1. إنشاء حجز جديد
-        // URL: POST /api/bookings
+        // 1. إنشاء حجز جديد (Create Booking)
+        // URL: POST /api/user/bookings
         // ==========================================================
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized();
+            // 1. نجيب الايدي
+            int userId = GetUserId();
 
-            int userId = int.Parse(userIdClaim.Value);
-
+            // 2. ننفذ الحجز (التحقق فقط بدون خصم حالياً حسب اللوجيك الجديد)
             var result = await _bookingService.CreateBookingAsync(userId, dto);
 
+            // 3. لو فشل (رصيد غير كافي / اشتراك منتهي) نرجع Error
             if (!result.IsSuccess)
                 return BadRequest(result);
 
+            // 4. لو نجح نرجع الـ Code
             return Ok(result);
         }
 
         // ==========================================================
         // 2. عرض سجل حجوزات اليوزر (My Bookings)
-        // URL: GET /api/bookings/my
+        // URL: GET /api/user/bookings/my
         // ==========================================================
         [HttpGet("my")]
         public async Task<IActionResult> GetMyBookings()
         {
-            // 1. نجيب الايدي من التوكن
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized();
+            int userId = GetUserId();
 
-            int userId = int.Parse(userIdClaim.Value);
-
-            // 2. نكلم السيرفيس تجيب الداتا
             var result = await _bookingService.GetUserBookingsAsync(userId);
 
-            // 3. نرد بالنتيجة
             if (!result.IsSuccess)
                 return BadRequest(result);
 
@@ -64,14 +67,12 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
         // ==========================================================
         // 3. عرض تفاصيل حجز معين
-        // URL: GET /api/bookings/{id}
+        // URL: GET /api/user/bookings/{id}
         // ==========================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookingDetails(int id)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized();
-            int userId = int.Parse(userIdClaim.Value);
+            int userId = GetUserId();
 
             var result = await _bookingService.GetBookingDetailsAsync(userId, id);
 
@@ -83,14 +84,12 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
         // ==========================================================
         // 4. إلغاء حجز
-        // URL: PUT /api/bookings/cancel/{id}
+        // URL: PUT /api/user/bookings/cancel/{id}
         // ==========================================================
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized();
-            int userId = int.Parse(userIdClaim.Value);
+            int userId = GetUserId();
 
             var result = await _bookingService.CancelBookingAsync(userId, id);
 
@@ -99,74 +98,5 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             return Ok(result);
         }
-
     }
 }
-//using FitHubBackendAPI.DTOs.Bookings;
-//using FitHubBackendAPI.Entities.Models;
-//using FitHubBackendAPI.Services.Interfaces.UserServices;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Security.Claims;
-
-//[Route("api/user/bookings")]
-//[ApiController]
-//[Authorize]
-//public class BookingsController : ControllerBase
-//{
-//    private readonly IBookingService _bookingService;
-
-//    public BookingsController(IBookingService bookingService)
-//    {
-//        _bookingService = bookingService;
-//    }
-
-//    private int GetUserId()
-//    {
-//        return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-//    }
-
-//    // ===============================
-//    // POST /api/user/bookings
-//    // ===============================
-//    [HttpPost]
-//    public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
-//    {
-//        int userId = GetUserId();
-//        var result = await _bookingService.CreateBookingAsync(userId, dto);
-//        return Ok(result);
-//    }
-
-//    // ===============================
-//    // GET /api/user/bookings/my
-//    // ===============================
-//    [HttpGet("my")]
-//    public async Task<IActionResult> GetMyBookings()
-//    {
-//        int userId = GetUserId();
-//        var result = await _bookingService.GetUserBookingsAsync(userId);
-//        return Ok(result);
-//    }
-
-//    // ===============================
-//    // GET /api/user/bookings/{id}
-//    // ===============================
-//    [HttpGet("{id}")]
-//    public async Task<IActionResult> GetBookingDetails(int id)
-//    {
-//        int userId = GetUserId();
-//        var result = await _bookingService.GetBookingDetailsAsync(userId, id);
-//        return Ok(result);
-//    }
-
-//    // ===============================
-//    // PUT /api/user/bookings/cancel/{id}
-//    // ===============================
-//    [HttpPut("cancel/{id}")]
-//    public async Task<IActionResult> CancelBooking(int id)
-//    {
-//        int userId = GetUserId();
-//        var result = await _bookingService.CancelBookingAsync(userId, id);
-//        return Ok(result);
-//    }
-//}

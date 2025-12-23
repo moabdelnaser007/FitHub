@@ -39,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Validators\Gym validators\" />
     <Folder Include="wwwroot\images\Gym\" />
   </ItemGroup>
 
