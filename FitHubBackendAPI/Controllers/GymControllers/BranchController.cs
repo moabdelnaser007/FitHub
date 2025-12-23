@@ -3,11 +3,9 @@
 using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 using FitHubBackendAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace FitHubBackendAPI.Controllers.GymControllers
 {
@@ -23,23 +21,24 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPost]
         [Authorize(Roles = "Owner")]
-        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> CreateBranch([FromForm] CreateGymBranchDTO dto, List<IFormFile> images)
+        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> CreateBranch(CreateGymBranchDTO dto)
         {
 
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            if (userId <= 0) {
-                return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Invalid user ID.",Entities.Enums.ErrorCode.Unauthorized);
+            if (userId <= 0)
+            {
+                return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Invalid user ID.", Entities.Enums.ErrorCode.Unauthorized);
             }
 
-            var branch = await _gymBranchService.CreateGymBranchAsync(userId, dto, images);
+            var branch = await _gymBranchService.CreateGymBranchAsync(userId, dto);
             if (branch == null)
             {
                 return ResponseViewModel<GetGymBranchByIdDTO>.Fail("Failed to create gym branch.", Entities.Enums.ErrorCode.BadRequest);
             }
             var createdBranch = new GetGymBranchByIdDTO
             {
-                //Id = branch.Id,
-                //OwnerId = branch.OwnerId,
+                Id = branch.Id,
+                //OwnerId = b.OwnerId,
                 BranchName = branch.BranchName,
                 Phone = branch.Phone,
                 Address = branch.Address,
@@ -47,23 +46,27 @@ namespace FitHubBackendAPI.Controllers.GymControllers
                 OpenTime = branch.OpenTime,
                 CloseTime = branch.CloseTime,
                 GenderType = branch.GenderType,
-                Status = branch.Status
+                Status = branch.Status,
+                Description = branch.Description,
+                WorkingDays = branch.WorkingDays,
+                VisitCreditsCost = branch.VisitCreditsCost,
+                AmenitiesAvailable = branch.AmenitiesAvailable
 
             };
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(createdBranch, "Gym branch created successfully.");
         }
 
 
-        [HttpPut]
+        [HttpPut("{Id:int}")]
         [Authorize(Roles = "Owner")]
-        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> UpdateBranch(int Id ,UpdateGymBranchDTO dto)
+        public async Task<ResponseViewModel<GetGymBranchByIdDTO>> UpdateBranch(int Id, UpdateGymBranchDTO dto)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            await _gymBranchService.UpdateGymBranchAsync(userId, dto,Id);
+            await _gymBranchService.UpdateGymBranchAsync(userId, dto, Id);
             var branch = await _gymBranchService.GetGymBranchByIdAsync(Id);
             return ResponseViewModel<GetGymBranchByIdDTO>.Success(branch, "Gym branch updated successfully.");
         }
-        
+
         [HttpGet]
         [Authorize(Roles = "Owner")]
         public async Task<ResponseViewModel<IEnumerable<GetAllBranchDTO>>> GetAllBranchesAsync()
@@ -84,6 +87,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPut]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> ActivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -93,6 +97,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpPut]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeactivateGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -101,12 +106,63 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpDelete]
         [Authorize(Roles = "Owner")]
+        [Route("{id:int}")]
         public async Task<ResponseViewModel<bool>> DeleteGymBranch(int id)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             await _gymBranchService.DeleteGymBranchAsync(userId, id);
             return ResponseViewModel<bool>.Success(true, "Branche Deleted successfully.");
         }
+        [HttpPost]
+        [Authorize(Roles = "Owner")]
+        [Route("{branchId}")]
+        public async Task<ResponseViewModel<bool>> AddImagesToBranch(int branchId, [FromForm] List<IFormFile> images)
+        {
+            if (images == null || images.Count == 0)
+            {
+                return ResponseViewModel<bool>.Fail("No images provided.");
+            }
+            if (branchId <= 0)
+            {
+                return ResponseViewModel<bool>.Fail("Invalid branch ID.");
+            }
+            bool result = await _gymBranchService.AddImagesToBranchAsync(branchId, images);
+            if (!result)
+            {
+                return ResponseViewModel<bool>.Fail("Failed to add images to branch.");
+            }
+            return ResponseViewModel<bool>.Success(result, "Images added to branch successfully.");
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ResponseViewModel<IEnumerable<GetBranchImagePathDto>>> GetBranchImages(int branchId, string imageName)
+        {
+            if (branchId <= 0 || string.IsNullOrEmpty(imageName))
+            {
+                return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Fail("Invalid branch ID or image name.");
+            }
+            var imagePathDto = await _gymBranchService.GetBranchImagesAsync(branchId);
+            if (imagePathDto == null)
+            {
+                return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Fail("Image not found.");
+            }
+            return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Success(imagePathDto, "Image path retrieved successfully.");
+        }
+        [HttpDelete]
+        [Authorize(Roles = "Owner")]
+        [Route("{branchId}")]
+        public async Task<ResponseViewModel<bool>> DeleteBranchImage(int branchId, string imageName)
+        {
+            if (branchId <= 0 || string.IsNullOrEmpty(imageName))
+            {
+                return ResponseViewModel<bool>.Fail("Invalid branch ID or image name.");
+            }
+            bool result = await _gymBranchService.RemoveImageFromBranchAsync(branchId, imageName);
+            if (!result)
+            {
+                return ResponseViewModel<bool>.Fail("Failed to delete image.");
+            }
+            return ResponseViewModel<bool>.Success(true, "Image deleted successfully.");
+        }
     }
-
 }

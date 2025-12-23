@@ -32,6 +32,7 @@ namespace FitHubBackendAPI.Data
         public DbSet<VerificationCode> VerificationCodes { get; set; }
         public DbSet<FithubPlan> FithubPlans { get; set; }
         public DbSet<FithubUserPlan> FithubUserPlans { get; set; }
+        public DbSet<Image> Image { get; set; }
 
 
 
@@ -118,11 +119,11 @@ namespace FitHubBackendAPI.Data
                 .HasForeignKey(s => s.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<GymBranch>()
-                .HasMany(b => b.Amenities)
-                .WithOne(a => a.Branch)
-                .HasForeignKey(a => a.BranchId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<GymBranch>()
+            //    .HasMany(b => b.Amenities)
+            //    .WithOne(a => a.Branch)
+            //    .HasForeignKey(a => a.BranchId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<GymBranch>()
                 .HasMany(b => b.Plans)

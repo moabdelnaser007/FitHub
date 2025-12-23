@@ -10,7 +10,6 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UserBranchController : ControllerBase
     {
         

@@ -4,6 +4,7 @@ namespace FitHubBackendAPI.Entities.Models
 {
     public class Image: BaseEntity
     {
+        public string? imageName { get; set; }
         public string? imagePath { get; set; }
         public int GymId {  get; set; }
 

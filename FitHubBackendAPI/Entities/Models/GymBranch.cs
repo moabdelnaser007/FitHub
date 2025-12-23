@@ -20,14 +20,14 @@ namespace FitHubBackendAPI.Entities.Models
         public GymGenderType? GenderType { get; set; } = GymGenderType.Mixed;
         public BranchStatus? Status { get; set; } = BranchStatus.ACTIVE;
         public Days? WorkingDays { get; set; } 
+        public GymAmenity? AmenitiesAvailable { get; set; }
         public List<Image>? Images { get; set; } = new();
-
 
 
         // Navigation
         public GymOwner? Owner { get; set; }
         public List<GymStaff>? Staff { get; set; } = new();
-        public List<GymAmenities>? Amenities { get; set; } = new();
+        //public List<GymAmenities>? Amenities { get; set; } = new();
         public List<GymPlan>? Plans { get; set; } = new();
         public List<Subscription>? Subscriptions { get; set; } = new();
         public List<Booking>? Bookings { get; set; } = new();
