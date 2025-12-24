@@ -19,5 +19,6 @@ namespace FitHubBackendAPI.Services.Interfaces.OwnerServices
         Task<IEnumerable<GetBranchImagePathDto>> GetBranchImagesAsync(int  branchId);
         Task<bool> RemoveImageFromBranchAsync(int branchId, string imageName);
         Task<GetBranchImagePathDto> GetBranchImagePathAsync(int branchId, string imageName);
+        Task<bool> SetCoverImage(string imageName, int branchId);
     }
 }

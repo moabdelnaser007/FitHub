@@ -164,5 +164,21 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             }
             return ResponseViewModel<bool>.Success(true, "Image deleted successfully.");
         }
+        [HttpPost]
+        [Authorize(Roles = "Owner")]
+        [Route("{branchId}")]
+        public async Task<ResponseViewModel<bool>> SetCoverImage(int branchId, string imageName)
+        {
+            if (branchId <= 0 || string.IsNullOrEmpty(imageName))
+            {
+                return ResponseViewModel<bool>.Fail("Invalid branch ID or image name.");
+            }
+            bool result = await _gymBranchService.SetCoverImage(imageName, branchId);
+            if (!result)
+            {
+                return ResponseViewModel<bool>.Fail("Failed to set cover image.");
+            }
+            return ResponseViewModel<bool>.Success(true, "Cover image set successfully.");
+        }
     }
 }

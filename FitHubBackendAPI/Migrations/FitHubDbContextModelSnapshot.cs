@@ -132,7 +132,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7797),
+                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6652),
                             CreditsValue = 250,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -143,7 +143,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7805),
+                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6655),
                             CreditsValue = 500,
                             Description = "Most Popular Choice",
                             IsAcTive = true,
@@ -154,7 +154,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7811),
+                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6657),
                             CreditsValue = 800,
                             Description = "Best Value for Pros",
                             IsAcTive = true,
@@ -282,6 +282,9 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("CloseTime")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -324,6 +327,9 @@ namespace FitHubBackendAPI.Migrations
                         .HasDefaultValue(50);
 
                     b.Property<int?>("WorkingDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("rating")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

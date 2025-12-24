@@ -414,5 +414,18 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 imagePath = image.imagePath
             };
         }
+        public async Task<bool> SetCoverImage(string imageName,int branchId)
+        {
+            var image = await GetBranchImagePathAsync(branchId, imageName);
+            var branch =  await _repository.GetByIdAsync(branchId);
+            if (branch == null)
+            {
+                throw new Exception("Branch not found");
+            }
+            branch.CoverImagePath = image.imagePath;
+            _repository.Update(branch);
+            await _repository.SaveChangesAsync();
+            return true;
+        }
         }
 }

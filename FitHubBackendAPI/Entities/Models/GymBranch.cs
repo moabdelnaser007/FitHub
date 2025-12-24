@@ -13,6 +13,8 @@ namespace FitHubBackendAPI.Entities.Models
         // price in credits for a single visit without a plan
         public int VisitCreditsCost { get; set; }
         public string? Description { get; set; }
+        public int? rating { get; set; } 
+        public string? CoverImagePath { get; set; } = string.Empty;
 
         public TimeSpan? OpenTime { get; set; }
         public TimeSpan? CloseTime { get; set; }
