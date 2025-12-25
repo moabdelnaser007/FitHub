@@ -20,6 +20,12 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             _bookingRepo = bookingRepo;
         }
 
+        public async Task<IEnumerable<GetAllBranchRevewsDto>> GetAllBrancheReviewsAsync(int branchId)
+        {
+            var reviews = await _reviewRepo.GetAsync(r=>r.BranchId == branchId,
+                includeProperties:"Bookings");
+        }
+
         public async Task<ResponseViewModel<bool>> LeaveReviewAsync(int userId, LeaveReviewDto dto)
         {
             try
