@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251226015219_removepricefromplan")]
-    partial class removepricefromplan
+    [Migration("20251226052545_initaiteDB")]
+    partial class initaiteDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,7 +136,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6265),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7883),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -147,7 +147,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6273),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7892),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -157,7 +157,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6275),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7894),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -645,11 +645,16 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId")
                         .IsUnique()
                         .HasFilter("[OwnerId] IS NOT NULL");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("OwnerWallets");
                 });
@@ -1195,7 +1200,13 @@ namespace FitHubBackendAPI.Migrations
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.OwnerWallet", "OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Owner");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Review", b =>

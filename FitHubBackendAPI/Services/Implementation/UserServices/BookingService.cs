@@ -39,7 +39,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             Subscription? subscription = null;
 
             // 2️⃣ Subscription booking
-            if (dto.SubscriptionId.HasValue)
+            if (dto.SubscriptionId.HasValue||dto.SubscriptionId>0)
             {
                 subscription = await _subscriptionRepo.GetByIdAsync(dto.SubscriptionId.Value);
 

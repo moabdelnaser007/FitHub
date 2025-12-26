@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitHubBackendAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class initaiteDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -286,6 +286,7 @@ namespace FitHubBackendAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OwnerId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
@@ -304,6 +305,11 @@ namespace FitHubBackendAPI.Migrations
                         principalTable: "GymOwners",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OwnerWallets_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -394,7 +400,7 @@ namespace FitHubBackendAPI.Migrations
                         column: x => x.BranchId,
                         principalTable: "GymBranches",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_GymStaffs_GymOwners_GymOwnerId",
                         column: x => x.GymOwnerId,
@@ -405,7 +411,7 @@ namespace FitHubBackendAPI.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -625,9 +631,9 @@ namespace FitHubBackendAPI.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "CreditsValue", "Description", "IsAcTive", "IsDeleted", "Name", "Price", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2602), null, 250m, "Perfect for starters", true, false, "Basic", 250m, null, null },
-                    { 2, new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2610), null, 500m, null, true, false, "Premium", 500m, null, null },
-                    { 3, new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2612), null, 800m, null, true, false, "Gold", 800m, null, null }
+                    { 1, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7883), null, 250m, "Perfect for starters", true, false, "Basic", 250m, null, null },
+                    { 2, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7892), null, 500m, null, true, false, "Premium", 500m, null, null },
+                    { 3, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7894), null, 800m, null, true, false, "Gold", 800m, null, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -713,6 +719,11 @@ namespace FitHubBackendAPI.Migrations
                 column: "OwnerId",
                 unique: true,
                 filter: "[OwnerId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnerWallets_UserId",
+                table: "OwnerWallets",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_BookingId",

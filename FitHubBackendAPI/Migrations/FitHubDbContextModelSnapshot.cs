@@ -133,7 +133,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9750),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7883),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -144,7 +144,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9758),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7892),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -154,7 +154,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9764),
+                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7894),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
