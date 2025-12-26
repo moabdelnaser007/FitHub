@@ -36,6 +36,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
              */
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
             var owner = owners.FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
+
             Entities.Models.GymBranch branch = new Entities.Models.GymBranch
             {
                 OwnerId = owner.Id,
@@ -147,6 +151,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         {
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
             var owner = owners.FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
+
             var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {
@@ -167,6 +175,9 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         {
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
             var owner = owners.FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
             
             var branches = _repository.GetAllAsync().Result
                 .Where(b => b.OwnerId == owner.Id).Include(g=>g.Images)
@@ -274,6 +285,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         {
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
             var owner = owners.FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
+
             var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {
@@ -295,6 +310,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         {
             var owners = await _ownerRepository.FindAsync(o => o.UserId == userId);
             var owner = owners.FirstOrDefault();
+
+            if (owner == null)
+                throw new Exception("Owner not found");
+
             var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null)
             {

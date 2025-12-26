@@ -2,20 +2,13 @@
 
 namespace FitHubBackendAPI.DTOs.Subscriptions
 {
-    public class SubscriptionDetailsDto
+    public class SubscriptionListDto
     {
         public int SubscriptionId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public string PlanName { get; set; } = string.Empty;
-
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-
-        public int VisitsAllowed { get; set; }
-        public int VisitsUsed { get; set; }
         public int RemainingVisits { get; set; }
-
         public SubscriptionStatus Status { get; set; } = SubscriptionStatus.ACTIVE;
+        public DateTime EndDate { get; set; }
     }
 }
-

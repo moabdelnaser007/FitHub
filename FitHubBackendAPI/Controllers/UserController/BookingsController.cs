@@ -7,96 +7,35 @@ using System.Security.Claims;
 
 namespace FitHubBackendAPI.Controllers.User_Controller
 {
-    [Route("api/user/bookings")]
     [ApiController]
-    [Authorize] // 🔒 أمان: لازم يكون مسجل دخول
-    public class BookingsController : ControllerBase
+    [Route("api/bookings")]
+    [Authorize]
+    public class BookingController : ControllerBase
     {
-        private readonly IBookingService _bookingService;
+        private readonly IBookingService _service;
 
-        public BookingsController(IBookingService bookingService)
+        public BookingController(IBookingService service)
         {
-            _bookingService = bookingService;
+            _service = service;
         }
 
-        // ==========================================
-        // Helper: دالة لاستخراج ID اليوزر من التوكن
-        // ==========================================
         private int GetUserId()
-        {
-            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        }
+        => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        // ==========================================================
-        // 1. إنشاء حجز جديد (Create Booking)
-        // URL: POST /api/user/bookings
-        // ==========================================================
         [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
-        {
-            // 1. نجيب الايدي
-            int userId = GetUserId();
+        public async Task<IActionResult> Create(CreateBookingDto dto)
+            => Ok(await _service.CreateBookingAsync(GetUserId(), dto));
 
-            // 2. ننفذ الحجز (التحقق فقط بدون خصم حالياً حسب اللوجيك الجديد)
-            var result = await _bookingService.CreateBookingAsync(userId, dto);
-
-            // 3. لو فشل (رصيد غير كافي / اشتراك منتهي) نرجع Error
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            // 4. لو نجح نرجع الـ Code
-            return Ok(result);
-        }
-
-        // ==========================================================
-        // 2. عرض سجل حجوزات اليوزر (My Bookings)
-        // URL: GET /api/user/bookings/my
-        // ==========================================================
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyBookings()
-        {
-            int userId = GetUserId();
+        public async Task<IActionResult> MyBookings()
+            => Ok(await _service.GetMyBookingsAsync(GetUserId()));
 
-            var result = await _bookingService.GetUserBookingsAsync(userId);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-
-        // ==========================================================
-        // 3. عرض تفاصيل حجز معين
-        // URL: GET /api/user/bookings/{id}
-        // ==========================================================
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBookingDetails(int id)
-        {
-            int userId = GetUserId();
+        public async Task<IActionResult> Details(int id)
+            => Ok(await _service.GetBookingDetailsAsync(GetUserId(), id));
 
-            var result = await _bookingService.GetBookingDetailsAsync(userId, id);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-
-        // ==========================================================
-        // 4. إلغاء حجز
-        // URL: PUT /api/user/bookings/cancel/{id}
-        // ==========================================================
-        [HttpPut("cancel/{id}")]
-        public async Task<IActionResult> CancelBooking(int id)
-        {
-            int userId = GetUserId();
-
-            var result = await _bookingService.CancelBookingAsync(userId, id);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
+        [HttpPost("{id}/cancel")]
+        public async Task<IActionResult> Cancel(int id)
+            => Ok(await _service.CancelBookingAsync(GetUserId(), id));
     }
 }

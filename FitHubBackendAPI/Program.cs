@@ -1,26 +1,27 @@
 using FitHubBackendAPI.Data;
+using FitHubBackendAPI.Data.DataSeeder;
+using FitHubBackendAPI.Entities.Models;
+using FitHubBackendAPI.Filters;
+using FitHubBackendAPI.Middlewares;
+using FitHubBackendAPI.Profiles;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
-using FitHubBackendAPI.Services.Implementation.UserServices;
-using FitHubBackendAPI.Services.Interfaces.AuthServices;
-using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FitHubBackendAPI.Services.Implementation.GymServices;
-
+using FitHubBackendAPI.Services.Implementation.UserServices;
+using FitHubBackendAPI.Services.Interfaces.AdminServices;
+using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
+using FitHubBackendAPI.Services.Interfaces.OwnerServices;
+using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
-using FitHubBackendAPI.Services.Interfaces.AdminServices;
-using Microsoft.AspNetCore.Mvc;
-using FitHubBackendAPI.Middlewares;
-using FitHubBackendAPI.Data.DataSeeder;
-using FitHubBackendAPI.Filters;
-using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 
 namespace FitHubBackendAPI
 {
@@ -71,7 +72,11 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IAdminGymService, AdminGymService>();
 
             builder.Services.AddScoped<IGymSearchService, GymSearchService>();
+            builder.Services.AddScoped<IVisitService, VisitService>();
+            builder.Services.AddScoped<IOwnerWalletService, OwnerWalletService>();
 
+            builder.Services.AddAutoMapper(typeof(UserJourneyMappingProfile));
+            builder.Services.AddAutoMapper(typeof(WalletMappingProfile));
 
             //add User "subscription" service
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();

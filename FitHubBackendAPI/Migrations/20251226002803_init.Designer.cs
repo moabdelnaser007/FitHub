@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251222235758_removeMINITES")]
-    partial class removeMINITES
+    [Migration("20251226002803_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,8 +45,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsCost")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
@@ -61,6 +61,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SubscriptionId")
@@ -86,6 +87,136 @@ namespace FitHubBackendAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.FithubPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CreditsValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAcTive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FithubPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2602),
+                            CreditsValue = 250m,
+                            Description = "Perfect for starters",
+                            IsAcTive = true,
+                            IsDeleted = false,
+                            Name = "Basic",
+                            Price = 250m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2610),
+                            CreditsValue = 500m,
+                            IsAcTive = true,
+                            IsDeleted = false,
+                            Name = "Premium",
+                            Price = 500m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2612),
+                            CreditsValue = 800m,
+                            IsAcTive = true,
+                            IsDeleted = false,
+                            Name = "Gold",
+                            Price = 800m
+                        });
+                });
+
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.FithubUserPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAcTive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FithubUserPlans");
                 });
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymAmenities", b =>
@@ -153,6 +284,9 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("CloseTime")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -189,12 +323,15 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("VisitCreditsCost")
+                    b.Property<decimal>("VisitCreditsCost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(50);
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(50m);
 
                     b.Property<int?>("WorkingDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("rating")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -272,8 +409,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsCost")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -289,10 +426,6 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -408,6 +541,9 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
+
+                    b.Property<string>("imageName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("imagePath")
                         .HasColumnType("nvarchar(max)");
@@ -697,20 +833,27 @@ namespace FitHubBackendAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsAfter")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsAfter")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CreditsBefore")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsBefore")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CreditsChanged")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsChanged")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
@@ -756,8 +899,8 @@ namespace FitHubBackendAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Balance")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("Balance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -855,14 +998,17 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<DateTime?>("CheckInTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("CheckOutAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsDeducted")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsDeducted")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
@@ -874,6 +1020,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -909,8 +1056,7 @@ namespace FitHubBackendAPI.Migrations
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymPlan", "Plan")
                         .WithMany("Bookings")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PlanId");
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.Subscription", "Subscription")
                         .WithMany("Bookings")
@@ -927,6 +1073,25 @@ namespace FitHubBackendAPI.Migrations
                     b.Navigation("Plan");
 
                     b.Navigation("Subscription");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.FithubUserPlan", b =>
+                {
+                    b.HasOne("FitHubBackendAPI.Entities.Models.FithubPlan", "FithubPlan")
+                        .WithMany("UserPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
+                        .WithMany("PurchasedPlans")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FithubPlan");
 
                     b.Navigation("User");
                 });
@@ -1142,6 +1307,11 @@ namespace FitHubBackendAPI.Migrations
                     b.Navigation("VisitRecord");
                 });
 
+            modelBuilder.Entity("FitHubBackendAPI.Entities.Models.FithubPlan", b =>
+                {
+                    b.Navigation("UserPlans");
+                });
+
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.GymBranch", b =>
                 {
                     b.Navigation("Bookings");
@@ -1194,6 +1364,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Navigation("GymOwner");
 
                     b.Navigation("GymStaff");
+
+                    b.Navigation("PurchasedPlans");
 
                     b.Navigation("Reviews");
 

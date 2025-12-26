@@ -11,235 +11,160 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 {
     public class SubscriptionService : ISubscriptionService
     {
-        private readonly IGenericRepository<Subscription> _subRepo;
+        private readonly IGenericRepository<Subscription> _subscriptionRepo;
         private readonly IGenericRepository<GymPlan> _planRepo;
         private readonly IGenericRepository<GymBranch> _branchRepo;
         private readonly IGenericRepository<UserWallet> _walletRepo;
-        private readonly IGenericRepository<UserCreditTransactions> _transRepo; // هنستخدم دي في هيستوري الاشتراك
-        private readonly IMapper _mapper;
+        private readonly IGenericRepository<OwnerWallet> _ownerWalletRepo;
+        private readonly IGenericRepository<UserCreditTransactions> _txRepo;
 
         public SubscriptionService(
-            IGenericRepository<Subscription> subRepo,
+            IGenericRepository<Subscription> subscriptionRepo,
             IGenericRepository<GymPlan> planRepo,
             IGenericRepository<GymBranch> branchRepo,
             IGenericRepository<UserWallet> walletRepo,
-            IGenericRepository<UserCreditTransactions> transRepo,
-            IMapper mapper)
+            IGenericRepository<OwnerWallet> ownerWalletRepo,
+            IGenericRepository<UserCreditTransactions> txRepo)
         {
-            _subRepo = subRepo;
+            _subscriptionRepo = subscriptionRepo;
             _planRepo = planRepo;
             _branchRepo = branchRepo;
             _walletRepo = walletRepo;
-            _transRepo = transRepo;
-            _mapper = mapper;
+            _ownerWalletRepo = ownerWalletRepo;
+            _txRepo = txRepo;
         }
 
-        // ====================================================
-        // 1. شراء اشتراك (Purchase)
-        // ====================================================
-        public async Task<ResponseViewModel<bool>> PurchaseSubscriptionAsync(int userId, PurchaseSubscriptionDto dto)
+        // ================= Create =================
+        public async Task<ResponseViewModel<bool>> CreateAsync(int userId, CreateSubscriptionDto dto)
         {
-            try
+            var plan = await _planRepo.GetByIdAsync(dto.PlanId);
+            if (plan == null || plan.Status != PlanStatus.ACTIVE)
+                return ResponseViewModel<bool>.Fail("Plan not available");
+
+            var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
+            if (branch == null)
+                return ResponseViewModel<bool>.Fail("Branch not found");
+
+            var wallet = (await _walletRepo.FindAsync(w => w.UserId == userId)).FirstOrDefault();
+            if (wallet == null || (wallet.Balance ?? 0) < plan.CreditsCost)
+                return ResponseViewModel<bool>.Fail("Insufficient balance");
+
+            // خصم
+            var before = wallet.Balance ?? 0;
+            wallet.Balance = (wallet.Balance ?? 0) - plan.CreditsCost;
+            _walletRepo.Update(wallet);
+
+            // Owner Wallet
+            var ownerWallet = (await _ownerWalletRepo.FindAsync(o => o.OwnerId == branch.OwnerId))
+                .FirstOrDefault();
+
+            if (ownerWallet == null)
             {
-                // 1. هات تفاصيل الخطة اللي اليوزر عايزها
-                var plan = await _planRepo.GetByIdAsync(dto.PlanId);
-                if (plan == null || plan.Status != PlanStatus.ACTIVE)
-                    return ResponseViewModel<bool>.Fail("Plan not found or inactive");
-
-                // تأكد إن الخطة ليها سعر بالكريديت
-                if (plan.CreditsCost == null)
-                    return ResponseViewModel<bool>.Fail("This plan cannot be purchased with credits");
-
-                // 2. هات محفظة اليوزر
-                var wallets = await _walletRepo.FindAsync(w => w.UserId == userId);
-                var wallet = wallets.FirstOrDefault();
-
-                if (wallet == null || wallet.Balance < plan.CreditsCost)
-                    return ResponseViewModel<bool>.Fail("Insufficient balance. Please recharge your wallet.");
-
-                // 3. خصم الرصيد
-                int cost = plan.CreditsCost.Value;
-                int? oldBalance = wallet.Balance;
-
-                wallet.Balance -= cost;
-                wallet.LastUpdated = DateTime.UtcNow;
-                // _walletRepo.Update(wallet); // EF Core tracks changes automatically
-
-                // 4. تسجيل حركة الخصم (Transaction)
-                var transaction = new UserCreditTransactions
+                ownerWallet = new OwnerWallet
                 {
-                    UserId = userId,
-                    CreditsBefore = oldBalance.Value,
-                    CreditsChanged = -cost, // بالسالب عشان خصم
-                    CreditsAfter = wallet.Balance,
-
-                    // هنا بنسجل إن المصدر هو اشتراك عشان تظهر في الهيستوري صح
-                    TransactionType = TransactionType.DEDUCT,
-                    Source = TransactionSource.SUBSCRIPTION,
-
-                    // مهم: بنسجل المبلغ اللي اتدفع (PaymentAmount) عشان يظهر في الفاتورة
-                    // هنا المبلغ هو التكلفة بالنقاط، لو عندك سعر بالفلوس ممكن تحطه
-                    PaymentAmount = cost,
-
-                    IsAcTive = true
+                    OwnerId = branch.OwnerId,
+                    Balance = 0
                 };
-
-                // هنضيفها للكونتكس بس لسه مش هنسيف دلوقتي
-                await _transRepo.AddAsync(transaction);
-
-                // 5. إنشاء الاشتراك الفعلي
-                var subscription = new Subscription
-                {
-                    UserId = userId,
-                    PlanId = plan.Id,
-                    BranchId = plan.BranchId, // الفرع جبناه من الخطة
-
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddDays(plan.DurationDays ?? 30), // لو مفيش مدة، الديفولت 30 يوم
-
-                    VisitsAllowed = plan.VisitsLimit ?? 0, // عدد الزيارات المسموحة
-                    VisitsUsed = 0,
-
-                    Status = SubscriptionStatus.ACTIVE,
-                    IsAcTive = true
-                };
-
-                await _subRepo.AddAsync(subscription);
-
-                // 6. حفظ الكل (Save Changes) مرة واحدة
-                await _subRepo.SaveChangesAsync();
-
-                // تحديث الـ ReferenceId للترانزاكشن برقم الاشتراك الجديد
-                // دي خطوة إضافية شيك عشان نربط الخصم بالاشتراك
-                transaction.ReferenceId = subscription.Id;
-                _transRepo.Update(transaction);
-                await _transRepo.SaveChangesAsync();
-
-                return ResponseViewModel<bool>.Success(true, "Subscription purchased successfully");
+                await _ownerWalletRepo.AddAsync(ownerWallet);
             }
-            catch (Exception ex)
+
+            ownerWallet.Balance += plan.CreditsCost;
+            _ownerWalletRepo.Update(ownerWallet);
+
+            var subscription = new Subscription
             {
-                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return ResponseViewModel<bool>.Fail($"Error purchasing subscription: {msg}");
-            }
+                UserId = userId,
+                BranchId = dto.BranchId,
+                PlanId = dto.PlanId,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddDays(plan.DurationDays ?? 30),
+                VisitsAllowed = plan.VisitsLimit ?? 0,
+                VisitsUsed = 0,
+                Status = SubscriptionStatus.ACTIVE
+            };
+
+            await _subscriptionRepo.AddAsync(subscription);
+            await _subscriptionRepo.SaveChangesAsync(); // 🔥 مهم جدًا
+
+            await _txRepo.AddAsync(new UserCreditTransactions
+            {
+                UserId = userId,
+                CreditsBefore = before,
+                CreditsChanged = -plan.CreditsCost,
+                CreditsAfter = wallet.Balance,
+                PaymentAmount = (decimal)plan.CreditsCost,
+                TransactionType = TransactionType.DEDUCT,
+                Source = TransactionSource.SUBSCRIPTION,
+                Description = "Subscription purchase",
+                ReferenceId = subscription.Id
+            });
+
+            await _walletRepo.SaveChangesAsync();
+
+            return ResponseViewModel<bool>.Success(true, "Subscription created successfully");
         }
 
-        // ====================================================
-        // 2. إلغاء اشتراك (Cancel)
-        // ====================================================
-        public async Task<ResponseViewModel<bool>> CancelSubscriptionAsync(int userId, int subscriptionId)
+
+
+        // ================= My Subscriptions =================
+        public async Task<ResponseViewModel<List<SubscriptionListDto>>> GetMyAsync(int userId)
         {
-            try
+            var subs = await _subscriptionRepo.GetAsync(
+                s => s.UserId == userId,
+                includeProperties: "Plan,Branch");
+
+            var result = subs.Select(s => new SubscriptionListDto
             {
-                var sub = await _subRepo.GetByIdAsync(subscriptionId);
+                SubscriptionId = s.Id,
+                BranchName = s.Branch.BranchName!,
+                PlanName = s.Plan.Name!,
+                RemainingVisits = s.VisitsAllowed - s.VisitsUsed,
+                Status = s.Status,
+                EndDate = s.EndDate
+            }).ToList();
 
-                // لازم نتأكد إن الاشتراك موجود وبتاع اليوزر ده
-                if (sub == null || sub.UserId != userId)
-                    return ResponseViewModel<bool>.Fail("Subscription not found");
-
-                if (sub.Status == SubscriptionStatus.CANCELLED || sub.Status == SubscriptionStatus.EXPIRED)
-                    return ResponseViewModel<bool>.Fail("Subscription is already cancelled or expired");
-
-                // تغيير الحالة
-                sub.Status = SubscriptionStatus.CANCELLED;
-
-                // تصفير الزيارات المتبقية (عشان نضمن عدم الاستخدام)
-                sub.VisitsUsed = sub.VisitsAllowed;
-                sub.UpdatedAt = DateTime.UtcNow;
-
-                _subRepo.Update(sub);
-                await _subRepo.SaveChangesAsync();
-
-                return ResponseViewModel<bool>.Success(true, "Subscription cancelled successfully");
-            }
-            catch (Exception ex)
-            {
-                return ResponseViewModel<bool>.Fail($"Error cancelling subscription: {ex.Message}");
-            }
+            return ResponseViewModel<List<SubscriptionListDto>>.Success(result);
         }
 
-        // ====================================================
-        // 3. عرض اشتراكاتي (Get My Subscriptions)
-        // ====================================================
-        public async Task<ResponseViewModel<List<MySubscriptionDto>>> GetMySubscriptionsAsync(int userId)
+        // ================= Details =================
+        public async Task<ResponseViewModel<SubscriptionDetailsDto>> GetByIdAsync(int userId, int subscriptionId)
         {
-            try
+            var sub = (await _subscriptionRepo.GetAsync(
+                s => s.Id == subscriptionId,
+                includeProperties: "Plan,Branch")).FirstOrDefault();
+
+            if (sub == null || sub.UserId != userId)
+                return ResponseViewModel<SubscriptionDetailsDto>.Fail("Not found");
+
+            if (sub.Branch == null || sub.Plan == null)
+                return ResponseViewModel<SubscriptionDetailsDto>.Fail("Subscription data is incomplete");
+
+            return ResponseViewModel<SubscriptionDetailsDto>.Success(new SubscriptionDetailsDto
             {
-                // بنجيب الاشتراكات الخاصة باليوزر
-                var subs = await _subRepo.FindAsync(s => s.UserId == userId);
-                var resultList = new List<MySubscriptionDto>();
-
-                // بنعمل Loop عشان نملى البيانات الناقصة (اسم الفرع والخطة) يدوي
-                foreach (var sub in subs)
-                {
-                    var plan = await _planRepo.GetByIdAsync(sub.PlanId);
-                    var branch = await _branchRepo.GetByIdAsync(sub.BranchId);
-
-                    resultList.Add(new MySubscriptionDto
-                    {
-                        Id = sub.Id,
-                        PlanName = plan?.Name ?? "Unknown Plan",
-                        GymName = branch?.BranchName ?? "Unknown Gym",
-                        StartDate = sub.StartDate,
-                        EndDate = sub.EndDate,
-                        VisitsAllowed = sub.VisitsAllowed,
-                        VisitsUsed = sub.VisitsUsed,
-                        Status = sub.Status
-                    });
-                }
-
-                return ResponseViewModel<List<MySubscriptionDto>>.Success(resultList);
-            }
-            catch (Exception ex)
-            {
-                return ResponseViewModel<List<MySubscriptionDto>>.Fail($"Error fetching subscriptions: {ex.Message}");
-            }
+                SubscriptionId = sub.Id,
+                BranchName = sub.Branch.BranchName!,
+                PlanName = sub.Plan.Name!,
+                StartDate = sub.StartDate,
+                EndDate = sub.EndDate,
+                VisitsAllowed = sub.VisitsAllowed,
+                VisitsUsed = sub.VisitsUsed,
+                RemainingVisits = sub.VisitsAllowed - sub.VisitsUsed,
+                Status = sub.Status
+            });
         }
 
-        // ====================================================
-        // 4. تفاصيل الاشتراك + سجل المدفوعات (Get Details) ✅ NEW
-        // ====================================================
-        public async Task<ResponseViewModel<SubscriptionDetailsDto>> GetSubscriptionDetailsAsync(int userId, int subscriptionId)
+        // ================= Cancel =================
+        public async Task<ResponseViewModel<bool>> CancelAsync(int userId, int subscriptionId)
         {
-            try
-            {
-                // 1️⃣ نجيب تفاصيل الاشتراك (الجزء اللي فوق)
-                // بنحاول نجيب الـ Branch والـ Plan بالـ Include
-                var subs = await _subRepo.GetAsync(
-                    filter: s => s.Id == subscriptionId,
-                    includeProperties: "Branch,Plan"
-                );
+            var sub = await _subscriptionRepo.GetByIdAsync(subscriptionId);
+            if (sub == null || sub.UserId != userId)
+                return ResponseViewModel<bool>.Fail("Not found");
 
-                var subscription = subs.FirstOrDefault();
+            sub.Status = SubscriptionStatus.CANCELLED;
+            _subscriptionRepo.Update(sub);
 
-                // Validation Checks
-                if (subscription == null)
-                    return ResponseViewModel<SubscriptionDetailsDto>.Fail("Subscription not found");
-
-                if (subscription.UserId != userId)
-                    return ResponseViewModel<SubscriptionDetailsDto>.Fail("Unauthorized access to this subscription");
-
-                // تحويل المودل لـ DTO (بيستخدم المابنج اللي عدلناه عشان Plan.Name)
-                var dto = _mapper.Map<SubscriptionDetailsDto>(subscription);
-
-                // 2️⃣ نجيب سجل المدفوعات (الجدول اللي تحت)
-                // الشرط: لنفس اليوزر + المصدر اشتراك + الـ ReferenceId هو رقم الاشتراك ده
-                var transactions = await _transRepo.GetAsync(
-                    filter: t => t.UserId == userId &&
-                                 t.Source == TransactionSource.SUBSCRIPTION &&
-                                 t.ReferenceId == subscriptionId,
-                    orderBy: q => q.OrderByDescending(t => t.CreatedAt)
-                );
-
-                // تحويل الترانزاكشنز لليستة جوه الـ DTO
-                dto.BillingHistory = _mapper.Map<List<SubscriptionTransactionDto>>(transactions);
-
-                return ResponseViewModel<SubscriptionDetailsDto>.Success(dto);
-            }
-            catch (Exception ex)
-            {
-                return ResponseViewModel<SubscriptionDetailsDto>.Fail($"Error loading details: {ex.Message}");
-            }
+            await _subscriptionRepo.SaveChangesAsync();
+            return ResponseViewModel<bool>.Success(true);
         }
     }
 }

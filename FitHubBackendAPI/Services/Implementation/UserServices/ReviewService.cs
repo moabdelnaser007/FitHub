@@ -24,14 +24,16 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
         {
             var reviews = await _reviewRepo.GetAsync(r=>r.BranchId == branchId,
                 includeProperties:"Users,Booking");
-            var dto = reviews.Select(r => new GetAllBranchRevewsDto
-            {
-                Id = r.Id,
-                Rating=r.Rating,
-                UserName = r.User.FullName,
-                BookingDate = r.Booking.ScheduledDateTime,
-                Comment = r.Comment
-            });
+            var dto = reviews
+                .Where(r => r.User != null && r.Booking != null)
+                .Select(r => new GetAllBranchRevewsDto
+                {
+                    Id = r.Id,
+                    Rating=r.Rating,
+                    UserName = r.User!.FullName,
+                    BookingDate = r.Booking!.ScheduledDateTime,
+                    Comment = r.Comment
+                });
             return dto;
         }
 
@@ -65,6 +67,10 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 if (booking.Review != null)
                     return ResponseViewModel<bool>.Fail("You have already reviewed this booking");
 
+                // التحقق من وجود BranchId
+                if (!booking.BranchId.HasValue)
+                    return ResponseViewModel<bool>.Fail("Booking data is incomplete");
+
                 // 3. إنشاء الريفيو
                 var review = new Review
                 {
@@ -72,7 +78,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     BookingId = booking.Id,
 
                     // ✅ نقطة مهمة: بنربط الريفيو بالفرع أوتوماتيك من بيانات الحجز
-                    BranchId = booking.BranchId,
+                    BranchId = booking.BranchId.Value,
 
                     Rating = dto.Rating,
                     Comment = dto.Comment,

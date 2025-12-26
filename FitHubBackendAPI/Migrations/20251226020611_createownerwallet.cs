@@ -6,20 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitHubBackendAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class addRatingandCover : Migration
+    public partial class createownerwallet : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "CoverImagePath",
-                table: "GymBranches",
-                type: "nvarchar(max)",
-                nullable: true);
-
             migrationBuilder.AddColumn<int>(
-                name: "rating",
-                table: "GymBranches",
+                name: "UserId",
+                table: "OwnerWallets",
                 type: "int",
                 nullable: true);
 
@@ -28,54 +22,70 @@ namespace FitHubBackendAPI.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6652));
+                value: new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9750));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6655));
+                value: new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9758));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6657));
+                value: new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9764));
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnerWallets_UserId",
+                table: "OwnerWallets",
+                column: "UserId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_OwnerWallets_Users_UserId",
+                table: "OwnerWallets",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CoverImagePath",
-                table: "GymBranches");
+            migrationBuilder.DropForeignKey(
+                name: "FK_OwnerWallets_Users_UserId",
+                table: "OwnerWallets");
+
+            migrationBuilder.DropIndex(
+                name: "IX_OwnerWallets_UserId",
+                table: "OwnerWallets");
 
             migrationBuilder.DropColumn(
-                name: "rating",
-                table: "GymBranches");
+                name: "UserId",
+                table: "OwnerWallets");
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7797));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6265));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7805));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6273));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7811));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6275));
         }
     }
 }

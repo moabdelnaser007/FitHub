@@ -11,7 +11,7 @@ namespace FitHubBackendAPI.Entities.Models
 
         public decimal Price { get; set; }       // السعر بالجنيه (250, 500, 800)
 
-        public int CreditsValue { get; set; }    // عدد النقاط المقابل (250, 500, 800)
+        public decimal CreditsValue { get; set; }    // عدد النقاط المقابل (250, 500, 800)
 
         // Navigation Property (للعلاقة Many-to-Many)
         public List<FithubUserPlan> UserPlans { get; set; } = new();

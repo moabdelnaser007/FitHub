@@ -12,8 +12,6 @@ namespace FitHubBackendAPI.Entities.Models
         public string? RejectionReason { get; set; }
 
         public string CommercialRegistrationNumber { get; set; }
-        //public byte[]? LicenseFile { get; set; }      // ✔ يتخزن في DB
-        //public string? LicenseFileType { get; set; }  // ✔ content-type
 
 
         // Navigation

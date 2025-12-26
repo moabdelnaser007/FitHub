@@ -3,7 +3,7 @@
     public class WalletBalanceDto
     {
         //class to return the wallet by "credits" balance
-        public int Balance { get; set; }
+        public decimal Balance { get; set; }
         public int UserId { get;  set; }
     }
 }

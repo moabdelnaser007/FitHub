@@ -42,8 +42,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsCost")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
@@ -58,6 +58,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SubscriptionId")
@@ -99,8 +100,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("CreditsValue")
-                        .HasColumnType("int");
+                    b.Property<decimal>("CreditsValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -132,8 +133,8 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6652),
-                            CreditsValue = 250,
+                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9750),
+                            CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
                             IsDeleted = false,
@@ -143,9 +144,8 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6655),
-                            CreditsValue = 500,
-                            Description = "Most Popular Choice",
+                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9758),
+                            CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
                             Name = "Premium",
@@ -154,9 +154,8 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 23, 22, 53, 19, 988, DateTimeKind.Utc).AddTicks(6657),
-                            CreditsValue = 800,
-                            Description = "Best Value for Pros",
+                            CreatedAt = new DateTime(2025, 12, 26, 2, 6, 9, 846, DateTimeKind.Utc).AddTicks(9764),
+                            CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
                             Name = "Gold",
@@ -321,10 +320,10 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("VisitCreditsCost")
+                    b.Property<decimal>("VisitCreditsCost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(50);
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(50m);
 
                     b.Property<int?>("WorkingDays")
                         .HasColumnType("int");
@@ -407,8 +406,8 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsCost")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -424,10 +423,6 @@ namespace FitHubBackendAPI.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -647,11 +642,16 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId")
                         .IsUnique()
                         .HasFilter("[OwnerId] IS NOT NULL");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("OwnerWallets");
                 });
@@ -835,20 +835,23 @@ namespace FitHubBackendAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsAfter")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsAfter")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CreditsBefore")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsBefore")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CreditsChanged")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsChanged")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -898,8 +901,8 @@ namespace FitHubBackendAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Balance")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("Balance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -997,14 +1000,17 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<DateTime?>("CheckInTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("CheckOutAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreditsDeducted")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CreditsDeducted")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsAcTive")
                         .HasColumnType("bit");
@@ -1016,6 +1022,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1051,8 +1058,7 @@ namespace FitHubBackendAPI.Migrations
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.GymPlan", "Plan")
                         .WithMany("Bookings")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PlanId");
 
                     b.HasOne("FitHubBackendAPI.Entities.Models.Subscription", "Subscription")
                         .WithMany("Bookings")
@@ -1191,7 +1197,13 @@ namespace FitHubBackendAPI.Migrations
                         .HasForeignKey("FitHubBackendAPI.Entities.Models.OwnerWallet", "OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("FitHubBackendAPI.Entities.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Owner");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitHubBackendAPI.Entities.Models.Review", b =>

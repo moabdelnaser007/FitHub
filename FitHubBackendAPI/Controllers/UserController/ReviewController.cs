@@ -37,5 +37,12 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             return Ok(result);
         }
+        [HttpGet("branch/{branchId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetBranchReviews(int branchId)
+        {
+            var reviews = await _reviewService.GetAllBrancheReviewsAsync(branchId);
+            return Ok(reviews);
+        }
     }
 }

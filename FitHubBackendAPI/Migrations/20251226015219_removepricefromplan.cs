@@ -6,67 +6,56 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitHubBackendAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDescriptionCol : Migration
+    public partial class removepricefromplan : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
-                table: "UserCreditTransactions",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7797));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6265));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7805));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6273));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 23, 44, 11, 684, DateTimeKind.Utc).AddTicks(7811));
+                value: new DateTime(2025, 12, 26, 1, 52, 17, 860, DateTimeKind.Utc).AddTicks(6275));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "UserCreditTransactions");
-
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 22, 59, 11, 690, DateTimeKind.Utc).AddTicks(680));
+                value: new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2602));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 22, 59, 11, 690, DateTimeKind.Utc).AddTicks(688));
+                value: new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2610));
 
             migrationBuilder.UpdateData(
                 table: "FithubPlans",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedAt",
-                value: new DateTime(2025, 12, 22, 22, 59, 11, 690, DateTimeKind.Utc).AddTicks(694));
+                value: new DateTime(2025, 12, 26, 0, 28, 2, 501, DateTimeKind.Utc).AddTicks(2612));
         }
     }
 }

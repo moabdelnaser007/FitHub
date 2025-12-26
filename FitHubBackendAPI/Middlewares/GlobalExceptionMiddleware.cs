@@ -81,6 +81,12 @@ namespace FitHubBackendAPI.Middlewares
                     message = validationEx.Message;
                     break;
 
+                case NullReferenceException nullRefEx:
+                    statusCode = (int)HttpStatusCode.InternalServerError;
+                    errorCode = ErrorCode.ServerError;
+                    message = "Object reference not set to an instance of an object.";
+                    break;
+
                 case KeyNotFoundException:
                     statusCode = (int)HttpStatusCode.NotFound;
                     errorCode = ErrorCode.NotFound;

@@ -5,16 +5,9 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
 {
     public interface ISubscriptionService
     {
-        // شراء اشتراك جديد
-        Task<ResponseViewModel<bool>> PurchaseSubscriptionAsync(int userId, PurchaseSubscriptionDto dto);
-
-        // إلغاء اشتراك
-        Task<ResponseViewModel<bool>> CancelSubscriptionAsync(int userId, int subscriptionId);
-
-        // عرض اشتراكاتي
-        Task<ResponseViewModel<List<MySubscriptionDto>>> GetMySubscriptionsAsync(int userId);
-
-        // الدالة دي هتجيب تفاصيل الاشتراك + سجل مدفوعاته
-        Task<ResponseViewModel<SubscriptionDetailsDto>> GetSubscriptionDetailsAsync(int userId, int subscriptionId);
+        Task<ResponseViewModel<bool>> CreateAsync(int userId, CreateSubscriptionDto dto);
+        Task<ResponseViewModel<List<SubscriptionListDto>>> GetMyAsync(int userId);
+        Task<ResponseViewModel<SubscriptionDetailsDto>> GetByIdAsync(int userId, int subscriptionId);
+        Task<ResponseViewModel<bool>> CancelAsync(int userId, int subscriptionId);
     }
 }

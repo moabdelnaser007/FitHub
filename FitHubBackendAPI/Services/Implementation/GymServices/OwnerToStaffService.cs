@@ -30,8 +30,13 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         public async Task<IEnumerable<GetStuffDTO>> GetAllStaffAsync(int ownerId)
         {
             var gymOwner = await _gymOwnerRepository.FindAsync(o => o.UserId == ownerId);
+            var owner = gymOwner.FirstOrDefault();
+            
+            if (owner == null)
+                throw new Exception("Owner not found");
+
             var staffMembers = await _staffMemberRepository
-                .FindAsync(s => s.GymOwnerId == gymOwner.FirstOrDefault().Id);
+                .FindAsync(s => s.GymOwnerId == owner.Id);
 
             if (staffMembers == null || !staffMembers.Any())
                 return new List<GetStuffDTO>();

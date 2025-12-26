@@ -11,9 +11,11 @@ namespace FitHubBackendAPI.Entities.Models
         public int? StaffId { get; set; }
 
         public DateTime? CheckInTime { get; set; }
-        public int? CreditsDeducted { get; set; }
+        public DateTime? CheckOutAt { get; set; }
 
-        public VisitStatus? Status { get; set; } = VisitStatus.CHECKED_IN;
+        public decimal? CreditsDeducted { get; set; }
+
+        public VisitStatus Status { get; set; } = VisitStatus.CHECKED_IN;
 
         public Booking? Booking { get; set; } = null!;
         public User? User { get; set; } = null!;

@@ -13,7 +13,7 @@ namespace FitHubBackendAPI.Entities.Models
 
 
         public UserRole? Role { get; set; }
-        public AccountStatus? Status { get; set; }
+        public AccountStatus? Status { get; set; } = AccountStatus.Active;
 
         public GymOwner? GymOwner { get; set; }
         public GymStaff? GymStaff { get; set; }

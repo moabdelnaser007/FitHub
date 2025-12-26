@@ -57,6 +57,10 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         // ✅ OWNER REGISTER
         public async Task<GymOwner> RegisterOwnerAsync(RegisterOwnerDto dto)
         {
+            var ownerwallet = new OwnerWallet
+            {
+                Balance = 0.0M
+            };
 
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Password mismatch");
@@ -81,6 +85,8 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 User = user,
                 CommercialRegistrationNumber = dto.CommercialRegistrationNumber,
             };
+            ownerwallet.User = user;
+            owner.Wallet = ownerwallet;
             await _context.GymOwners.AddAsync(owner);
             await _context.SaveChangesAsync();
 

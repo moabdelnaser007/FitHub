@@ -181,15 +181,15 @@ namespace FitHubBackendAPI.Data
                 .HasForeignKey(s => s.PlanId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<GymPlan>()
-                .HasMany(p => p.Bookings)
-                .WithOne(b => b.Plan)
-                .HasForeignKey(b => b.PlanId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<GymPlan>()
+            //    .HasMany(p => p.Bookings)
+            //    .WithOne(b => b.Plan)
+            //    .HasForeignKey(b => b.PlanId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<GymPlan>()
-                .Property(x => x.Price)
-                .HasPrecision(18, 2);
+            //modelBuilder.Entity<GymPlan>()
+            //    .Property(x => x.Price)
+            //    .HasPrecision(18, 2);
 
             // ----- User -----
             modelBuilder.Entity<User>()
@@ -290,43 +290,39 @@ namespace FitHubBackendAPI.Data
             .Property(b => b.VisitCreditsCost)
             .HasDefaultValue(50);
 
-
-            // 👇 FIXED : Seeding Fithub Plans
             modelBuilder.Entity<FithubPlan>().HasData(
-                new FithubPlan
-                {
-                    Id = 1, // لازم نحدد الـ Id يدوي هنا
-                    Name = "Basic",
-                    Description = "Perfect for starters",
-                    Price = 250,
-                    CreditsValue = 250,
-                    IsAcTive = true,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new FithubPlan
-                {
-                    Id = 2,
-                    Name = "Premium",
-                    Description = "Most Popular Choice",
-                    Price = 500,
-                    CreditsValue = 500,
-                    IsAcTive = true,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new FithubPlan
-                {
-                    Id = 3,
-                    Name = "Gold",
-                    Description = "Best Value for Pros",
-                    Price = 800,
-                    CreditsValue = 800,
-                    IsAcTive = true,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.UtcNow
-                }
-            );
+    new FithubPlan
+    {
+        Id = 1,
+        Name = "Basic",
+        Description = "Perfect for starters",
+        Price = 250m,
+        CreditsValue = 250,
+        IsAcTive = true,
+        IsDeleted = false
+    },
+    new FithubPlan
+    {
+        Id = 2,
+        Name = "Premium",
+        Price = 500m,
+        CreditsValue = 500,
+        IsAcTive = true,
+        IsDeleted = false
+    },
+    new FithubPlan
+    {
+        Id = 3,
+        Name = "Gold",
+        Price = 800m,
+        CreditsValue = 800,
+        IsAcTive = true,
+        IsDeleted = false
+    }
+);
+
+
+
 
         }
 

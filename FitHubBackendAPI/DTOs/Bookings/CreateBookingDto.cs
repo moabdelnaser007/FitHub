@@ -4,12 +4,13 @@ namespace FitHubBackendAPI.DTOs.Bookings
 {
     public class CreateBookingDto
     {
-        [Required(ErrorMessage = "Branch is required")]
-        public int BranchId { get; set; } // رايح أنهي فرع
+        [Required]
+        public int BranchId { get; set; }
 
-        public int? SubscriptionId { get; set; } // لو عنده اشتراك يبعته، لو زيارة ع الطاير يسيبه فاضي
+        // لو حجز باشتراك
+        public int? SubscriptionId { get; set; }
 
-        [Required(ErrorMessage = "Date and Time is required")]
-        public DateTime ScheduledDateTime { get; set; } // ميعاد الحجز
+        [Required]
+        public DateTime ScheduledDateTime { get; set; }
     }
 }

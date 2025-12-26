@@ -2,7 +2,6 @@
 
 namespace FitHubBackendAPI.DTOs.Subscriptions
 {
-    //for displaying user's subscription details
     public class MySubscriptionDto
     {
         public int Id { get; set; } // Subscription Id
