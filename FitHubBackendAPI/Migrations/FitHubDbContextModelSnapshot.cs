@@ -133,7 +133,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7883),
+                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1893),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -144,7 +144,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7892),
+                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1901),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -154,7 +154,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7894),
+                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1903),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -793,7 +793,8 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -823,6 +824,9 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

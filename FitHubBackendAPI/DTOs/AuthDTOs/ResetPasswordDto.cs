@@ -12,12 +12,19 @@ namespace FitHubBackendAPI.DTOs.AuthDTOs
         [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits.")]
         public string Otp { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "New password is required.")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [RegularExpression(
+        @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
+        ErrorMessage = "Password must contain uppercase, lowercase, and number")]
         public string NewPassword { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Confirm Password is required.")]
-        [Compare("NewPassword", ErrorMessage = "Passwords do not match.")]
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [RegularExpression(
+                @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
+                ErrorMessage = "Password must contain uppercase, lowercase, and number")]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

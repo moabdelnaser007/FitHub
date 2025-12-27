@@ -381,10 +381,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 throw new Exception("Branch not found");
             }
             var images = await _imagesRepository.FindAsync(img => img.GymId == branchId);
-            if (images == null || images.Count() == 0)
-            {
-                throw new Exception("No images found for this branch");
-            }
+            //if (images == null || images.Count() == 0)
+            //{
+            //    throw new Exception("No images found for this branch");
+            //}
             var dtos = images.Select(image => new GetBranchImagePathDto
             {
                 imageName = image.imageName,
@@ -394,7 +394,9 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         }
         public async Task<bool> RemoveImageFromBranchAsync(int branchId, string imageName)
         {
-            var branch = await _repository.GetByIdAsync(branchId);
+            var query = await _repository.GetAsync(b=>b.Id==branchId,
+                                        includeProperties:"Images");
+            var branch = query.FirstOrDefault();
             if (branch == null)
             {
                 throw new Exception("Branch not found");
@@ -417,7 +419,9 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         }
         public async Task<GetBranchImagePathDto> GetBranchImagePathAsync(int branchId, string imageName)
         {
-            var branch = await _repository.GetByIdAsync(branchId);
+            var query = await _repository.GetAsync(b => b.Id == branchId,
+                                        includeProperties: "Images");
+            var branch = query.FirstOrDefault();
             if (branch == null)
             {
                 throw new Exception("Branch not found");

@@ -68,14 +68,14 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 return ResponseViewModel<bool>.Fail("Staff not assigned to this branch");
 
             // 4️⃣ No Show
-            if (booking.ScheduledDateTime < DateTime.UtcNow)
-            {
-                booking.Status = BookingStatus.NOSHOW;
-                _bookingRepo.Update(booking);
-                await _bookingRepo.SaveChangesAsync();
+            //if (booking.ScheduledDateTime < DateTime.UtcNow)
+            //{
+            //    booking.Status = BookingStatus.NOSHOW;
+            //    _bookingRepo.Update(booking);
+            //    await _bookingRepo.SaveChangesAsync();
 
-                return ResponseViewModel<bool>.Fail("Booking expired (No Show)");
-            }
+            //    return ResponseViewModel<bool>.Fail("Booking expired (No Show)");
+            //}
 
             decimal deductedCredits = 0;
 
@@ -168,7 +168,6 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             return ResponseViewModel<bool>.Success(true, "Check-in completed successfully");
         }
-
 
         // ======================================================
         // 2️⃣ USER VISIT HISTORY

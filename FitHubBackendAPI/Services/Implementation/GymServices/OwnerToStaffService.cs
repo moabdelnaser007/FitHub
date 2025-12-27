@@ -70,6 +70,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 FullName = s.FullName,
                 Email = s.Email,
                 Phone = s.Phone,
+                City = s.City,
                 Role = s.Role,
                 
                 Status = s.Status

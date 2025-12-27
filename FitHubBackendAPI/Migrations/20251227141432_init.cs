@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitHubBackendAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class initaiteDB : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,7 +42,7 @@ namespace FitHubBackendAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -400,7 +400,7 @@ namespace FitHubBackendAPI.Migrations
                         column: x => x.BranchId,
                         principalTable: "GymBranches",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_GymStaffs_GymOwners_GymOwnerId",
                         column: x => x.GymOwnerId,
@@ -411,7 +411,7 @@ namespace FitHubBackendAPI.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -631,9 +631,9 @@ namespace FitHubBackendAPI.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "CreditsValue", "Description", "IsAcTive", "IsDeleted", "Name", "Price", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7883), null, 250m, "Perfect for starters", true, false, "Basic", 250m, null, null },
-                    { 2, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7892), null, 500m, null, true, false, "Premium", 500m, null, null },
-                    { 3, new DateTime(2025, 12, 26, 5, 25, 43, 914, DateTimeKind.Utc).AddTicks(7894), null, 800m, null, true, false, "Gold", 800m, null, null }
+                    { 1, new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1893), null, 250m, "Perfect for starters", true, false, "Basic", 250m, null, null },
+                    { 2, new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1901), null, 500m, null, true, false, "Premium", 500m, null, null },
+                    { 3, new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1903), null, 800m, null, true, false, "Gold", 800m, null, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -761,6 +761,12 @@ namespace FitHubBackendAPI.Migrations
                 name: "IX_UserCreditTransactions_UserId",
                 table: "UserCreditTransactions",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserWallets_UserId",
