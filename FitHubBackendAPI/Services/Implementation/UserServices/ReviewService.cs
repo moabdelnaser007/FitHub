@@ -23,7 +23,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
         public async Task<IEnumerable<GetAllBranchRevewsDto>> GetAllBrancheReviewsAsync(int branchId)
         {
             var reviews = await _reviewRepo.GetAsync(r=>r.BranchId == branchId,
-                includeProperties:"Users,Booking");
+                includeProperties:"User,Booking");
             var dto = reviews
                 .Where(r => r.User != null && r.Booking != null)
                 .Select(r => new GetAllBranchRevewsDto
