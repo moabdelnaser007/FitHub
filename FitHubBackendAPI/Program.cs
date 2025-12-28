@@ -80,6 +80,7 @@ namespace FitHubBackendAPI
 
             //add User "subscription" service
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            builder.Services.AddScoped<IOwnerSubscriptionService, OwnerSubscriptionService>();
             //add User "booking" service
             builder.Services.AddScoped<IBookingService, BookingService>();
 
