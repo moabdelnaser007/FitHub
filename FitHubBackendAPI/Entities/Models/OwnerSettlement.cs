@@ -6,7 +6,6 @@ namespace FitHubBackendAPI.Entities.Models
     {
         public int OwnerId { get; set; }
 
-        public string? SettlementMonth { get; set; }
 
         public int? TotalCreditsConsumed { get; set; }
         public decimal? TotalExpectedPayout { get; set; }
