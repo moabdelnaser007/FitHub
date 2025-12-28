@@ -32,6 +32,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             => Ok(await _service.GetMyAsync(GetUserId()));
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> Details(int id)
             => Ok(await _service.GetByIdAsync(GetUserId(), id));
 
@@ -42,5 +43,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpGet("GetActiveSubscriptions")]
         public async Task<IActionResult> GetActiveSubscriptions(int branchId)
             => Ok(await _service.GetActiveSubscriptionsAsync(GetUserId(), branchId));
+        [Authorize(Roles = "Owner,Admin")]
+        [HttpGet("GetBranchSubscriptions/{branchId}")]
+        public async Task<IActionResult> GetBranchSubscriptions(int branchId)
+            => Ok(await _service.GetBranchSubscriptionsAsync( branchId));
     }
 }

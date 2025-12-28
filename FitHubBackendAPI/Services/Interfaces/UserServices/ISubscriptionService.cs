@@ -10,5 +10,6 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
         Task<ResponseViewModel<SubscriptionDetailsDto>> GetByIdAsync(int userId, int subscriptionId);
         Task<ResponseViewModel<bool>> CancelAsync(int userId, int subscriptionId);
         Task<ResponseViewModel<IEnumerable<SubscriptionListDto>>> GetActiveSubscriptionsAsync(int userId, int branchId);
+        Task<ResponseViewModel<IEnumerable<SubscriptionListDto>>> GetBranchSubscriptionsAsync(int branchId);
     }
 }

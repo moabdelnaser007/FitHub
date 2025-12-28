@@ -137,7 +137,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 s => s.Id == subscriptionId,
                 includeProperties: "Plan,Branch")).FirstOrDefault();
 
-            if (sub == null || sub.UserId != userId)
+            if (sub == null )
                 return ResponseViewModel<SubscriptionDetailsDto>.Fail("Not found");
 
             if (sub.Branch == null || sub.Plan == null)
@@ -177,6 +177,21 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             IEnumerable<Subscription> subs = await _subscriptionRepo
                         .GetAsync(s=>s.UserId==userId && s.BranchId==branchId && s.Status==SubscriptionStatus.ACTIVE,
                         includeProperties: "Plan,Branch");
+            return ResponseViewModel<IEnumerable<SubscriptionListDto>>.Success(subs.Select(s => new SubscriptionListDto
+            {
+                SubscriptionId = s.Id,
+                BranchName = s.Branch.BranchName!,
+                PlanName = s.Plan.Name!,
+                RemainingVisits = s.VisitsAllowed - s.VisitsUsed,
+                Status = s.Status,
+                EndDate = s.EndDate
+            }));
+        }
+        public async Task<ResponseViewModel<IEnumerable<SubscriptionListDto>>> GetBranchSubscriptionsAsync(int branchId)
+        {
+            IEnumerable<Subscription> subs = await _subscriptionRepo
+                        .GetAsync(s => s.BranchId == branchId,
+                        includeProperties: "Plan,Branch,User");
             return ResponseViewModel<IEnumerable<SubscriptionListDto>>.Success(subs.Select(s => new SubscriptionListDto
             {
                 SubscriptionId = s.Id,
