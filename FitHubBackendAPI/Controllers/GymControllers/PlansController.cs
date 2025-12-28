@@ -58,7 +58,7 @@ namespace FitHubBackendAPI.Controllers.GymControllers
             return ResponseViewModel<IEnumerable<GetPlanByBranchIdDTO>>.Success(result, "Plans retrieved successfully.");
         }
 
-
+        [Authorize]
         [HttpGet]
         [Route("{planId}")]
         public async Task<ResponseViewModel<GetPlanByIdDTO>> GetPlanById(int planId)
