@@ -99,7 +99,7 @@ namespace FitHubBackendAPI.Services.Implementation.PaymobSevice
                 expiration = 3600,
                 merchant_order_id = SpecialReference.ToString(),
                 redirection_url = "http://localhost:5024/api/wallet/callback",
-                notification_url = "https://truantly-palpitant-taunya.ngrok-free.dev/api/wallet/ServerCallback"
+                notification_url = "https://branchiostegous-conjugationally-sherise.ngrok-free.dev/api/wallet/ServerCallback"
             };
 
             var json = JsonSerializer.Serialize(requestBody);

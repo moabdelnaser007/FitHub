@@ -11,31 +11,44 @@ namespace FitHubBackendAPI.Services.Implementation.SettlementsService
     {
         private readonly IGenericRepository<OwnerSettlement> _settlementRepo;
         private readonly IGenericRepository<OwnerWallet> _walletRepo;
+        private readonly IGenericRepository<GymOwner> _ownerRepo;
 
         public OwnerSettlementService(
             IGenericRepository<OwnerSettlement> settlementRepo,
-            IGenericRepository<OwnerWallet> walletRepo)
+            IGenericRepository<OwnerWallet> walletRepo,
+            IGenericRepository<GymOwner> ownerRepo)
         {
             _settlementRepo = settlementRepo;
             _walletRepo = walletRepo;
+            _ownerRepo = ownerRepo;
         }
 
         // ================= OWNER =================
 
-        public async Task<ResponseViewModel<bool>> CreateSettlementAsync(int ownerId, CreateSettlementDto dto)
+        public async Task<ResponseViewModel<bool>> CreateSettlementAsync(int ownerUserId, CreateSettlementDto dto)
         {
-            var wallet = (await _walletRepo.FindAsync(w => w.OwnerId == ownerId))
+            // 1️⃣ Get GymOwner by UserId
+            var owner = (await _ownerRepo.FindAsync(o => o.UserId == ownerUserId))
+                .FirstOrDefault();
+
+            if (owner == null)
+                return ResponseViewModel<bool>.Fail("Owner not found");
+
+            // 2️⃣ Get Owner Wallet
+            var wallet = (await _walletRepo.FindAsync(w => w.OwnerId == owner.Id))
                 .FirstOrDefault();
 
             if (wallet == null || wallet.Balance <= 0)
                 return ResponseViewModel<bool>.Fail("Owner wallet is empty");
 
+            // 3️⃣ Validate amount
             if (dto.Amount <= 0 || dto.Amount > wallet.Balance)
                 return ResponseViewModel<bool>.Fail("Invalid settlement amount");
 
+            // 4️⃣ Create settlement (NO wallet deduction here)
             var settlement = new OwnerSettlement
             {
-                OwnerId = ownerId,
+                OwnerId = owner.Id,
                 TotalExpectedPayout = dto.Amount,
                 PayoutStatus = SettlementStatus.PENDING,
                 CreatedAt = DateTime.UtcNow
@@ -47,9 +60,16 @@ namespace FitHubBackendAPI.Services.Implementation.SettlementsService
             return ResponseViewModel<bool>.Success(true, "Settlement request created");
         }
 
-        public async Task<ResponseViewModel<List<SettlementDto>>> GetOwnerSettlementsAsync(int ownerId)
+
+        public async Task<ResponseViewModel<List<SettlementDto>>> GetOwnerSettlementsAsync(int ownerUserId)
         {
-            var settlements = await _settlementRepo.GetAsync(s => s.OwnerId == ownerId);
+            var owner = (await _ownerRepo.GetAsync(o => o.UserId == ownerUserId))
+                .FirstOrDefault();
+
+            if (owner == null)
+                return ResponseViewModel<List<SettlementDto>>.Fail("Owner not found");
+
+            var settlements = await _settlementRepo.GetAsync(s => s.OwnerId == owner.Id);
 
             var result = settlements.Select(s => new SettlementDto
             {
@@ -63,6 +83,7 @@ namespace FitHubBackendAPI.Services.Implementation.SettlementsService
 
             return ResponseViewModel<List<SettlementDto>>.Success(result);
         }
+
 
         // ================= ADMIN =================
 
