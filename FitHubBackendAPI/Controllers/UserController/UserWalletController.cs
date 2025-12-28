@@ -21,6 +21,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         private readonly IUserWalletService _walletService;
         private readonly IPaymobService _paymobService;
         private readonly IConfiguration _configuration;
+        private object? crossValue = new object();
 
         public UserWalletController(IUserWalletService walletService,
             IPaymobService paymobService,

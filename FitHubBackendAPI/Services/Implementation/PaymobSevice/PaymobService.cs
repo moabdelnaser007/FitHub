@@ -144,18 +144,12 @@ namespace FitHubBackendAPI.Services.Implementation.PaymobSevice
             {
                 throw new Exception("Corrupted Transaction");
             }
-            var userPlan = (await _userPlanRepo.FindAsync(u=>u.UserId == Transaction.UserId)).FirstOrDefault()??
-                throw new Exception("User Plan Not Found");
-            
-            
             Transaction.IsPaid = true;
             Transaction.PaidAt = DateTime.UtcNow;
             Transaction.Status = _TransactionStatus.COMPLETED;
 
-            userPlan.PurchaseDate = DateTime.UtcNow;
-            userPlan.IsAcTive = true;
+            Transaction.CreditsAfter = (Transaction.CreditsBefore ?? 0) + (Transaction.CreditsChanged ?? 0);
             _transactionRepo.Update(Transaction);
-            _userPlanRepo.Update(userPlan);
             await _transactionRepo.SaveChangesAsync();
             return (Transaction);
         }
@@ -166,6 +160,8 @@ namespace FitHubBackendAPI.Services.Implementation.PaymobSevice
                         .FindAsync(t => t.ReferenceId == specialReference)).FirstOrDefault() ??
                         throw new Exception($"Payment Reference: {specialReference} Not Found");
             Transaction.IsPaid = false;
+            Transaction.PaidAt = DateTime.UtcNow;
+            Transaction.Status = _TransactionStatus.FAILED;
             _transactionRepo.Update(Transaction);
             await _transactionRepo.SaveChangesAsync();
             return (Transaction);

@@ -96,22 +96,8 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 await _walletRepo.AddAsync(wallet);
             }
-            //create user plan entry
-            //set isActive to false until payment confirmation
-
-            await _userPlanRepo.AddAsync(new FithubUserPlan
-            {
-                UserId = userId,
-                PlanId = plan.Id,
-
-                BasePrice = plan.Price,
-                TaxAmount = plan.Price * 0.15m,
-                TotalAmount = plan.Price * 1.15m,
-
-                IsAcTive = false,
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow
-            });
+            
+            
             //create transaction entry
             //set isPaid to false until payment confirmation
             //set credits before and after accordingly
@@ -121,9 +107,10 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 UserId = userId,
                 CreditsChanged = plan.CreditsValue,
                 CreditsBefore = wallet.Balance,
-                CreditsAfter = wallet.Balance + plan.CreditsValue,
+                CreditsAfter = wallet.Balance,
                 TransactionType = TransactionType.RECHARGE,
                 Source = TransactionSource.PAYMOB,
+                PaymentKey = plan.Id.ToString(),
                 Description = $"Recharge plan {plan.Name}",
                 PaymentAmount = plan.Price * 1.15m,
                 IsPaid = false,
@@ -144,10 +131,23 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var wallet = (await _walletRepo.FindAsync(w => w.UserId == transaction.UserId)).FirstOrDefault();
             if (wallet == null)
                 return ResponseViewModel<UserCreditTransactions>.Fail("Wallet not found");
+            var plan = await _planRepo.GetByIdAsync(int.Parse(transaction.PaymentKey ?? "0"))??
+                throw new Exception("Plan not found");
             if (transaction.IsPaid)
             {
                 wallet.Balance = transaction.CreditsAfter;
                 wallet.LastUpdated = DateTime.UtcNow;
+                await _userPlanRepo.AddAsync(new FithubUserPlan
+                {
+                    UserId = transaction.UserId??0,
+                    PlanId = plan.Id,
+
+                    BasePrice = plan.Price,
+                    TaxAmount = plan.Price * 0.15m,
+                    TotalAmount = plan.Price * 1.15m,
+
+                    CreatedAt = DateTime.UtcNow
+                });
                 _walletRepo.Update(wallet);
                 await _walletRepo.SaveChangesAsync();
             }

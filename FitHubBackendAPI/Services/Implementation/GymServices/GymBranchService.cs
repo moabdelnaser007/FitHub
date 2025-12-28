@@ -54,36 +54,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 Description = dto.Description,
                 WorkingDays = dto.WorkingDays,
                 VisitCreditsCost = dto.VisitCreditsCost,
-                AmenitiesAvailable = dto.AmenitiesAvailable
+                AmenitiesAvailable = dto.AmenitiesAvailable,
+                rating = 0
             };
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            string folderPath = Path.Combine(wwwRootPath, "images\\Gym", branch.BranchName);
-
-            //// Create the directory if it doesn't exist
-            //Directory.CreateDirectory(folderPath);
-            //foreach (var image in images)
-            //{
-
-            //    if (image != null)
-            //    {
-            //        var fileName = $"{Guid.NewGuid().ToString()}-{branch.BranchName}" + Path.GetExtension(image.FileName);
-            //        string filePath = Path.Combine(folderPath,fileName);
-
-
-            //        using (var stream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            await image.CopyToAsync(stream);
-            //        }
-
-            //        Image imageEntity = new Image
-            //        {
-            //            imagePath = filePath,
-            //            branch = branch
-            //        };
-            //        branch.Images.Add(imageEntity);
-            //    }
-
-            //}
+            
             await _repository.AddAsync(branch);
 
 
