@@ -284,6 +284,10 @@ namespace FitHubBackendAPI.Data
                 .HasForeignKey(r => r.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+         modelBuilder.Entity<User>()
+        .HasIndex(u => u.Email)
+        .IsUnique();
+
             // ✅ السطر السحري:
             // بنقوله: عمود سعر الزيارة، لو مبعتلكش قيمة، او للصفوف القديمة، خليه بـ 50
             modelBuilder.Entity<GymBranch>()

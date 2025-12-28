@@ -20,11 +20,18 @@ namespace FitHubBackendAPI.DTOs.AuthDTOs
         [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]
         public string City { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required.")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [RegularExpression(
+        @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
+        ErrorMessage = "Password must contain uppercase, lowercase, and number"    )]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Confirm Password is required.")]
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [RegularExpression(
+                @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
+                ErrorMessage = "Password must contain uppercase, lowercase, and number")]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }

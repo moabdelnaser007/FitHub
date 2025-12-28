@@ -133,6 +133,8 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 throw new Exception("Invalid Owner Id");
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Password mismatch");
+            if (await _context.Users.AnyAsync(x => x.Email == dto.Email))
+                throw new ValidationException("Email already exists");
             var owner = await _context.GymOwners.FirstOrDefaultAsync(x => x.UserId == ownerId);
             var user = new User
             {

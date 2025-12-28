@@ -24,17 +24,18 @@ namespace FitHubBackendAPI.Controllers.UserController
         private int GetUserId()
         => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        [HttpPost("check-in")]
+            [HttpPost("check-in")]
             [Authorize(Roles = "Staff")]
             public async Task<IActionResult> CheckIn(CheckInVisitDto dto)
                 => Ok(await _service.CheckInAsync(GetUserId(), dto));
 
-            [HttpGet("history")]
+           [HttpGet("history")]
+           [Authorize]
             public async Task<IActionResult> MyVisits()
                 => Ok(await _service.GetMyVisitsAsync(GetUserId()));
 
             [HttpGet("branch/{branchId}")]
-            [Authorize(Roles = "Staff,Owner")]
+            [Authorize]
             public async Task<IActionResult> BranchVisits(int branchId)
                 => Ok(await _service.GetBranchVisitsAsync(branchId, GetUserId()));
         }
