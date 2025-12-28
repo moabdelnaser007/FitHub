@@ -49,7 +49,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     return ResponseViewModel<string>.Fail("Invalid subscription");
 
                 if (subscription.Status != SubscriptionStatus.ACTIVE)
-                    return ResponseViewModel<string>.Fail("Subscription not active");
+                    return ResponseViewModel<string>.Fail("Subscription expired");
 
                 if (subscription.BranchId != dto.BranchId)
                     return ResponseViewModel<string>.Fail("Subscription not valid for this branch");
@@ -71,6 +71,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 creditsCost = 0; // ❗ لا خصم هنا
             }
+            
 
             // 3️⃣ Create booking
             var booking = new Booking
