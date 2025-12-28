@@ -38,5 +38,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpPost("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
             => Ok(await _service.CancelAsync(GetUserId(), id));
+
+        [HttpGet("GetActiveSubscriptions")]
+        public async Task<IActionResult> GetActiveSubscriptions(int branchId)
+            => Ok(await _service.GetActiveSubscriptionsAsync(GetUserId(), branchId));
     }
 }

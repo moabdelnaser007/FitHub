@@ -34,6 +34,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
             if (branch == null || branch.Status != BranchStatus.ACTIVE)
                 return ResponseViewModel<string>.Fail("Branch not available");
+            bool CanRegularVisit = dto.SubscriptionId == null || dto.SubscriptionId <= 0;
 
             decimal creditsCost = branch.VisitCreditsCost;
             Subscription? subscription = null;

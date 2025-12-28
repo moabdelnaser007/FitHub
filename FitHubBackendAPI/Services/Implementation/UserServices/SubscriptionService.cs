@@ -70,8 +70,9 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             ownerWallet.Balance += plan.CreditsCost;
             _ownerWalletRepo.Update(ownerWallet);
-
-            var subscription = new Subscription
+            var subs = (await GetActiveSubscriptionsAsync(userId, dto.BranchId)).Data;
+            if (subs == null || !subs.Any()) { 
+                var subscription = new Subscription
             {
                 UserId = userId,
                 BranchId = dto.BranchId,
@@ -85,6 +86,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             await _subscriptionRepo.AddAsync(subscription);
             await _subscriptionRepo.SaveChangesAsync(); // 🔥 مهم جدًا
+
 
             await _txRepo.AddAsync(new UserCreditTransactions
             {
@@ -101,7 +103,9 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             await _walletRepo.SaveChangesAsync();
 
-            return ResponseViewModel<bool>.Success(true, "Subscription created successfully");
+            return ResponseViewModel<bool>.Success(true, "Subscription created successfully"); 
+            }
+            return ResponseViewModel<bool>.Fail("You already have an active subscription for this branch");
         }
 
 
@@ -160,11 +164,28 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             if (sub == null || sub.UserId != userId)
                 return ResponseViewModel<bool>.Fail("Not found");
 
+            if(sub.VisitsAllowed - sub.VisitsUsed <= 0)
+                return ResponseViewModel<bool>.Fail("No remaining visits to refund");
             sub.Status = SubscriptionStatus.CANCELLED;
             _subscriptionRepo.Update(sub);
 
             await _subscriptionRepo.SaveChangesAsync();
             return ResponseViewModel<bool>.Success(true);
+        }
+        public async Task<ResponseViewModel<IEnumerable<SubscriptionListDto>>> GetActiveSubscriptionsAsync(int userId,int branchId)
+        {
+            IEnumerable<Subscription> subs = await _subscriptionRepo
+                        .GetAsync(s=>s.UserId==userId && s.BranchId==branchId && s.Status==SubscriptionStatus.ACTIVE,
+                        includeProperties: "Plan,Branch");
+            return ResponseViewModel<IEnumerable<SubscriptionListDto>>.Success(subs.Select(s => new SubscriptionListDto
+            {
+                SubscriptionId = s.Id,
+                BranchName = s.Branch.BranchName!,
+                PlanName = s.Plan.Name!,
+                RemainingVisits = s.VisitsAllowed - s.VisitsUsed,
+                Status = s.Status,
+                EndDate = s.EndDate
+            }));
         }
     }
 }
