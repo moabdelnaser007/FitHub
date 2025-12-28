@@ -11,12 +11,14 @@ using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Implementation.GymServices;
 using FitHubBackendAPI.Services.Implementation.PaymobSevice;
+using FitHubBackendAPI.Services.Implementation.SettlementsService;
 using FitHubBackendAPI.Services.Implementation.UserServices;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FitHubBackendAPI.Services.Interfaces.OwnerServices;
 using FitHubBackendAPI.Services.Interfaces.PaymobService;
+using FitHubBackendAPI.Services.Interfaces.SettlementsService;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +93,8 @@ namespace FitHubBackendAPI
 
             //add User "review" service
             builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IOwnerSettlementService, OwnerSettlementService>();
+            builder.Services.AddScoped<IAdminSettlementService, AdminSettlementService>();
 
             // ===============================
             // 3) Add AutoMapper
