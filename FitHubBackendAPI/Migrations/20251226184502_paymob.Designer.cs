@@ -4,6 +4,7 @@ using FitHubBackendAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    partial class FitHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251226184502_paymob")]
+    partial class paymob
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,7 +136,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1328),
+                            CreatedAt = new DateTime(2025, 12, 26, 18, 45, 1, 546, DateTimeKind.Utc).AddTicks(4556),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -144,7 +147,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1335),
+                            CreatedAt = new DateTime(2025, 12, 26, 18, 45, 1, 546, DateTimeKind.Utc).AddTicks(4563),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -154,7 +157,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1336),
+                            CreatedAt = new DateTime(2025, 12, 26, 18, 45, 1, 546, DateTimeKind.Utc).AddTicks(4565),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -881,9 +884,6 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("Source")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("TransactionType")
                         .IsRequired()

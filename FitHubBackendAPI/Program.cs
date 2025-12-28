@@ -1,5 +1,6 @@
 using FitHubBackendAPI.Data;
 using FitHubBackendAPI.Data.DataSeeder;
+using FitHubBackendAPI.Entities;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Filters;
 using FitHubBackendAPI.Middlewares;
@@ -9,11 +10,13 @@ using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Implementation.AdminServices;
 using FitHubBackendAPI.Services.Implementation.AuthServices;
 using FitHubBackendAPI.Services.Implementation.GymServices;
+using FitHubBackendAPI.Services.Implementation.PaymobSevice;
 using FitHubBackendAPI.Services.Implementation.UserServices;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
 using FitHubBackendAPI.Services.Interfaces.AuthServices;
 using FitHubBackendAPI.Services.Interfaces.GymBranch;
 using FitHubBackendAPI.Services.Interfaces.OwnerServices;
+using FitHubBackendAPI.Services.Interfaces.PaymobService;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -70,10 +73,12 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IAdminOwnerService, AdminOwnerService>();
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
             builder.Services.AddScoped<IAdminGymService, AdminGymService>();
+            builder.Services.AddScoped<IPaymobService,PaymobService>();
 
             builder.Services.AddScoped<IGymSearchService, GymSearchService>();
             builder.Services.AddScoped<IVisitService, VisitService>();
             builder.Services.AddScoped<IOwnerWalletService, OwnerWalletService>();
+            
 
             builder.Services.AddAutoMapper(typeof(UserJourneyMappingProfile));
             builder.Services.AddAutoMapper(typeof(WalletMappingProfile));
@@ -107,6 +112,9 @@ namespace FitHubBackendAPI
                 // register the filter globally so it applies to all controllers/actions
                 options.Filters.Add<ModelStateValidationFilter>();
             });
+            //paymob config
+            builder.Services.Configure<PaymobSettings>(builder.Configuration.GetSection("Paymob"));
+
 
             // ===============================
             // 4) Add FluentValidation

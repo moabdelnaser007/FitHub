@@ -381,10 +381,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 throw new Exception("Branch not found");
             }
             var images = await _imagesRepository.FindAsync(img => img.GymId == branchId);
-            if (images == null || images.Count() == 0)
-            {
-                throw new Exception("No images found for this branch");
-            }
+            //if (images == null || images.Count() == 0)
+            //{
+            //    throw new Exception("No images found for this branch");
+            //}
             var dtos = images.Select(image => new GetBranchImagePathDto
             {
                 imageName = image.imageName,

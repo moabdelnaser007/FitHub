@@ -98,5 +98,10 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 return ResponseViewModel<bool>.Fail($"Error submitting review: {ex.Message}");
             }
         }
+        public async Task<bool> DeleteReview(int ReviewId)
+        {
+
+            return true;
+        }
     }
 }
