@@ -21,11 +21,11 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
         private int GetUserId()
         => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateBookingDto dto)
             => Ok(await _service.CreateBookingAsync(GetUserId(), dto));
-
+        [Authorize(Roles = "User")]
         [HttpGet("my")]
         public async Task<IActionResult> MyBookings()
             => Ok(await _service.GetMyBookingsAsync(GetUserId()));
@@ -37,5 +37,9 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         [HttpPost("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
             => Ok(await _service.CancelBookingAsync(GetUserId(), id));
+        [Authorize(Roles = "Owner,Admin")]
+        [HttpGet("BranchBookings/{branchId}")]
+        public async Task<IActionResult> BranchBookings(int branchId)
+            => Ok(await _service.GetBookingsByBranchIdAsync(branchId));
     }
 }

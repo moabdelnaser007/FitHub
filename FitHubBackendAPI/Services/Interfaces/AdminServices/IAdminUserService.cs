@@ -9,6 +9,8 @@ namespace FitHubBackendAPI.Services.Interfaces.AdminServices
         Task<List<AdminUserListItemDto>> GetAllUsersAsync();
         Task UpdateUserAsync(int userId, AdminUpdateUserDto dto);
         Task DeleteUserAsync(int userId);
+        Task<List<AdminFitHubPlanDto>> GetUserFitHubPlansAsync(int userId);
+        Task<List<AdminFitHubPlanDto>> GetAllFitHubUserPlansAsync();
 
         
     }

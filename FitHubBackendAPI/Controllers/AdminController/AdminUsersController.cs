@@ -62,5 +62,26 @@ namespace FitHubBackendAPI.Controllers.UserController
 
             return Ok(ResponseViewModel<string>.Success( null,"User suspended successfully" ));
         }
+        [Authorize(Roles ="Admin,User")]
+        [HttpGet("{id}/GetCreditsPlansHistory")]
+        public async Task<ResponseViewModel<List<AdminFitHubPlanDto>>> GetCreditsPlansHistory(int id)
+        {
+            var plans = await _adminUserService.GetUserFitHubPlansAsync(id);
+            if (!plans.Any())
+            {
+                return ResponseViewModel<List<AdminFitHubPlanDto>>.Fail("no History");
+            }
+            return ResponseViewModel<List<AdminFitHubPlanDto>>.Success(plans);
+        }
+        [HttpGet("GetAllUsersCreditHistory")]
+        public async Task<ResponseViewModel<List<AdminFitHubPlanDto>>> GetAllUsersCreditHistory()
+        {
+            var plans = await _adminUserService.GetAllFitHubUserPlansAsync();
+            if (!plans.Any())
+            {
+                return ResponseViewModel<List<AdminFitHubPlanDto>>.Fail("no History");
+            }
+            return ResponseViewModel<List<AdminFitHubPlanDto>>.Success(plans);
+        }
     }
 }

@@ -107,6 +107,18 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var result = _mapper.Map<IEnumerable<BookingHistoryDto>>(bookings);
             return ResponseViewModel<IEnumerable<BookingHistoryDto>>.Success(result);
         }
+        //================= Get Booking by Branch Id =================
+        public async Task<ResponseViewModel<IEnumerable<BookingHistoryDto>>> GetBookingsByBranchIdAsync(int branchId)
+        {
+            var bookings = await _bookingRepo.GetAsync(
+                b => b.BranchId == branchId,
+                includeProperties: "User,Branch",
+                orderBy: q => q.OrderByDescending(x => x.ScheduledDateTime)
+            );
+
+            var result = _mapper.Map<IEnumerable<BookingHistoryDto>>(bookings);
+            return ResponseViewModel<IEnumerable<BookingHistoryDto>>.Success(result);
+        }
 
         // ================= Booking Details =================
         public async Task<ResponseViewModel<BookingDetailsDto>> GetBookingDetailsAsync(int userId, int bookingId)
@@ -118,8 +130,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
             var booking = bookings.FirstOrDefault();
 
-            if (booking == null || booking.UserId != userId)
-                return ResponseViewModel<BookingDetailsDto>.Fail("Booking not found");
+            
 
             if (booking.Branch == null)
                 return ResponseViewModel<BookingDetailsDto>.Fail("Booking data is incomplete");

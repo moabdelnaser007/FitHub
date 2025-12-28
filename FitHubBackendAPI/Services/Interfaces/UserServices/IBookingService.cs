@@ -9,5 +9,6 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
         Task<ResponseViewModel<IEnumerable<BookingHistoryDto>>> GetMyBookingsAsync(int userId);
         Task<ResponseViewModel<BookingDetailsDto>> GetBookingDetailsAsync(int userId, int bookingId);
         Task<ResponseViewModel<bool>> CancelBookingAsync(int userId, int bookingId);
+        Task<ResponseViewModel<IEnumerable<BookingHistoryDto>>> GetBookingsByBranchIdAsync(int branchId);
     }
 }

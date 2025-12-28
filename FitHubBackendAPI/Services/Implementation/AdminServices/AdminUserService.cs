@@ -115,5 +115,41 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
 
             await _context.SaveChangesAsync();
         }
+        //Get all fihub user plan 
+        public async Task<List<AdminFitHubPlanDto>> GetUserFitHubPlansAsync(int userId)
+        {
+            var subscriptions = await _context.FithubUserPlans
+                .Where(s => s.UserId == userId)
+                .ToListAsync();
+
+            return subscriptions.Select(s => new AdminFitHubPlanDto
+            {
+                Id = s.Id,
+                UserId = s.UserId,
+                PlanId = s.PlanId,
+                BasePrice = s.BasePrice,
+                TaxAmount = s.TaxAmount,
+                TotalAmount = s.TotalAmount,
+                PurchaseDate = s.PurchaseDate
+
+            }).ToList();
+        }
+        // get all fihub user plans 
+        public async Task<List<AdminFitHubPlanDto>> GetAllFitHubUserPlansAsync()
+        {
+            var subscriptions = await _context.FithubUserPlans.ToListAsync();
+
+            return subscriptions.Select(s => new AdminFitHubPlanDto
+            {
+                Id = s.Id,
+                UserId = s.UserId,
+                PlanId = s.PlanId,
+                BasePrice = s.BasePrice,
+                TaxAmount = s.TaxAmount,
+                TotalAmount = s.TotalAmount,
+                PurchaseDate = s.PurchaseDate
+            }).ToList();
+        }
+
     }
 }

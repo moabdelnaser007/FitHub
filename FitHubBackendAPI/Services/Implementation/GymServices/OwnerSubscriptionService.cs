@@ -30,6 +30,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         public async Task<ResponseViewModel<List<SubscriptionForOwnerDto>>> GetOwnerSubscriptionsAsync(int ownerId)
         {
             var branches = await _branchRepo.GetAsync(b => b.OwnerId == ownerId);
+            
             var branchIds = branches.Select(b => b.Id).ToList();
 
             var subs = await _subscriptionRepo.GetAsync(
