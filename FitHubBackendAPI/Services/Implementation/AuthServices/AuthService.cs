@@ -141,6 +141,8 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
                 FullName = dto.FullName,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Phone = dto.Phone,
+                City = dto.City,
                 Role = UserRole.Staff,
                 Status = AccountStatus.Active,
             };

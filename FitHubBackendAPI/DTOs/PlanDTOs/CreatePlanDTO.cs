@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
+using System.Text.Json.Serialization;
 
 namespace FitHubBackendAPI.DTOs.PlanDTOs
 {

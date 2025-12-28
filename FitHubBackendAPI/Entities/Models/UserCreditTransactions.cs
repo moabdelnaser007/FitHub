@@ -1,5 +1,6 @@
 ﻿using FitHubBackendAPI.Entities.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Transactions;
 
 namespace FitHubBackendAPI.Entities.Models
 {
@@ -19,7 +20,11 @@ namespace FitHubBackendAPI.Entities.Models
         public TransactionType TransactionType { get; set; }
         public TransactionSource Source { get; set; }
 
-        public int? ReferenceId { get; set; }
+        public int? ReferenceId { get; set; }          // Paymob order_id
+        public string? PaymentKey { get; set; }        // Paymob payment token
+        public bool IsPaid { get; set; }= false;               
+        public _TransactionStatus Status { get; set; } = _TransactionStatus.PENDING;
+        public DateTime? PaidAt { get; set; }
 
         public User? User { get; set; }
     }

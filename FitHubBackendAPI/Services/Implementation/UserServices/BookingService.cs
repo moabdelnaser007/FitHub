@@ -34,12 +34,14 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var branch = await _branchRepo.GetByIdAsync(dto.BranchId);
             if (branch == null || branch.Status != BranchStatus.ACTIVE)
                 return ResponseViewModel<string>.Fail("Branch not available");
+            bool CanRegularVisit = dto.SubscriptionId == null || dto.SubscriptionId <= 0;
 
             decimal creditsCost = branch.VisitCreditsCost;
+            var dateNow = DateTime.UtcNow;
             Subscription? subscription = null;
 
             // 2️⃣ Subscription booking
-            if (dto.SubscriptionId.HasValue||dto.SubscriptionId>0)
+            if (dto.SubscriptionId.HasValue || dto.SubscriptionId > 0)
             {
                 subscription = await _subscriptionRepo.GetByIdAsync(dto.SubscriptionId.Value);
 
@@ -47,16 +49,29 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     return ResponseViewModel<string>.Fail("Invalid subscription");
 
                 if (subscription.Status != SubscriptionStatus.ACTIVE)
-                    return ResponseViewModel<string>.Fail("Subscription not active");
+                    return ResponseViewModel<string>.Fail("Subscription expired");
 
                 if (subscription.BranchId != dto.BranchId)
                     return ResponseViewModel<string>.Fail("Subscription not valid for this branch");
 
                 if (subscription.VisitsUsed >= subscription.VisitsAllowed)
+                { 
+                    subscription.Status = SubscriptionStatus.EXPIRED;
+                    _subscriptionRepo.Update(subscription);
+                    await _subscriptionRepo.SaveChangesAsync();
                     return ResponseViewModel<string>.Fail("No remaining visits");
+                }
+                if (subscription.EndDate < dateNow)
+                {
+                    subscription.Status = SubscriptionStatus.EXPIRED;
+                    _subscriptionRepo.Update(subscription);
+                    await _subscriptionRepo.SaveChangesAsync();
+                    return ResponseViewModel<string>.Fail("Subscription has expired");
+                }
 
                 creditsCost = 0; // ❗ لا خصم هنا
             }
+            
 
             // 3️⃣ Create booking
             var booking = new Booking

@@ -6,6 +6,7 @@
         VISIT,           // مرتبط بزيارة
         SUBSCRIPTION,    // خصم من اشتراك زيارته
         MANUAL,          // إضافة/خصم يدوي
-        SETTLEMENT       // عملية تسوية
+        SETTLEMENT,      // عملية تسوية
+        PAYMOB           // عملية دفع عبر باي موب
     }
 }

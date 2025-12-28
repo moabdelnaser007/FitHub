@@ -39,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Implementation\PaymobSevice\" />
     <Folder Include="Validators\Gym validators\" />
     <Folder Include="wwwroot\images\Gym\" />
   </ItemGroup>

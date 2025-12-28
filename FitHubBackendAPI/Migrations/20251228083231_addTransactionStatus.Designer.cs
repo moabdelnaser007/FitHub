@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251227141432_init")]
-    partial class init
+    [Migration("20251228083231_addTransactionStatus")]
+    partial class addTransactionStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,7 +136,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1893),
+                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1328),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -147,7 +147,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1901),
+                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1335),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -157,7 +157,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 27, 14, 14, 31, 148, DateTimeKind.Utc).AddTicks(1903),
+                            CreatedAt = new DateTime(2025, 12, 28, 8, 32, 30, 751, DateTimeKind.Utc).AddTicks(1336),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -796,8 +796,7 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -827,9 +826,6 @@ namespace FitHubBackendAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -870,8 +866,17 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("PaymentAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PaymentKey")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ReferenceId")
                         .HasColumnType("int");
@@ -879,6 +884,9 @@ namespace FitHubBackendAPI.Migrations
                     b.Property<string>("Source")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("TransactionType")
                         .IsRequired()

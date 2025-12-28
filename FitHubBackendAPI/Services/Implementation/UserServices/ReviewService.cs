@@ -11,13 +11,16 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
     {
         private readonly IGenericRepository<Review> _reviewRepo;
         private readonly IGenericRepository<Booking> _bookingRepo;
+        private readonly IGenericRepository<GymBranch> _branchRepo;
 
         public ReviewService(
             IGenericRepository<Review> reviewRepo,
-            IGenericRepository<Booking> bookingRepo)
+            IGenericRepository<Booking> bookingRepo,
+            IGenericRepository<GymBranch> branchRepo)
         {
             _reviewRepo = reviewRepo;
             _bookingRepo = bookingRepo;
+            _branchRepo = branchRepo;
         }
 
         public async Task<IEnumerable<GetAllBranchRevewsDto>> GetAllBrancheReviewsAsync(int branchId)
@@ -89,7 +92,21 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 };
 
                 await _reviewRepo.AddAsync(review);
+
                 await _reviewRepo.SaveChangesAsync();
+                //get all reviews for branch and calculate average rating
+
+                var branchReviews = await _reviewRepo.GetAsync(r => r.BranchId == booking.BranchId.Value);
+                var averageRating= (int)(branchReviews.Any() ? branchReviews.Average(r => r.Rating) : 0);
+                //update branch average rating
+                var branches = await _branchRepo.GetAsync(b => b.Id == booking.BranchId.Value);
+                var branch = branches.FirstOrDefault();
+                if (branch != null)
+                {
+                    branch.rating = averageRating;
+                    _branchRepo.Update(branch);
+                    await _branchRepo.SaveChangesAsync();
+                }
 
                 return ResponseViewModel<bool>.Success(true, "Review submitted successfully");
             }
@@ -97,6 +114,11 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             {
                 return ResponseViewModel<bool>.Fail($"Error submitting review: {ex.Message}");
             }
+        }
+        public async Task<bool> DeleteReview(int ReviewId)
+        {
+
+            return true;
         }
     }
 }

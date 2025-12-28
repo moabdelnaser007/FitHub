@@ -89,6 +89,8 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 if (sub.VisitsUsed >= sub.VisitsAllowed)
                     return ResponseViewModel<bool>.Fail("No remaining visits in subscription");
+                if(sub.VisitsAllowed-sub.VisitsUsed ==1)
+                    sub.Status = SubscriptionStatus.EXPIRED;
 
                 sub.VisitsUsed += 1;
                 _subscriptionRepo.Update(sub);
