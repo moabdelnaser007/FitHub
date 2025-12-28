@@ -39,6 +39,24 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 });
             return dto;
         }
+        //get review by booking id
+        public async Task<GetAllBranchRevewsDto?> GetReviewByBookingIdAsync(int bookingId)
+        {
+            var reviews = await _reviewRepo.GetAsync(r => r.BookingId == bookingId,
+                includeProperties: "User,Booking");
+            var review = reviews.FirstOrDefault();
+            if (review == null)
+                return null;
+            var dto = new GetAllBranchRevewsDto
+            {
+                Id = review.Id,
+                Rating = review.Rating,
+                Comment = review.Comment,
+                UserName = review.User!.FullName,
+                BookingDate = review.Booking!.ScheduledDateTime
+            };
+            return dto;
+        }
 
         public async Task<ResponseViewModel<bool>> LeaveReviewAsync(int userId, LeaveReviewDto dto)
         {

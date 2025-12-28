@@ -43,5 +43,14 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             var reviews = await _reviewService.GetAllBrancheReviewsAsync(branchId);
             return Ok(reviews);
         }
+        [HttpGet("ByBooking/{bookingId}")]
+        public async Task<IActionResult> GetReviewByBookingId(int bookingId)
+        {
+            var review = await _reviewService.GetReviewByBookingIdAsync(bookingId);
+            if (review == null)
+                return NotFound();
+
+            return Ok(review);
+        }
     }
 }

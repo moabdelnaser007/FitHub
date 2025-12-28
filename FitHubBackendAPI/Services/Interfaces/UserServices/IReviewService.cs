@@ -7,5 +7,6 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
     {
         Task<ResponseViewModel<bool>> LeaveReviewAsync(int userId, LeaveReviewDto dto);
         Task<IEnumerable<GetAllBranchRevewsDto>> GetAllBrancheReviewsAsync(int branchId);
+        Task<GetAllBranchRevewsDto?> GetReviewByBookingIdAsync(int bookingId);
     }
 }
