@@ -178,7 +178,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             {
                 var visits = await _visitRepo.GetAsync(
                     v => v.UserId == userId,
-                    includeProperties: "Branch",
+                    includeProperties: "Branch,User",
                     orderBy: q => q.OrderByDescending(v => v.CheckInTime)
                 );
 
@@ -204,7 +204,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 var branchId = staff.BranchId;
             var visits = await _visitRepo.GetAsync(
                     v => v.BranchId == branchId,
-                    includeProperties: "Branch",
+                    includeProperties: "Branch,User",
                     orderBy: q => q.OrderByDescending(v => v.CheckInTime)
                 );
 
@@ -213,7 +213,8 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     VisitId = v.Id,
                     BranchName = v.Branch!.BranchName!,
                     CheckInTime = v.CheckInTime!.Value,
-                    CreditsDeducted = v.CreditsDeducted ?? 0
+                    CreditsDeducted = v.CreditsDeducted ?? 0,
+                    
                 });
 
                 return ResponseViewModel<IEnumerable<VisitHistoryDto>>.Success(result);
