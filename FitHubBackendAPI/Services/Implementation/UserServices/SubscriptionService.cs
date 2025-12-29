@@ -163,15 +163,26 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var sub = await _subscriptionRepo.GetByIdAsync(subscriptionId);
             if (sub == null || sub.UserId != userId)
                 return ResponseViewModel<bool>.Fail("Not found");
+            var plan = await _planRepo.GetByIdAsync(sub.PlanId)??
+                throw new Exception("Plan not found");
+            var userWallet = (await _walletRepo.FindAsync(w => w.UserId == userId))
+                .FirstOrDefault() ?? throw new Exception("User wallet not found");
 
-            if(sub.VisitsAllowed - sub.VisitsUsed <= 0)
-                return ResponseViewModel<bool>.Fail("No remaining visits to refund");
+            if (sub.VisitsUsed > 0)
+                return ResponseViewModel<bool>.Fail("Can Not cancel Your subscription");
             sub.Status = SubscriptionStatus.CANCELLED;
+            var refundedCredits = plan.CreditsCost;
+            userWallet.Balance = (userWallet.Balance ?? 0) + refundedCredits;
             _subscriptionRepo.Update(sub);
+            _walletRepo.Update(userWallet);
 
             await _subscriptionRepo.SaveChangesAsync();
             return ResponseViewModel<bool>.Success(true);
         }
+
+
+
+
         public async Task<ResponseViewModel<IEnumerable<SubscriptionListDto>>> GetActiveSubscriptionsAsync(int userId,int branchId)
         {
             IEnumerable<Subscription> subs = await _subscriptionRepo
