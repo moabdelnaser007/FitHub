@@ -1,4 +1,5 @@
-﻿using FitHubBackendAPI.Entities.Enums;
+﻿using FitHubBackendAPI.DTOs.Reviews;
+using FitHubBackendAPI.Entities.Enums;
 
 namespace FitHubBackendAPI.DTOs.GymBranchDTOs
 {
@@ -6,8 +7,9 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
     {
         public int Id { get; set; }
         //public int OwnerId { get; set; }
-
+        public int? rating { get; set; }
         public string? BranchName { get; set; }
+        
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -26,5 +28,6 @@ namespace FitHubBackendAPI.DTOs.GymBranchDTOs
         }
         public GymAmenity? AmenitiesAvailable { get; set; }
         public List<GetBranchImagePathDto>? Images { get; set; } 
+        public List<GetAllBranchRevewsDto>? Reviews { get; set; }
     }
 }

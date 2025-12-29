@@ -1,4 +1,5 @@
 ﻿using FitHubBackendAPI.DTOs.GymBranchDTOs;
+using FitHubBackendAPI.DTOs.Reviews;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Interfaces;
@@ -15,13 +16,19 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
         private readonly IGenericRepository<GymBranch> _repository;
         private readonly IGenericRepository<GymOwner> _ownerRepository;
         private readonly IGenericRepository<Image> _imagesRepository;
+        private readonly IGenericRepository<Review> _reviewRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public GymBranchService(IGenericRepository<GymBranch> repository, IGenericRepository<GymOwner> ownerRepository, IGenericRepository<Image> imagesRepository, IWebHostEnvironment webHostEnvironment)
+        public GymBranchService(IGenericRepository<GymBranch> repository,
+            IGenericRepository<GymOwner> ownerRepository,
+            IGenericRepository<Image> imagesRepository, 
+            IGenericRepository<Review> reviewRepository,
+            IWebHostEnvironment webHostEnvironment)
         {
             _ownerRepository = ownerRepository;
             _repository = repository;
             _imagesRepository = imagesRepository;
             _webHostEnvironment = webHostEnvironment;
+            _reviewRepository = reviewRepository;
         }
         public async Task<Entities.Models.GymBranch> CreateGymBranchAsync(int userId, CreateGymBranchDTO dto)
         {
@@ -79,6 +86,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                  Phone = b.Phone,
                  Address = b.Address,
                  City = b.City,
+                 rating = b.rating,
                  OpenTime = b.OpenTime,
                  CloseTime = b.CloseTime,
                  GenderType = b.GenderType,
@@ -100,6 +108,9 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             var branch = await _repository.GetByIdAsync(branchId);
             if (branch == null || branch.IsAcTive != true)
                 throw new Exception("Branch not found or inactive");
+            //get reviews of this branch
+            var reviews = await _reviewRepository.GetAsync(r => r.BranchId == branchId,
+                includeProperties:"User");
             var imgs = await GetBranchImagesAsync(branchId);
             return new GetGymBranchByIdDTO
             {
@@ -109,6 +120,7 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 Phone = branch.Phone,
                 Address = branch.Address,
                 City = branch.City,
+                rating = branch.rating,
                 OpenTime = branch.OpenTime,
                 CloseTime = branch.CloseTime,
                 GenderType = branch.GenderType,
@@ -117,7 +129,14 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
                 WorkingDays = branch.WorkingDays,
                 VisitCreditsCost = branch.VisitCreditsCost,
                 AmenitiesAvailable = branch.AmenitiesAvailable,
-                Images = imgs.ToList()
+                Images = imgs.ToList(),
+                Reviews = reviews.Select(r => new GetAllBranchRevewsDto
+                {
+                    Id = r.Id,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    UserName = r.User.FullName
+                }).ToList()
             };
         }
 
