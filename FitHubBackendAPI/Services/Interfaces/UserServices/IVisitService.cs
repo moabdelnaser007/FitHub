@@ -7,7 +7,7 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
     {
         Task<ResponseViewModel<bool>> CheckInAsync(int staffUserId, CheckInVisitDto dto);
         Task<ResponseViewModel<IEnumerable<VisitHistoryDto>>> GetMyVisitsAsync(int userId);
-        Task<ResponseViewModel<IEnumerable<VisitHistoryDto>>> GetBranchVisitsAsync(int branchId, int requesterUserId);
+        Task<ResponseViewModel<IEnumerable<VisitHistoryDto>>> GetBranchVisitsAsync( int requesterUserId);
     }
 }
 

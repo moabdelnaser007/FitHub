@@ -196,9 +196,13 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             // ======================================================
             // 3️⃣ BRANCH VISITS (Staff / Owner)
             // ======================================================
-            public async Task<ResponseViewModel<IEnumerable<VisitHistoryDto>>> GetBranchVisitsAsync(int branchId, int requesterUserId)
+            public async Task<ResponseViewModel<IEnumerable<VisitHistoryDto>>> GetBranchVisitsAsync( int requesterUserId)
             {
-                var visits = await _visitRepo.GetAsync(
+                var staff = (await _staffRepo.FindAsync(s => s.UserId == requesterUserId)).FirstOrDefault();
+                if (staff == null)
+                    return ResponseViewModel<IEnumerable<VisitHistoryDto>>.Fail("Staff not found");
+                var branchId = staff.BranchId;
+            var visits = await _visitRepo.GetAsync(
                     v => v.BranchId == branchId,
                     includeProperties: "Branch",
                     orderBy: q => q.OrderByDescending(v => v.CheckInTime)
