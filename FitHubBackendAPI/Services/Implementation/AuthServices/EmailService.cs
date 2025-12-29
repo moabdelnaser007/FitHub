@@ -13,7 +13,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             _config = config;
         }
 
-        public async Task SendAsync(string to, string subject, string body)
+        public async Task SendAsync(string to, string subject, string body, bool isHtml = false)
         {
             var fromEmail = _config["EmailSettings:Email"];
             var appPassword = _config["EmailSettings:AppPassword"];
@@ -26,10 +26,9 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             message.To.Add(MailboxAddress.Parse(to));
             message.Subject = subject;
 
-            message.Body = new TextPart("plain")
-            {
-                Text = body
-            };
+            message.Body = isHtml
+                ? new TextPart("html") { Text = body }
+                : new TextPart("plain") { Text = body };
 
             using var smtp = new SmtpClient();
             try
@@ -64,6 +63,12 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             {
                 throw new InvalidOperationException($"Unable to send email: {ex.Message}");
             }
+        }
+
+        // Optionally, you can keep the old method for backward compatibility and delegate to the new one:
+        public async Task SendAsync(string to, string subject, string body)
+        {
+            await SendAsync(to, subject, body, false);
         }
     }
 }

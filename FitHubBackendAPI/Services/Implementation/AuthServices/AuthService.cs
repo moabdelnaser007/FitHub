@@ -242,8 +242,7 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
         public async Task ReSendOtpAsync(string email)
         {
             var userExists = await _context.Users.AnyAsync(x => x.Email == email);
-
-            if (!userExists )
+            if (!userExists)
                 throw new KeyNotFoundException("Email not found.");
 
             // OTP type is ALWAYS ForgotPassword because user initiated this manually
@@ -350,10 +349,12 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             await _context.VerificationCodes.AddAsync(otp);
             await _context.SaveChangesAsync();
 
+            var html = BuildOtpEmailHtml(code, 10);
             await _emailService.SendAsync(
                 email,
                 "FitHub OTP Code",
-                $"Your OTP code is: {code}. It expires in 10 minutes."
+                html,
+                isHtml: true
             );
         }
 
@@ -371,5 +372,105 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             return value.ToString().PadLeft(length, '0');
         }
 
+        private string BuildOtpEmailHtml(string code, int minutes)
+        {
+            return $@"
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+  <meta charset=""utf-8"">
+  <meta name=""viewport"" content=""width=device-width, initial-scale=1"">
+  <title>FitHub OTP</title>
+  <style>
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f7fb;
+      margin: 0;
+      padding: 0;
+      color: #213045;
+    }}
+    .container {{
+      max-width: 560px;
+      margin: 32px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(33, 48, 69, 0.08);
+      overflow: hidden;
+      border: 1px solid #e8edf5;
+    }}
+    .header {{
+      background: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%);
+      color: #ffffff;
+      padding: 20px 24px;
+    }}
+    .brand {{
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }}
+    .content {{
+      padding: 24px;
+    }}
+    .title {{
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: #213045;
+    }}
+    .subtitle {{
+      font-size: 14px;
+      margin: 0 0 16px;
+      color: #5b6b83;
+    }}
+    .code {{
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      font-size: 24px;
+      letter-spacing: 6px;
+      font-weight: 800;
+      color: #2b6cb0;
+      background: #f0f7ff;
+      border: 1px solid #cfe2ff;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 12px 0 16px;
+    }}
+    .note {{
+      font-size: 12px;
+      color: #6b7a90;
+      margin-top: 8px;
+    }}
+    .footer {{
+      padding: 16px 24px;
+      font-size: 12px;
+      color: #6b7a90;
+      background: #fafcff;
+      border-top: 1px solid #e8edf5;
+      text-align: center;
+    }}
+    a {{
+      color: #2b6cb0;
+      text-decoration: none;
+    }}
+  </style>
+</head>
+<body>
+  <div class=""container"">
+    <div class=""header"">
+      <div class=""brand"">FitHub</div>
+    </div>
+    <div class=""content"">
+      <h1 class=""title"">Your One-Time Passcode</h1>
+      <p class=""subtitle"">Use the code below to complete your action. For your security, this code will expire in {minutes} minutes.</p>
+      <div class=""code"">{code}</div>
+      <p class=""note"">If you did not request this code, you can safely ignore this email.</p>
+    </div>
+    <div class=""footer"">
+      © {DateTime.UtcNow.Year} FitHub. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>";
+}
     }
 }
