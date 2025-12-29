@@ -34,10 +34,10 @@ namespace FitHubBackendAPI.Controllers.UserController
             public async Task<IActionResult> MyVisits()
                 => Ok(await _service.GetMyVisitsAsync(GetUserId()));
 
-            [HttpGet("branch/{branchId}")]
+            [HttpGet("branch")]
             [Authorize]
-            public async Task<IActionResult> BranchVisits(int branchId)
-                => Ok(await _service.GetBranchVisitsAsync(branchId, GetUserId()));
+            public async Task<IActionResult> BranchVisits()
+                => Ok(await _service.GetBranchVisitsAsync(GetUserId()));
         }
     }
 
