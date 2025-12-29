@@ -41,7 +41,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             Subscription? subscription = null;
 
             // 2️⃣ Subscription booking
-            if (dto.SubscriptionId.HasValue || dto.SubscriptionId > 0)
+            if (dto.SubscriptionId != null|| dto.SubscriptionId>0)
             {
                 subscription = await _subscriptionRepo.GetByIdAsync(dto.SubscriptionId.Value);
 
@@ -68,6 +68,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     await _subscriptionRepo.SaveChangesAsync();
                     return ResponseViewModel<string>.Fail("Subscription has expired");
                 }
+
 
                 creditsCost = 0; // ❗ لا خصم هنا
             }
