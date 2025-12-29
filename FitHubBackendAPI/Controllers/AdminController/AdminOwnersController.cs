@@ -53,6 +53,12 @@ namespace FitHubBackendAPI.Controllers.AdminController
             }
             return ResponseViewModel<IEnumerable<GetOwnerForAdminDto>>.Success(owners, "Owners retrieved successfully");
         }
-
+        //[HttpGet("SystemRevenue")]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<ResponseViewModel<decimal>> GetSystemRevenue()
+        //{
+        //    var revenue = await _adminOwnerService.GetSystemRevenueAsync();
+        //    return ResponseViewModel<decimal>.Success(revenue, "System revenue retrieved successfully");
+        //}
     }
 }

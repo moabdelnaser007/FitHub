@@ -11,6 +11,8 @@ namespace FitHubBackendAPI.Services.Interfaces.UserServices
         Task<ResponseViewModel<UserCreditTransactions>> RechargeAsync(int userId, RechargeWalletDto dto);
         Task<ResponseViewModel<bool>> RefundBookingAsync(int userId, int bookingId);
         Task<ResponseViewModel<UserCreditTransactions>> UpdateWallet(UserCreditTransactions transaction);
+        Task<ResponseViewModel<GetFitHubPlanDto>> GetPlanById(int planId);
+        Task<ResponseViewModel<IEnumerable<GetFitHubPlanDto>>> GetAllPlans();
 
 
     }

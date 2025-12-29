@@ -7,6 +7,7 @@ using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.PaymobService;
 using FitHubBackendAPI.Services.Interfaces.UserServices;
 using FitHubBackendAPI.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -199,6 +200,47 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             await _walletRepo.SaveChangesAsync();
 
             return ResponseViewModel<bool>.Success(true, "Booking refunded successfully");
+        }
+        public async Task<ResponseViewModel<GetFitHubPlanDto>> GetPlanById(int planId)
+        {
+            if (planId <= 0)
+            {
+                return ResponseViewModel<GetFitHubPlanDto>.Fail("Invalid plan ID");
+            }
+            var plan = (await _planRepo.GetByIdAsync(planId));
+            if (plan == null)
+            {
+                return ResponseViewModel<GetFitHubPlanDto>.Fail("Plan not found");
+            }
+            var planDto = new GetFitHubPlanDto
+            {
+                Id = plan.Id,
+                Name = plan.Name,
+                Description = plan.Description,
+                Price = plan.Price,
+                PriceAfterTax = plan.Price * 1.15m,
+                CreditsValue = plan.CreditsValue
+            };
+            return ResponseViewModel<GetFitHubPlanDto>.Success(planDto, "Plan retrieved successfully");
+        }
+        public async Task<ResponseViewModel<IEnumerable<GetFitHubPlanDto>>> GetAllPlans()
+        {
+            var plans = await _planRepo.GetAllAsync();
+            if (plans == null || !plans.Any())
+            {
+                return ResponseViewModel<IEnumerable<GetFitHubPlanDto>>.Fail("No plans available", Entities.Enums.ErrorCode.NotFound);
+            }
+            var planDtos = plans.Select(plan => new GetFitHubPlanDto
+            {
+                Id = plan.Id,
+                Name = plan.Name,
+                Description = plan.Description,
+                Price = plan.Price,
+                PriceAfterTax = plan.Price * 1.15m,
+                CreditsValue = plan.CreditsValue
+            });
+
+            return ResponseViewModel<IEnumerable<GetFitHubPlanDto>>.Success(planDtos, "Plans retrieved successfully");
         }
     }
 }

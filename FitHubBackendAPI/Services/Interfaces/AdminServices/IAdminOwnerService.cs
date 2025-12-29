@@ -9,8 +9,9 @@ namespace FitHubBackendAPI.Services.Interfaces.AdminServices
         Task<List<PendingOwnerDto>> GetPendingOwnersAsync();
         Task ApproveOwnerAsync(int ownerId);
         Task RejectOwnerAsync(int ownerId);
+        //Task<decimal> GetSystemRevenueAsync();
 
-        
+
 
     }
 }
