@@ -24,7 +24,7 @@ namespace FitHubBackendAPI.DTOs.AuthDTOs
         [RegularExpression(
                 @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$",
                 ErrorMessage = "Password must contain uppercase, lowercase, and number")]
-        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        [Compare("NewPassword", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
