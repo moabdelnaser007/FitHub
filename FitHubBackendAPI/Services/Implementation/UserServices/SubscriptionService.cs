@@ -169,7 +169,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 .FirstOrDefault() ?? throw new Exception("User wallet not found");
 
             if (sub.VisitsUsed > 0)
-                return ResponseViewModel<bool>.Fail("Can Not cancel Your subscription");
+                return ResponseViewModel<bool>.Fail("Can Not cancel Your subscription",ErrorCode.BadRequest,false);
             sub.Status = SubscriptionStatus.CANCELLED;
             var refundedCredits = plan.CreditsCost;
             userWallet.Balance = (userWallet.Balance ?? 0) + refundedCredits;
