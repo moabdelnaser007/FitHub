@@ -34,7 +34,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                     Id = r.Id,
                     Rating=r.Rating,
                     UserName = r.User!.FullName,
-                    BookingDate = r.Booking!.ScheduledDateTime,
+
                     Comment = r.Comment
                 });
             return dto;
@@ -53,7 +53,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 Rating = review.Rating,
                 Comment = review.Comment,
                 UserName = review.User!.FullName,
-                BookingDate = review.Booking!.ScheduledDateTime
+
             };
             return dto;
         }
