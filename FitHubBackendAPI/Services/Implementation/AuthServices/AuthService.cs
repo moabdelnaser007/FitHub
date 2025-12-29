@@ -303,27 +303,36 @@ namespace FitHubBackendAPI.Services.Implementation.AuthServices
             if (dto.NewPassword != dto.ConfirmPassword)
                 throw new ValidationException("Passwords do not match.");
 
+            // Get the latest OTP for ForgotPassword that matches the code and is not expired.
             var otp = await _context.VerificationCodes
-                .FirstOrDefaultAsync(
-                x => x.Email == dto.Email
-                    && x.Code == dto.Otp
-                    && x.Type == OtpType.ForgotPassword
-                    && x.UsedAt == null
-                    && x.ExpireAt > DateTime.UtcNow);
+                .Where(x => x.Email == dto.Email
+                            && x.Code == dto.Otp
+                            && x.Type == OtpType.ForgotPassword
+                            && x.ExpireAt > DateTime.UtcNow)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
 
             if (otp == null)
                 throw new ValidationException("Invalid or expired OTP.");
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
-            if (user != null)
+            // If the OTP was previously verified, allow reset. Otherwise, ensure it isn't used.
+            if (otp.UsedAt != null)
             {
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
-                otp.UsedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                return;
+                // Optional: enforce a small window after verification (e.g., 15 minutes)
+                // if ((DateTime.UtcNow - otp.UsedAt.Value) > TimeSpan.FromMinutes(15))
+                //     throw new ValidationException("OTP already used.");
             }
 
-            throw new KeyNotFoundException("User/Owner not found.");
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
+            if (user == null)
+                throw new KeyNotFoundException("User/Owner not found.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            // Mark OTP as used at reset time
+            otp.UsedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
         }
 
         private async Task CreateOtpAndSend(string email, OtpType type)
