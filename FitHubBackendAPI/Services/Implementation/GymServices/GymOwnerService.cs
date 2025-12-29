@@ -75,13 +75,13 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             
             var totalBranches = await GetCountOwnerBranches(userId);
             var totalVisits = await GetCountBranchVisits(userId);
-            var totalCredits = await _ownerWalletRepo.GetByIdAsync(userId);
+            var totalCredits =( await _ownerWalletRepo.FindAsync(w=>w.UserId==userId)).FirstOrDefault();
             var totalSubscriptions = await GetCountOwnerSubscriptions(userId);
             var dashboardData = new OwnerDashBoardDto
             {
                 TotalBranches = totalBranches,
                 TotalVisits = totalVisits,
-                TotalCredits = totalCredits?.Balance ?? 0,
+                TotalCredits = totalCredits.Balance ?? 0,
                 TotalSubscriptions = totalSubscriptions
             };
             return ResponseViewModel<OwnerDashBoardDto>.Success(dashboardData);

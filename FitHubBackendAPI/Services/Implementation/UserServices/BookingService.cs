@@ -13,18 +13,21 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
         private readonly IGenericRepository<Booking> _bookingRepo;
         private readonly IGenericRepository<GymBranch> _branchRepo;
         private readonly IGenericRepository<Subscription> _subscriptionRepo;
+        private readonly IGenericRepository<UserWallet> _walletRepo;
         private readonly IMapper _mapper;
 
         public BookingService(
             IGenericRepository<Booking> bookingRepo,
             IGenericRepository<GymBranch> branchRepo,
             IGenericRepository<Subscription> subscriptionRepo,
+            IGenericRepository<UserWallet> walletRepo,
             IMapper mapper)
         {
             _bookingRepo = bookingRepo;
             _branchRepo = branchRepo;
             _subscriptionRepo = subscriptionRepo;
             _mapper = mapper;
+            _walletRepo = walletRepo;
         }
 
         // ================= Create Booking =================
@@ -39,6 +42,7 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             decimal creditsCost = branch.VisitCreditsCost;
             var dateNow = DateTime.UtcNow;
             Subscription? subscription = null;
+            var userWallet =(await _walletRepo.FindAsync(w=>w.UserId == userId)).FirstOrDefault();
 
             // 2️⃣ Subscription booking
             if (dto.SubscriptionId != null|| dto.SubscriptionId>0)
@@ -72,7 +76,11 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
 
                 creditsCost = 0; // ❗ لا خصم هنا
             }
-            
+            if(userWallet.Balance<creditsCost)
+            {
+                return ResponseViewModel<string>.Fail("Low Credits");
+
+            }
 
             // 3️⃣ Create booking
             var booking = new Booking
