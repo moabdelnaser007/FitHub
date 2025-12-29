@@ -135,12 +135,12 @@ namespace FitHubBackendAPI.Controllers.GymControllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ResponseViewModel<IEnumerable<GetBranchImagePathDto>>> GetBranchImages(int branchId, string imageName)
+        public async Task<ResponseViewModel<IEnumerable<GetBranchImagePathDto>>> GetBranchImages(int branchId)
         {
-            if (branchId <= 0 || string.IsNullOrEmpty(imageName))
-            {
-                return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Fail("Invalid branch ID or image name.");
-            }
+            //if (branchId <= 0 || string.IsNullOrEmpty(imageName))
+            //{
+            //    return ResponseViewModel<IEnumerable<GetBranchImagePathDto>>.Fail("Invalid branch ID or image name.");
+            //}
             var imagePathDto = await _gymBranchService.GetBranchImagesAsync(branchId);
             if (imagePathDto == null)
             {
