@@ -43,7 +43,12 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var dateNow = DateTime.UtcNow;
             Subscription? subscription = null;
             var userWallet =(await _walletRepo.FindAsync(w=>w.UserId == userId)).FirstOrDefault();
+            if(userWallet==null)
+            {
 
+                return ResponseViewModel<string>.Fail("Please Charge Credits First");
+
+            }
             // 2️⃣ Subscription booking
             if (dto.SubscriptionId != null|| dto.SubscriptionId>0)
             {
