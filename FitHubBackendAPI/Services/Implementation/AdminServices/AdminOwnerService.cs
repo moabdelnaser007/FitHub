@@ -86,7 +86,14 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
             .ProjectTo<GetOwnerForAdminDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
         }
-
+        //public async Task<decimal> GetSystemRevenueAsync();
+        //{
+        //    //var Transactions = await _context.UserCreditTransactions.AsNoTracking().Where(T => T.IsPaid == true);
+        //    //    .Where(p => p.Status == PaymentStatus.Completed)
+        //    //    .SumAsync(p => p.Amount);
+        //    var dei = await Task.FromResult(100m);
+        //    return dei;
+        //}
 
     }
 }

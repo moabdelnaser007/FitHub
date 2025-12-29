@@ -189,5 +189,20 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             return ResponseViewModel<bool>.Success(true, "payment Successful");
         }
+        
+        [HttpGet("GetFitHubPlan/{Id:int}")]
+        
+        public async Task<IActionResult> GetFitHubPlan(int Id) 
+        {
+            var plan = await _walletService.GetPlanById(Id);
+            return Ok(plan);
+        }
+        [AllowAnonymous]
+        [HttpGet("GetAllFitHubPlans")]
+        public async Task<IActionResult> GetAllFitHubPlans()
+        {
+            var plans = await _walletService.GetAllPlans();
+            return Ok(plans);
+        }
     }
 }
