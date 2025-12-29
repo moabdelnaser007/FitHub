@@ -65,53 +65,53 @@ namespace FitHubBackendAPI.Controllers.User_Controller
             => Ok(await _walletService.RefundBookingAsync(GetUserId(), bookingId));
 
 
-        
+
 
         [AllowAnonymous]
         [HttpGet("callback")]
-        public async Task<ResponseViewModel<bool>> CallbackAsync()
+        public IActionResult CallbackAsync()
         {
             var query = Request.Query;
 
             string[] fields = new[]
             {
-                "amount_cents", "created_at", "currency", "error_occured", "has_parent_transaction",
-                "id", "integration_id", "is_3d_secure", "is_auth", "is_capture", "is_refunded",
-                "is_standalone_payment", "is_voided", "order", "owner", "pending",
-                "source_data.pan", "source_data.sub_type", "source_data.type", "success"
-            };
+        "amount_cents", "created_at", "currency", "error_occured", "has_parent_transaction",
+        "id", "integration_id", "is_3d_secure", "is_auth", "is_capture", "is_refunded",
+        "is_standalone_payment", "is_voided", "order", "owner", "pending",
+        "source_data.pan", "source_data.sub_type", "source_data.type", "success"
+    };
 
             var concatenated = new StringBuilder();
             foreach (var field in fields)
             {
+                // ⚠️ Do NOT fail on missing field — Paymob may omit some
                 if (query.TryGetValue(field, out var value))
-                {
                     concatenated.Append(value);
-                }
                 else
-                {
-                    return ResponseViewModel<bool>.Fail("Payment Failed",Entities.Enums.ErrorCode.BadRequest);
-                }
+                    concatenated.Append("");
             }
 
             string receivedHmac = query["hmac"];
-            string calculatedHmac = _paymobService.ComputeHmacSHA512(concatenated.ToString(), _configuration["Paymob:HMAC"]);
+            string calculatedHmac = _paymobService.ComputeHmacSHA512(
+                concatenated.ToString(),
+                _configuration["Paymob:HMAC"]
+            );
+
+            bool isSuccess = false;
 
             if (receivedHmac.Equals(calculatedHmac, StringComparison.OrdinalIgnoreCase))
             {
-                bool.TryParse(query["success"], out bool isSuccess);
-                var specialReference = query["merchant_order_id"];
-
-                if (isSuccess)
-                {
-                    return ResponseViewModel<bool>.Success(true,"payment Successful");
-                }
-
-                return ResponseViewModel<bool>.Fail("Payment Failed", Entities.Enums.ErrorCode.BadRequest);
+                bool.TryParse(query["success"], out isSuccess);
             }
 
-            return ResponseViewModel<bool>.Fail("Payment Failed", Entities.Enums.ErrorCode.BadRequest);
+            // 🔁 Redirect to Angular
+            string redirectUrl = isSuccess
+                ? "http://localhost:4201/billing?status=success"
+                : "http://localhost:4201/billing?status=failed";
+
+            return Redirect(redirectUrl);
         }
+
         [AllowAnonymous]
         [HttpPost("ServerCallback")]
         public async Task<ResponseViewModel<bool>> ServerCallback([FromBody] JsonElement payload)
