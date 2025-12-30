@@ -23,7 +23,7 @@ namespace FitHubBackendAPI.Controllers.User_Controller
         => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         [Authorize(Roles = "User")]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBookingDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
             => Ok(await _service.CreateBookingAsync(GetUserId(), dto));
         [Authorize(Roles = "User")]
         [HttpGet("my")]

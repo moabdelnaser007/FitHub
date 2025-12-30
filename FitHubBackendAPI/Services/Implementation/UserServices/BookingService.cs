@@ -29,6 +29,22 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             _mapper = mapper;
             _walletRepo = walletRepo;
         }
+        public static Days ToWorkingDay(DateTime date)
+
+        {
+            return date.DayOfWeek switch
+            {
+                DayOfWeek.Saturday => Days.Saturday,
+                DayOfWeek.Sunday => Days.Sunday,
+                DayOfWeek.Monday => Days.Monday,
+                DayOfWeek.Tuesday => Days.Tuesday,
+                DayOfWeek.Wednesday => Days.Wednesday,
+                DayOfWeek.Thursday => Days.Thursday,
+                DayOfWeek.Friday => Days.Friday,
+                
+            };
+        }
+
 
         // ================= Create Booking =================
         public async Task<ResponseViewModel<string>> CreateBookingAsync(int userId, CreateBookingDto dto)
@@ -38,7 +54,13 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             if (branch == null || branch.Status != BranchStatus.ACTIVE)
                 return ResponseViewModel<string>.Fail("Branch not available");
             bool CanRegularVisit = dto.SubscriptionId == null || dto.SubscriptionId <= 0;
-
+            // check if the booking is in valid time for visit
+           var dayFlag= ToWorkingDay( dto.ScheduledDateTime);
+            bool isBranchOpenOnThatDay = (branch.WorkingDays & dayFlag) == dayFlag;
+            if (!isBranchOpenOnThatDay)
+            {
+                return ResponseViewModel<string>.Fail("Branch is closed on the selected day");
+            }
             decimal creditsCost = branch.VisitCreditsCost;
             var dateNow = DateTime.UtcNow;
             Subscription? subscription = null;
