@@ -77,6 +77,7 @@ namespace FitHubBackendAPI
             builder.Services.AddScoped<IAdminGymService, AdminGymService>();
             builder.Services.AddScoped<IPaymobService,PaymobService>();
             builder.Services.AddScoped<IGymOwnerService, GymOwnerService>();
+            builder.Services.AddScoped<IAdminRevenue, AdminRevenueService>();
 
             builder.Services.AddScoped<IGymSearchService, GymSearchService>();
             builder.Services.AddScoped<IVisitService, VisitService>();
