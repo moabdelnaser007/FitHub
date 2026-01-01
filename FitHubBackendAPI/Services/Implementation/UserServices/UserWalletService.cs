@@ -80,8 +80,18 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
             var plan = await _planRepo.GetByIdAsync(dto.PlanId);
             if (plan == null)
                 return ResponseViewModel<UserCreditTransactions>.Fail("Plan not found");
+            //check user is not admin or owner or staff
+            var user = (await _UserRepostory.GetAsync(u => u.Id == userId)).FirstOrDefault();
+            if (user == null)
+            {
+                return ResponseViewModel<UserCreditTransactions>.Fail("User not found");
+            }
+            if (user.Role != UserRole.User)
+            { 
+                return ResponseViewModel<UserCreditTransactions>.Fail("Only regular users can recharge wallet");
+            }
 
-            var wallet = (await _walletRepo.FindAsync(w => w.UserId == userId)).FirstOrDefault();
+                var wallet = (await _walletRepo.FindAsync(w => w.UserId == userId)).FirstOrDefault();
             //check if wallet exists
             //create if not
             if (wallet == null)
