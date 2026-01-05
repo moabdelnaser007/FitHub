@@ -5,7 +5,7 @@ namespace FitHubBackendAPI.DTOs.PlanDTOs
 {
     public class CreatePlanDTO
     {
-        public int BranchId { get; set; }
+        //public int BranchId { get; set; }
 
         public string Name { get; set; } = null!;
         public string? Description { get; set; }

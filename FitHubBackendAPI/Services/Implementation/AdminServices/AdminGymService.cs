@@ -1,10 +1,12 @@
-﻿using FitHubBackendAPI.DTOs.AdminDtos;
+﻿using FitHubBackendAPI.Data;
+using FitHubBackendAPI.DTOs.AdminDtos;
 using FitHubBackendAPI.DTOs.GymBranchDTOs;
 using FitHubBackendAPI.Entities.Enums;
 using FitHubBackendAPI.Entities.Models;
 using FitHubBackendAPI.Repository.Implementation;
 using FitHubBackendAPI.Repository.Interfaces;
 using FitHubBackendAPI.Services.Interfaces.AdminServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitHubBackendAPI.Services.Implementation.AdminServices
 {
@@ -12,9 +14,12 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
     public class AdminGymService : IAdminGymService
     {
         private readonly IGenericRepository<GymBranch> _branchRepository;
-        public AdminGymService(IGenericRepository<GymBranch> branchRepository)
+        private readonly FitHubDbContext _context;
+        public AdminGymService(IGenericRepository<GymBranch> branchRepository, FitHubDbContext context)
         {
             _branchRepository = branchRepository;
+            _context = context;
+
         }
 
         public async Task<IEnumerable<GetBranchForAdminDto>> GetAllBranchOfOwner(int ownerId)
@@ -46,11 +51,17 @@ namespace FitHubBackendAPI.Services.Implementation.AdminServices
 
         public async Task<IEnumerable<GetBranchForAdminDto>> GetAllGymBranchesAsync()
         {
+            var branche = await _context.GymBranches
+                .Include(b => b.Owner)
+                .ThenInclude(o => o.User)
+                .ToListAsync();
+
             var branches = await _branchRepository.GetAllAsync();
             return branches.Select(b => new GetBranchForAdminDto
             {
                 Id = b.Id,
                 OwnerId = b.OwnerId,
+                //OwnerName = b.Owner.FullName,
                 BranchName = b.BranchName,
                 Phone = b.Phone,
                 Address = b.Address,

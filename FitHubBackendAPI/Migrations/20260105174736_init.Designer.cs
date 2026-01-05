@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitHubBackendAPI.Migrations
 {
     [DbContext(typeof(FitHubDbContext))]
-    [Migration("20251228170928_settelments")]
-    partial class settelments
+    [Migration("20260105174736_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,7 +136,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 28, 17, 9, 27, 141, DateTimeKind.Utc).AddTicks(6083),
+                            CreatedAt = new DateTime(2026, 1, 5, 17, 47, 35, 961, DateTimeKind.Utc).AddTicks(2757),
                             CreditsValue = 250m,
                             Description = "Perfect for starters",
                             IsAcTive = true,
@@ -147,7 +147,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 28, 17, 9, 27, 141, DateTimeKind.Utc).AddTicks(6091),
+                            CreatedAt = new DateTime(2026, 1, 5, 17, 47, 35, 961, DateTimeKind.Utc).AddTicks(2765),
                             CreditsValue = 500m,
                             IsAcTive = true,
                             IsDeleted = false,
@@ -157,7 +157,7 @@ namespace FitHubBackendAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 28, 17, 9, 27, 141, DateTimeKind.Utc).AddTicks(6094),
+                            CreatedAt = new DateTime(2026, 1, 5, 17, 47, 35, 961, DateTimeKind.Utc).AddTicks(2767),
                             CreditsValue = 800m,
                             IsAcTive = true,
                             IsDeleted = false,

@@ -21,54 +21,79 @@ namespace FitHubBackendAPI.Services.Implementation.UserServices
                 .Include(x => x.Reviews)
                 .AsQueryable();
 
-            // search by name
+            // 🔍 Name
             if (!string.IsNullOrWhiteSpace(query.Name))
-                gymsQuery = gymsQuery.Where(x => x.BranchName!.Contains(query.Name));
+            {
+                gymsQuery = gymsQuery.Where(x =>
+                    x.BranchName != null &&
+                    x.BranchName.Contains(query.Name));
+            }
 
-            // filter by city
+            // 🏙️ City
             if (!string.IsNullOrWhiteSpace(query.City))
+            {
                 gymsQuery = gymsQuery.Where(x => x.City == query.City);
+            }
 
-            // filter by rating
+            // 📍 Address
+            if (!string.IsNullOrWhiteSpace(query.Address))
+            {
+                gymsQuery = gymsQuery.Where(x =>
+                    x.Address != null &&
+                    x.Address.Contains(query.Address));
+            }
+
+            // ⭐ Rating
             if (query.MinRating.HasValue)
+            {
                 gymsQuery = gymsQuery.Where(x =>
                     x.Reviews.Any() &&
-                    x.Reviews.Average(r => r.Rating) >= query.MinRating.Value
-                );
+                    x.Reviews.Average(r => r.Rating) >= query.MinRating.Value);
+            }
 
-            // 👈 هنا نطلع الداتا من الداتابيز
+            // 💰 Max Visit Credits
+            if (query.MaxVisitCredits.HasValue)
+            {
+                gymsQuery = gymsQuery.Where(x =>
+                    x.VisitCreditsCost <= query.MaxVisitCredits.Value);
+            }
+
+            // 🏷️ Amenities (Flags)
+            if (query.Amenities.HasValue)
+            {
+                gymsQuery = gymsQuery.Where(x =>
+                    x.AmenitiesAvailable.HasValue &&
+                    (x.AmenitiesAvailable.Value & query.Amenities.Value) == query.Amenities.Value
+                );
+            }
+
+            // ⬇️ تحميل الداتا من DB
             var gyms = await gymsQuery
                 .Select(x => new
                 {
                     x.Id,
                     x.BranchName,
-                    //x.CoverImageUrl,
                     x.City,
                     x.Address,
+                    x.VisitCreditsCost,
                     x.AmenitiesAvailable,
                     Ratings = x.Reviews.Select(r => r.Rating)
                 })
                 .ToListAsync();
 
+            // ⬇️ Mapping بعد DB
             return gyms.Select(x => new GymSearchResultDto
             {
                 Id = x.Id,
                 Name = x.BranchName!,
-                //Image = x.CoverImageUrl!,
+                City = x.City,
                 Address = $"{x.City}, {x.Address}",
+                VisitCreditsCost = (int?)x.VisitCreditsCost,
+                Amenities = x.AmenitiesAvailable,
 
                 Rating = x.Ratings.Any()
-            ? (decimal)Math.Round((decimal)x.Ratings.Average(), 1)
-            : 0m,
-
-                Amenities = x.AmenitiesAvailable.HasValue
-            ? Enum.GetValues(typeof(GymAmenity))
-                .Cast<GymAmenity>()
-                .Where(a => a != 0 && x.AmenitiesAvailable.Value.HasFlag(a))
-                .Select(a => a.ToString())
-                .Take(2)
-                .ToList()
-            : new List<string>()
+                    ? Math.Round((decimal)x.Ratings.Average(), 1)
+                    : 0m
             }).ToList();
         }
 

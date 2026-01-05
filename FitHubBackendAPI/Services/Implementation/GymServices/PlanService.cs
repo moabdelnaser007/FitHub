@@ -25,9 +25,10 @@ namespace FitHubBackendAPI.Services.Implementation.GymServices
             await _planRepository.SaveChangesAsync();
         }
 
-        public async Task<GetPlanByIdDTO> CreatePlanAsync(CreatePlanDTO createPlanDto)
+        public async Task<GetPlanByIdDTO> CreatePlanAsync(int branchId, CreatePlanDTO createPlanDto)
         {
             var plan = _mapper.Map<GymPlan>(createPlanDto);
+            plan.BranchId = branchId;
             await _planRepository.AddAsync(plan);
             await _planRepository.SaveChangesAsync();
             return new GetPlanByIdDTO();

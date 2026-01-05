@@ -7,7 +7,7 @@ namespace FitHubBackendAPI.DTOs.AdminDtos
     {
         public int Id { get; set; }
         public int OwnerId { get; set; }
-
+        public string? OwnerName { get; set; }
         public string? BranchName { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }

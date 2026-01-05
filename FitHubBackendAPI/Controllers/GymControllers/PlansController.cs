@@ -22,16 +22,15 @@ namespace FitHubBackendAPI.Controllers.GymControllers
 
         [HttpPost]
         [Route("{branchId}/Create")]
-        public async Task<ResponseViewModel<CreatePlanDTO>> CreatePlan(int branchId, CreatePlanDTO createPlanDto)
+        public async Task<ResponseViewModel<GetPlanByIdDTO>> CreatePlan(int branchId, [FromBody] CreatePlanDTO createPlanDto)
         {
 
             if (createPlanDto == null)
             {
-                return ResponseViewModel<CreatePlanDTO>.Fail("Invalid plan data.");
+                return ResponseViewModel<GetPlanByIdDTO>.Fail("Invalid plan data.");
             }
-            createPlanDto.BranchId = branchId;
-            var result = await _planService.CreatePlanAsync(createPlanDto);
-            return ResponseViewModel<CreatePlanDTO>.Success(createPlanDto, "Plan created successfully.");
+            var result = await _planService.CreatePlanAsync(branchId, createPlanDto);
+            return ResponseViewModel<GetPlanByIdDTO>.Success(result, "Plan created successfully.");
         }
 
 

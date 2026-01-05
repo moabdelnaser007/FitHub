@@ -106,8 +106,8 @@ namespace FitHubBackendAPI.Controllers.User_Controller
 
             // 🔁 Redirect to Angular
             string redirectUrl = isSuccess
-                ? "http://localhost:4201/billing"
-                : "http://localhost:4201/billing";
+                ? "http://localhost:4200/billing"
+                : "http://localhost:4200/billing";
 
             return Redirect(redirectUrl);
         }
